@@ -17,6 +17,7 @@ class Projectile(object):
 		self.zpos = z
 		self.loadModel()
 		self.setupCollisions()
+		self.prevtime = 0
 	
 	def loadModel(self):
 		"""loads the bullet model"""
@@ -35,6 +36,13 @@ class Projectile(object):
 		cNode.addSolid(cSphere)
 		cNodePath = self.form.attachNewNode(cNode)
 		base.cTrav.addCollider(cNodePath, self.cHandler)
+	
+	def update(self, task):
+		"""moves the bullet in a straight line relative to its trajectory"""
+		elapsed = task.time - self.prevtime
+		self.xpos = self.xpos + self.xvel*math.cos(self.trajectory)*elapsed
+		self.ypos = self.ypos + self.yvel*math.sin(self.trajectory)*elapsed
+		self.form.setPos(self.xpos, self.ypos, self.zpos)
 		
 		
 class Bullet(Projectile):
