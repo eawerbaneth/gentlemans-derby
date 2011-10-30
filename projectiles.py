@@ -7,10 +7,12 @@ from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
 
 class Projectile(object):
-	def __init__(self, vel, angle, x, y, z):
+	def __init__(self, vel, x, y, z, angle, range):
 		self.xvel = vel*math.cos(angle)
 		self.yvel = vel*math.sin(angle)
 		self.zvel = 0
+		self.origx = x
+		self.origy = y
 		self.trajectory = angle
 		self.xpos = x
 		self.ypos = y
@@ -18,6 +20,7 @@ class Projectile(object):
 		self.loadModel()
 		self.setupCollisions()
 		self.prevtime = 0
+		self.range = range
 	
 	def loadModel(self):
 		"""loads the bullet model"""
@@ -44,7 +47,14 @@ class Projectile(object):
 		self.ypos = self.ypos + self.yvel*math.sin(self.trajectory)*elapsed
 		self.form.setPos(self.xpos, self.ypos, self.zpos)
 		
+		#check to see if the projectile is out of range
+		if math.sqrt((self.origx-self.xpos)^2 + (self.origy-self.ypos)^2) > self.range:
+			
+	def kill(self, cEntry):
+		"""destroys the bullet upon entering a foreign body"""
+		cEntr.getIntoNodePath().getParent().remove()
+	
 		
-class Bullet(Projectile):
-	def loadModel()
+#class Bullet(Projectile):
+	
 	
