@@ -26,7 +26,7 @@ class Projectile(object):
 	def loadModel(self):
 		"""loads the bullet model"""
 		#load the proxy model
-		self.form = loader.loadModel("proxy")
+		self.form = loader.loadModel("models/weapons/bulletproxy")
 		self.form.reparentTo(render)
 	
 	def setupCollisions(self):

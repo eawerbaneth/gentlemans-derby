@@ -29,7 +29,8 @@ class Weapon(DirectObject):
 		self.LoadModel
 	
 	def LoadModel(self):
-		pass
+		self.form = Actor("models/weapons/revolverProxy.egg")
+		self.form.reparentTo(render)
 	
 	def setKey(self, key, value):
 		self.keyMap[key] = value
@@ -59,20 +60,21 @@ class Weapon(DirectObject):
 	
 		# if the player runs out of ammo (this will only happen on inherited classes, 
 		# kill the thing and revert back to the pistol
-#FLAG: still need to complete this one
 		if self.ammo <= 0:
-			pass
+			self.kill()
+			return false
+			
+		return true
 	
 	def fire(self):
 		"""pulls the trigger"""
 		new_projectile = projectile(5, self.xpos, self.ypos, self.zpos, self.angle, self.range, self.penalty)
 		self.projectiles.append(new_projectile)
 		self.cooldown = 1.0
-	
-#FLAG: still to to write this one
+
 	def kill(self):
 		"""removes the weapon from the scene"""
-		pass
+		self.form.removeNode()
 	
 class GattlingGun(Weapon):
 	def __init__(self, x, y, z, angle):
@@ -81,9 +83,10 @@ class GattlingGun(Weapon):
 		self.penalty = 0.3
 		self.ammo = 100
 
-#FLAG: still need to complete this one
+#using revolver proxy for now
 	def LoadModel(self):
-		pass
+		self.form = Actor("models/weapons/revolverProxy.egg")
+		self.form.reparentTo(render)
 		
 	def fire(self):
 		"""pulls the trigger"""
@@ -100,7 +103,8 @@ class Flamethrower(Weapon):
 	
 #FLAG: waiting on image for this one
 	def LoadModel(self):
-		pass
+		self.form = Actor("models/weapons/revolverProxy.egg")
+		self.form.reparentTo(render)
 
 #FLAG: need to finish this
 	def fire(self):
@@ -119,7 +123,8 @@ class BombWeapon(Weapon):
 	#each individual method is going to need to load its own model
 #FLAG: needs image
 	def LoadModel(self):
-		pass
+		self.form = Actor("models/weapons/revolverProxy.egg")
+		self.form.reparentTo(render)
 	
 	def fire(self):
 		"""drops a bomb"""
@@ -129,9 +134,4 @@ class BombWeapon(Weapon):
 		self.cooldown = 5.0
 		self.ammo = self.ammo - 1
 	
-
 	
-	
-		
-		
-		
