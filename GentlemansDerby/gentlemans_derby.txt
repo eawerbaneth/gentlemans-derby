@@ -1,0 +1,42 @@
+Gentleman's Derby
+Race/Combat
+1920's
+
+Racer's are guys in top hats on old bikes
+Setting:
+	Nighttime
+	Lit by street lights
+	Moonlight
+	
+
+Weapons:
+	Revolver  --  single shot that slows down the enemy
+	Gattling Gun -- rapid fire that slows down the enemy
+	Flamethrower  --  duration fire that slows down the enemy
+	Bomb Throw  --  drops the bomb behind you, detonates after
+		    -- a few seconds
+	
+Abilities:
+	Oil Slick
+	Black Hole
+
+Obstacle:
+	Lady Crossing
+	Spikes
+	Train Crossing
+
+Features of the Track:
+	Jumps
+	Loop - d - loop
+	Speed Boost
+	
+Animations:
+	Riding
+	Throw bomb
+	Fire revolver
+	Fire flamethrower
+	Fire gattling
+	Drop oil
+	Drop black hole
+	"Death" animation
+	
