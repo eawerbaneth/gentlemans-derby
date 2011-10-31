@@ -7,7 +7,7 @@ from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
 
 class Projectile(object):
-	def __init__(self, vel, x, y, z, angle, range):
+	def __init__(self, vel, x, y, z, angle, range, penalty):
 		self.xvel = vel*math.cos(angle)
 		self.yvel = vel*math.sin(angle)
 		self.zvel = 0
@@ -21,6 +21,7 @@ class Projectile(object):
 		self.setupCollisions()
 		self.prevtime = 0
 		self.range = range
+		self.penalty = penalty
 	
 	def loadModel(self):
 		"""loads the bullet model"""
@@ -61,7 +62,7 @@ class Projectile(object):
 		cEntry.getIntoNodePath().getParent().remove()
 	
 class Bomb(DirectObject):
-	def __init__(self, x, y, z, angle):
+	def __init__(self, x, y, z, angle, penalty):
 		self.xpos = x
 		self.ypos = y
 		self.zpos = z
@@ -71,6 +72,7 @@ class Bomb(DirectObject):
 		self.prevtime = -1
 		self.countdown = 3.0
 		self.exploderange = 10.0
+		self.penalty = penalty
 		self.accept('bomb-detonated-player', self.explode)
 	
 	def loadModel(self):

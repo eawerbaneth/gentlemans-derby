@@ -15,7 +15,11 @@ class Weapon(DirectObject):
 		self.accept("space", self.setKey, ["firing", 1] )
 		self.accept("space-up", self.setKey, ["firing", 0] )
 		self.projectiles = []
+		
+		#set weapon cooldown and how long it slows a player down for
 		self.cooldown = 1.0
+		self.penalty = 0.5
+		self.ammo = 1000
 		
 		self.angle = angle
 		self.xpos = x
@@ -44,7 +48,7 @@ class Weapon(DirectObject):
 		if self.cooldown < 0.0
 			self.cooldown = 0.0
 		
-		if keyMap["firing"] and self.cooldown == 0:
+		if keyMap["firing"] and self.cooldown == 0 and self.ammo > 0:
 			self.fire()
 		
 		for i, projectile in enumerate(self.projectiles):
@@ -53,33 +57,77 @@ class Weapon(DirectObject):
 				#if the projectile was destroyed, get rid of it
 				self.projectiles.pop(i)
 	
+		# if the player runs out of ammo (this will only happen on inherited classes, 
+		# kill the thing and revert back to the pistol
+#FLAG: still need to complete this one
+		if self.ammo <= 0:
+			pass
 	
 	def fire(self):
-		"""pull the trigger"""
-		new_projectile = projectile(5, x, y, z, angle, self.range)
+		"""pulls the trigger"""
+		new_projectile = projectile(5, self.xpos, self.ypos, self.zpos, self.angle, self.range, self.penalty)
 		self.projectiles.append(new_projectile)
 		self.cooldown = 1.0
-		
+	
+#FLAG: still to to write this one
 	def kill(self):
 		"""removes the weapon from the scene"""
 		pass
 	
+class GattlingGun(Weapon):
+	def __init__(self, x, y, z, angle):
+		Weapon.__init__(self, x, y, z, angle)
+		self.coodown = 0.3
+		self.penalty = 0.3
+		self.ammo = 100
+
+#FLAG: still need to complete this one
+	def LoadModel(self):
+		pass
 		
+	def fire(self):
+		"""pulls the trigger"""
+		Weapon.fire(self)
+		self.cooldown = 0.3
+		self.ammo = self.ammo - 1
+	
+class Flamethrower(Weapon):
+	def __init__(self, x, y, z, angle):
+		Weapon.__init__(self, x, y, z, angle)
+		self.ammo = 160
+		self.cooldown = 0
+		self.penalty = 0.1
+	
+#FLAG: waiting on image for this one
+	def LoadModel(self):
+		pass
+
+#FLAG: need to finish this
+	def fire(self):
+	"""sprays fire"""
+	#note: fire doesn't inherit from projectile class
+	
+	
+	
 class BombWeapon(Weapon):
 	def __init__(self, x, y, z, angle):
 		Weapon.__init__(self, x, y, z, angle)
 		self.cooldown = 5.0
+		self.penalty = 2.0
+		self.ammo = 3
 	
 	#each individual method is going to need to load its own model
+#FLAG: needs image
 	def LoadModel(self):
 		pass
 	
 	def fire(self):
 		"""drops a bomb"""
 		#note: bombs don't inherit from projectile class
-		new_bomb = bomb(x, y, z, angle)
+		new_bomb = bomb(self.xpos, self.ypos, self.zpos, self.angle)
 		self.projectiles.append(new_bomb)
 		self.cooldown = 5.0
+		self.ammo = self.ammo - 1
 	
 
 	
