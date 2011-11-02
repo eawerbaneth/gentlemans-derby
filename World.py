@@ -56,7 +56,7 @@ class World(DirectObject):
 		
 		self.env = loader.loadModel("models/environment")
 		self.env.reparentTo(render)
-		self.env.setScale(.25)
+		#self.env.setScale(.25)
 		
 	def	setupLights(self):
 		#ambient light
