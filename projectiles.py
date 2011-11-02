@@ -32,7 +32,7 @@ class Projectile(object):
 	
 	def setupCollisions(self):
 		#run through the gambit
-		base.cTrav = CollisionTraverser()
+		#base.cTrav = CollisionTraverser()
 		self.cHandler = CollisionHandlerEvent()
 		self.cHandler.setInPattern("shot-%in")
 		
@@ -85,7 +85,7 @@ class Flames(DirectObject):
 		
 	def setupCollisions(self):
 		"""sets up the flamebox to burn things"""
-		base.cTrav = CollisionTraverser()
+		#base.cTrav = CollisionTraverser()
 		self.cHandler = CollisionHandlerEvent()
 		self.cHandler.setInPattern('burned-up-%in')
 		
@@ -135,7 +135,7 @@ class Bomb(DirectObject):
 		
 	def setupCollisions(self):
 		"""sets the bomb up to collide with things"""
-		base.cTrav = CollisionTraverser()
+		#base.cTrav = CollisionTraverser()
 		self.cHandler = CollisionHandlerEvent()
 		self.cHandler.setInPattern('bomb-detonated-%in')
 		

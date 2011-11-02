@@ -45,6 +45,7 @@ class StreetLamp(DirectObject):
 		
 	def LoadModel(self):
 		"""loads the lamp model"""
+#FLAG: still waiting on model for this one
 		self.form = loader.loadModel("models/panda-model")
 		self.form.setScale(.007)
 		self.form.reparentTo(render)
@@ -53,7 +54,8 @@ class StreetLamp(DirectObject):
 		
 	def setupLights(self):
 		self.light = PointLight("streetlight")
-		self.light.setColor((1, 1, 1, 1))
+#FLAG: brighter for testing, change it back when you get model
+		self.light.setColor((5, 5, 5, 5))
 		self.light.setPoint((self.xpos, self.ypos, self.zpos+3))
 		self.nodepath = render.attachNewNode(self.light)
 		#self.nodepath.setPos(self.xpos, self.ypos, self.zpos)

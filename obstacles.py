@@ -26,7 +26,7 @@ class Spikes(DirectObject):
 	self.form.reparentTo(render)
 		
 	def setupCollisions(self):
-		base.cTrav = CollisionTraverser()
+		#base.cTrav = CollisionTraverser()
 		self.cHandler = CollisionHandlerEvent()
 		self.cHandler.setInPattern("spiked-%in")
 		
