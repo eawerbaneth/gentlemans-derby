@@ -47,7 +47,7 @@ class Weapon(DirectObject):
 		self.zpos = z
 		
 		self.cooldown = self.cooldown - elapsed
-		if self.cooldown < 0.0
+		if self.cooldown < 0.0:
 			self.cooldown = 0.0
 		
 		if keyMap["firing"] and self.cooldown == 0 and self.ammo > 0:
@@ -55,7 +55,7 @@ class Weapon(DirectObject):
 		
 		for i, projectile in enumerate(self.projectiles):
 			#update all projectiles belonging to this weapon,
-			if not projectile.update(elapsed)
+			if not projectile.update(elapsed):
 				#if the projectile was destroyed, get rid of it
 				self.projectiles.pop(i)
 	
@@ -96,7 +96,7 @@ class GattlingGun(Weapon):
 		Weapon.fire(self)
 		projectiles[projectiles.len()-1].penalty = 0.3
 		self.cooldown = 0.3
-		self.ammo = -= 1
+		self.ammo -= 1
 	
 class Flamethrower(Weapon):
 	def __init__(self, x, y, z, angle, projectiles):
@@ -111,12 +111,12 @@ class Flamethrower(Weapon):
 		self.form.reparentTo(render)
 
 	def fire(self):
-	"""sprays fire"""
-	#note: fire doesn't inherit from projectile class
-	new_flames = Flames(self.xpos, self.ypos, self.zpos, self.angle)
-	self.projectiles.append(new_flames)
-	self.cooldown = 0
-	self.ammo -= 1
+		"""sprays fire"""
+		#note: fire doesn't inherit from projectile class
+		new_flames = Flames(self.xpos, self.ypos, self.zpos, self.angle)
+		self.projectiles.append(new_flames)
+		self.cooldown = 0
+		self.ammo -= 1
 		
 	
 class BombWeapon(Weapon):

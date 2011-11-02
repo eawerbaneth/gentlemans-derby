@@ -5,6 +5,7 @@ from direct.actor.Actor import Actor #for animated models
 from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
 import sys, math, random
+from weapons import *
 
 class World(DirectObject):
 	def __init__(self):
@@ -25,6 +26,8 @@ class World(DirectObject):
 		self.accept("arrow_right-up", self.setKey, ["right", 0])
 		self.accept("arrow_left-up", self.setKey, ["left", 0])
 		self.accept("collide-wall", self.putPlayer)
+		
+		self.weapon = Weapon(0, 0, 2, 0, [])
 		
 		
 	def setKey(self,key,value):

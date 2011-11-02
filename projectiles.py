@@ -103,11 +103,11 @@ class Flames(DirectObject):
 		#else:
 		#	elapsed = task.time - self.prevtime
 			
-			self.duration -= elapsed
+		self.duration -= elapsed
 			
-			if self.duration <= 0:
-				self.form.removeNode()
-				return False
+		if self.duration <= 0:
+			self.form.removeNode()
+			return False
 			
 		#	self.prevtime = task.time
 		#	return Task.cont
