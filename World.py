@@ -27,7 +27,7 @@ class World(DirectObject):
 		self.accept("arrow_left-up", self.setKey, ["left", 0])
 		self.accept("collide-wall", self.putPlayer)
 		
-		self.weapon = GattlingGun(0, 0, 2, 0, [])
+		#self.weapon = GattlingGun(0, 0, 20, 0, [])
 		
 		
 	def setKey(self,key,value):
@@ -37,10 +37,13 @@ class World(DirectObject):
 		self.player.setPos(0,0,0)	
 		
 	def loadModels(self):
-		self.player = Actor("models/weapons/revolverProxy")
-		self.player.setScale(3)
+		self.player = Actor("models/panda-model")
+		self.player.setScale(.005)
 		#self.player.setH(180)
 		self.player.reparentTo(render)
+		
+		self.weapon = GattlingGun(0, 0, 100, 0, [])
+		self.weapon.form.reparentTo(self.player)
 		
 		self.env = loader.loadModel("models/environment")
 		self.env.reparentTo(render)
@@ -60,6 +63,7 @@ class World(DirectObject):
 			dy = dist * -math.cos(angle)
 			self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
 		
+		self.weapon.update(self.player.getX(), self.player.getY(), self.weapon.form.getZ(), self.player.getH(), elapsed)
 		self.prevtime = task.time
 		return Task.cont
 		

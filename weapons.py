@@ -38,7 +38,7 @@ class Weapon(DirectObject):
 	#DEBUGGING PURPOSES ONLY
 	def testing(self, task):
 		camera.lookAt(self.form)
-		self.update(0, 0, 3, 0, task.time - self.prevtime)
+		#self.update(0, 0, 3, 0, task.time - self.prevtime)
 		
 		self.prevtime = task.time
 		
@@ -47,7 +47,7 @@ class Weapon(DirectObject):
 	def LoadModel(self):
 		self.form = Actor("models/weapons/revolverProxy")
 		self.form.setScale(5)
-		self.form.reparentTo(render)
+		#self.form.reparentTo(render)
 	
 	def setKey(self, key, value):
 		self.keyMap[key] = value
@@ -104,7 +104,8 @@ class GattlingGun(Weapon):
 #using revolver proxy for now
 	def LoadModel(self):
 		self.form = Actor("models/weapons/revolverProxy")
-		self.form.reparentTo(render)
+		self.form.setScale(5)
+		#self.form.reparentTo(render)
 		
 	def fire(self):
 		"""pulls the trigger"""
@@ -122,13 +123,9 @@ class Flamethrower(Weapon):
 	
 #FLAG: waiting on image for this one
 	def LoadModel(self):
-<<<<<<< HEAD
 		self.form = Actor("models/weapons/revolverProxy")
-=======
-		self.form = Actor("models/panda-model")
-		self.form.setScale(.005)
->>>>>>> df3701fbbbd5e0cc186db06c637cef48ec8f68f3
-		self.form.reparentTo(render)
+
+		#self.form.reparentTo(render)
 
 	def fire(self):
 		"""sprays fire"""
@@ -149,13 +146,10 @@ class BombWeapon(Weapon):
 	#each individual method is going to need to load its own model
 #FLAG: needs image
 	def LoadModel(self):
-<<<<<<< HEAD
+
 		self.form = Actor("models/weapons/revolverProxy")
-=======
-		self.form = Actor("models/panda-model")
-		self.form.setScale(.005)
->>>>>>> df3701fbbbd5e0cc186db06c637cef48ec8f68f3
-		self.form.reparentTo(render)
+
+		#self.form.reparentTo(render)
 	
 	def fire(self):
 		"""drops a bomb"""
