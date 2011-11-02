@@ -36,7 +36,7 @@ class Weapon(DirectObject):
 		
 	#DEBUGGING PURPOSES ONLY
 	def testing(self, task):
-		camera.lookAt(self.form)
+		#camera.lookAt(self.form)
 		self.update(0, 0, 3, 0, task.time - self.prevtime)
 		
 		self.prevtime = task.time

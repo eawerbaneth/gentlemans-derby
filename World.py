@@ -6,6 +6,7 @@ from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
 import sys, math, random
 from weapons import *
+from misc import *
 
 class World(DirectObject):
 	def __init__(self):
@@ -28,6 +29,7 @@ class World(DirectObject):
 		self.accept("collide-wall", self.putPlayer)
 		
 		self.weapon = GattlingGun(0, 0, 2, 0, [])
+		self.lighttest = StreetLamp(self.player.getX(), self.player.getY(), self.player.getZ())
 		
 		
 	def setKey(self,key,value):
@@ -48,7 +50,7 @@ class World(DirectObject):
 		
 	def move(self, task):
 		elapsed = task.time - self.prevtime
-		#camera.lookAt(self.player)
+		camera.lookAt(self.player)
 		if self.keyMap["left"]:
 			self.player.setH(self.player.getH() + elapsed * 100)
 		if self.keyMap["right"]:
@@ -59,6 +61,9 @@ class World(DirectObject):
 			dx = dist * math.sin(angle)
 			dy = dist * -math.cos(angle)
 			self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
+		
+		#light testing
+		#self.lighttest.light.setPoint((self.player.getX(), self.player.getY(), self.player.getZ()+3))
 		
 		self.prevtime = task.time
 		return Task.cont
