@@ -39,7 +39,7 @@ class World(DirectObject):
 	def loadModels(self):
 		self.player = Actor("models/panda-model")
 		self.player.setScale(.005)
-		#self.player.setH(180)
+		self.player.setH(90)
 		self.player.reparentTo(render)
 		
 		self.weapon = GattlingGun(0, 0, 100, 0, [])
@@ -63,7 +63,7 @@ class World(DirectObject):
 			dy = dist * -math.cos(angle)
 			self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
 		
-		self.weapon.update(self.player.getX(), self.player.getY(), self.weapon.form.getZ(), self.player.getH(), elapsed)
+		self.weapon.update(self.player.getX(), self.player.getY(), self.weapon.form.getZ(), deg2Rad(self.player.getH()), elapsed)
 		self.prevtime = task.time
 		return Task.cont
 		

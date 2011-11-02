@@ -8,8 +8,8 @@ from direct.task import Task #for update functions
 
 class Projectile(object):
 	def __init__(self, vel, x, y, z, angle, range, penalty):
-		self.xvel = vel*math.cos(angle)
-		self.yvel = vel*math.sin(angle)
+		self.xvel = vel*math.sin(angle)
+		self.yvel = vel*-math.cos(angle)
 		self.zvel = 0
 		self.origx = x
 		self.origy = y
@@ -46,8 +46,8 @@ class Projectile(object):
 	def update(self, elapsed):
 		"""moves the bullet in a straight line relative to its trajectory"""
 		#elapsed = task.time - self.prevtime
-		self.xpos = self.xpos + self.xvel*math.cos(self.trajectory)*elapsed
-		self.ypos = self.ypos + self.yvel*math.sin(self.trajectory)*elapsed
+		self.xpos = self.xpos + self.xvel*elapsed
+		self.ypos = self.ypos + self.yvel*elapsed
 		self.form.setPos(self.xpos, self.ypos, self.zpos)
 		
 		#check to see if the projectile is out of range
