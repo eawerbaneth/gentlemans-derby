@@ -35,7 +35,9 @@ class World(DirectObject):
 		
 		self.weapon = GattlingGun(0, 0, 2, 0, [])
 		self.lighttest = StreetLamp(self.player.getX(), self.player.getY(), self.player.getZ())
-		self.spikestest = Spikes(3, 3, 3)
+		#self.spikestest = Spikes(3, 3, 3)
+		self.oiltest = oilSlick(3, 3, 3)
+		self.bombtest = BombWeapon(10, 10, 3, 0, [])
 		
 	def setKey(self,key,value):
 		self.keyMap[key] = value

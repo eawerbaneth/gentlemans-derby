@@ -32,7 +32,7 @@ class Weapon(DirectObject):
 		
 
 		#for debugging purposes only
-		taskMgr.add(self.testing, "TESTING_WEAPON")
+		#taskMgr.add(self.testing, "TESTING_WEAPON")
 		self.prevtime = 0
 		
 		self.LoadModel()
@@ -90,12 +90,13 @@ class Weapon(DirectObject):
 	
 	def fire(self):
 		"""pulls the trigger"""
-		new_projectile = Projectile(5, self.xpos, self.ypos, 0, self.angle, 30, self.penalty)
+		new_projectile = Projectile(100, self.xpos, self.ypos, 0, self.angle, 30, self.penalty)
 		self.bullets.append(new_projectile)
 		self.cooldown = 1.0
 
 	def kill(self):
 		"""removes the weapon from the scene"""
+		self.form.cleanup()
 		self.form.removeNode()
 	
 class GattlingGun(Weapon):

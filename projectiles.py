@@ -169,13 +169,13 @@ class Bomb(DirectObject):
 	#before being removed
 	def explode(self):	
 		"""the bomb explodes"""
-		base.cTrav = CollisionTraverser()
-		self.cHandler = CollisionHandlerEvent()
-		self.cHandler('blew-up-%in')
+		#base.cTrav = CollisionTraverser()
+		self.cHandler2 = CollisionHandlerEvent()
+		self.cHandler2.setInPattern('blew-up-%in')
 		
 		explosionSphere = CollisionSphere(self.xpos, self.ypos, self.zpos, self.exploderange)
 		cNode = CollisionNode("explosion")
-		Cnode.addSolid(explosionSphere)
+		cNode.addSolid(explosionSphere)
 		cNodePath = self.form.attachNewNode(cNode)
-		base.cTrav.addCollider(cNodePath, self.cHandler)
+		base.cTrav.addCollider(cNodePath, self.cHandler2)
 		
