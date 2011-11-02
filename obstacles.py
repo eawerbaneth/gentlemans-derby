@@ -21,7 +21,9 @@ class Spikes(DirectObject):
 		
 	def loadModel(self):
 		"""loads the spikes"""
+
 		#FLAG: waiting on spikes model
+
 		self.form = loader.loadModel("models/panda-model")
 		self.form.setScale(.02)
 		self.form.reparentTo(render)
@@ -41,15 +43,15 @@ class Spikes(DirectObject):
 		elapsed = task.time - self.prevtime
 		#if mode is 0, move up
 		if self.mode == 0:
-			self.form.setPos(self.form.getX(), self.form.getY(), self.form.getZ()+1*elapsed)
+			self.form.setPos(self.form.getX(), self.form.getY(), self.form.getZ()+3*elapsed)
 			#if we reach the top, set mode to 1
 			if self.form.getZ() > self.zpos+10:
 				self.mode = 1
 		#else move down
 		else:
-			self.form.setPos(self.form.getX(), self.form.getY(), self.form.getZ()-1*elapsed)
+			self.form.setPos(self.form.getX(), self.form.getY(), self.form.getZ()-3*elapsed)
 			#if we reach the bottom, set mode to 0
-			if self.form.getZ() < self.zpos:
+			if self.form.getZ() < self.zpos-10:
 				self.mode = 0
 		
 		self.prevtime = task.time
