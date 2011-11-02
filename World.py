@@ -17,20 +17,23 @@ class World(DirectObject):
 		self.setupLights()
 		self.collisionInit()
 		
-		self.keyMap = {"left":0, "right":0, "forward":0, "down":0}
+		self.keyMap = {"left":0, "right":0, "forward":0, "down":0, "break":0}
 		taskMgr.add(self.move, "moveTask")
 		self.prevtime = 0
 		self.velocity = 0
+		self.topspeed = 100
 		
 		self.accept("escape", sys.exit)
 		self.accept("arrow_up", self.setKey, ["forward", 1])
 		self.accept("arrow_right", self.setKey, ["right", 1])
 		self.accept("arrow_left", self.setKey, ["left", 1])
 		self.accept("arrow_down", self.setKey, ["down", 1])
+		self.accept("z", self.setKey, ["break", 1])
 		self.accept("arrow_up-up", self.setKey, ["forward", 0])
 		self.accept("arrow_right-up", self.setKey, ["right", 0])
 		self.accept("arrow_left-up", self.setKey, ["left", 0])
 		self.accept("arrow_down-up", self.setKey, ["down", 0])
+		self.accept("z-up", self.setKey, ["break", 0])
 		self.accept("collide-wall", self.putPlayer)
 		
 		#self.weapon = GattlingGun(0, 0, 2, 0, [])
@@ -56,7 +59,11 @@ class World(DirectObject):
 		
 		self.env = loader.loadModel("models/environment")
 		self.env.reparentTo(render)
-		#self.env.setScale(.25)
+
+		self.env.setScale(.25)
+		camera.reparentTo(self.player)
+		camera.setPos(0, 3000, 700)
+
 		
 	def	setupLights(self):
 		#ambient light
@@ -100,26 +107,49 @@ class World(DirectObject):
 		if self.keyMap["forward"]:
 			dist = elapsed * self.velocity
 			self.velocity += elapsed * 20
+			if self.velocity > self.topspeed: self.velocity = self.topspeed
 			angle = deg2Rad(self.player.getH())
 			dx = dist * math.sin(angle)
 			dy = dist * -math.cos(angle)
 			self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
-		if self.keyMap["down"]:
-			dist = -5 * elapsed
-			angle = deg2Rad(self.player.getH())
-			dx = dist * math.sin(angle)
-			dy = dist * -math.cos(angle)
-			self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
-		if (self.keyMap["forward"]==0):
+		elif self.keyMap["down"]:
 			dist = elapsed * self.velocity
-			if self.velocity >= 0:
-				self.velocity -= elapsed * 50
+			self.velocity -= elapsed * 5
+			if self.velocity < -10:
+				self.velocity = -10
+			angle = deg2Rad(self.player.getH())
+			dx = dist * math.sin(angle)
+			dy = dist * -math.cos(angle)
+			self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
+		if self.keyMap["break"]:
+			dist = elapsed * self.velocity
+			self.velocity -= elapsed *75
 			if self.velocity < 0:
 				self.velocity = 0
 			angle = deg2Rad(self.player.getH())
 			dx = dist * math.sin(angle)
 			dy = dist * -math.cos(angle)
 			self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
+		if self.keyMap["forward"]==0:
+			if self.velocity >= 0:
+				dist = elapsed * self.velocity
+				self.velocity -= elapsed * 50
+				if self.velocity < 0:
+					self.velocity = 0
+				angle = deg2Rad(self.player.getH())
+				dx = dist * math.sin(angle)
+				dy = dist * -math.cos(angle)
+				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
+		if self.keyMap["down"]==0:
+			if self.velocity < 0:
+				dist = elapsed * self.velocity
+				self.velocity += elapsed * 50
+				if self.velocity > 0:
+					self.velocity = 0
+				angle = deg2Rad(self.player.getH())
+				dx = dist * math.sin(angle)
+				dy = dist * -math.cos(angle)
+				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
 		
 		#light testing
 		#self.lighttest.light.setPoint((self.player.getX(), self.player.getY(), self.player.getZ()+3))
