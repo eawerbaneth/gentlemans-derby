@@ -4,7 +4,7 @@ from direct.showbase.DirectObject import DirectObject #for event handling
 from direct.actor.Actor import Actor #for animated models
 from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
-import projectiles
+from projectiles import *
 import sys, math, random
 
 #default weapon (revolver)
@@ -28,10 +28,24 @@ class Weapon(DirectObject):
 		self.ypos = y
 		self.zpos = z
 		
-		self.LoadModel
-	
+		#for debugging purposes only
+		taskMgr.add(self.testing, "TESTING_WEAPON")
+		self.prevtime = 0
+		
+		self.LoadModel()
+		
+	#DEBUGGING PURPOSES ONLY
+	def testing(self, task):
+		camera.lookAt(self.form)
+		self.update(0, 0, 3, 0, task.time - self.prevtime)
+		
+		self.prevtime = task.time
+		
+		return Task.cont
+		
 	def LoadModel(self):
-		self.form = Actor("models/weapons/revolverProxy.egg")
+		self.form = Actor("models/panda-model")
+		self.form.setScale(.005)
 		self.form.reparentTo(render)
 	
 	def setKey(self, key, value):
@@ -50,7 +64,7 @@ class Weapon(DirectObject):
 		if self.cooldown < 0.0:
 			self.cooldown = 0.0
 		
-		if keyMap["firing"] and self.cooldown == 0 and self.ammo > 0:
+		if self.keyMap["firing"] and self.cooldown == 0 and self.ammo > 0:
 			self.fire()
 		
 		for i, projectile in enumerate(self.projectiles):
@@ -63,15 +77,15 @@ class Weapon(DirectObject):
 		# kill the thing and revert back to the pistol
 		if self.ammo <= 0:
 			self.kill()
-			return false
+			return False
 		#note, when update returns false, you need to pass the weapon's projecitles
 		#to the new pistol before destroying it
 			
-		return true
+		return True
 	
 	def fire(self):
 		"""pulls the trigger"""
-		new_projectile = Projectile(5, self.xpos, self.ypos, self.zpos, self.angle, self.range, self.penalty)
+		new_projectile = Projectile(5, self.xpos, self.ypos, self.zpos, self.angle, 30, self.penalty)
 		self.projectiles.append(new_projectile)
 		self.cooldown = 1.0
 

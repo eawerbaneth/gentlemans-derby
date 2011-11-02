@@ -48,7 +48,7 @@ class World(DirectObject):
 		
 	def move(self, task):
 		elapsed = task.time - self.prevtime
-		camera.lookAt(self.player)
+		#camera.lookAt(self.player)
 		if self.keyMap["left"]:
 			self.player.setH(self.player.getH() + elapsed * 100)
 		if self.keyMap["right"]:

@@ -26,7 +26,8 @@ class Projectile(object):
 	def loadModel(self):
 		"""loads the bullet model"""
 		#load the proxy model
-		self.form = loader.loadModel("models/weapons/bulletproxy")
+		self.form = loader.loadModel("models/panda-model")
+		self.form.setScale(.005)
 		self.form.reparentTo(render)
 	
 	def setupCollisions(self):
@@ -50,7 +51,7 @@ class Projectile(object):
 		self.form.setPos(self.xpos, self.ypos, self.zpos)
 		
 		#check to see if the projectile is out of range
-		if math.sqrt((self.origx-self.xpos)^2 + (self.origy-self.ypos)^2) > self.range:
+		if math.sqrt((self.origx-self.xpos)**2 + (self.origy-self.ypos)**2) > self.range:
 			 #kill the projectile
 			 self.form.removeNode()
 			 return False
