@@ -46,10 +46,12 @@ class World(DirectObject):
 	def loadModels(self):
 		self.player = Actor("models/panda-model")
 		self.player.setScale(.005)
+		#self.player = Actor("models/weapons/revolverProxy")
+		#self.player.setScale(3)
 		self.player.setH(90)
 		self.player.reparentTo(render)
 		
-		self.weapon = GattlingGun(0, 0, 100, 0, [])
+		self.weapon = GattlingGun(0, 0, 800, 0, [])
 		self.weapon.form.reparentTo(self.player)
 		
 		self.env = loader.loadModel("models/environment")

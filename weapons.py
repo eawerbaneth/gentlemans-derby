@@ -28,6 +28,8 @@ class Weapon(DirectObject):
 		self.ypos = y
 		self.zpos = z
 		
+		
+		
 
 		#for debugging purposes only
 		taskMgr.add(self.testing, "TESTING_WEAPON")
@@ -48,6 +50,7 @@ class Weapon(DirectObject):
 	def LoadModel(self):
 		self.form = Actor("models/weapons/revolverProxy")
 		self.form.setScale(5)
+		self.form.setPos(self.xpos,self.ypos,self.zpos)
 		#self.form.reparentTo(render)
 	
 	def setKey(self, key, value):
@@ -87,7 +90,7 @@ class Weapon(DirectObject):
 	
 	def fire(self):
 		"""pulls the trigger"""
-		new_projectile = Projectile(5, self.xpos, self.ypos, self.zpos, self.angle, 30, self.penalty)
+		new_projectile = Projectile(5, self.xpos, self.ypos, 0, self.angle, 30, self.penalty)
 		self.bullets.append(new_projectile)
 		self.cooldown = 1.0
 
@@ -105,7 +108,9 @@ class GattlingGun(Weapon):
 #using revolver proxy for now
 	def LoadModel(self):
 		self.form = Actor("models/weapons/revolverProxy")
-		self.form.setScale(5)
+		self.form.setScale(300)
+		self.form.setPos(self.xpos,self.ypos,self.zpos)
+		self.form.setH(90)
 		#self.form.reparentTo(render)
 		
 	def fire(self):
