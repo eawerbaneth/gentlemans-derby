@@ -7,6 +7,7 @@ from direct.task import Task #for update functions
 import sys, math, random
 from weapons import *
 from misc import *
+from obstacles import *
 
 class World(DirectObject):
 	def __init__(self):
@@ -34,7 +35,7 @@ class World(DirectObject):
 		
 		self.weapon = GattlingGun(0, 0, 2, 0, [])
 		self.lighttest = StreetLamp(self.player.getX(), self.player.getY(), self.player.getZ())
-
+		self.spikestest = Spikes(3, 3, 3)
 		
 	def setKey(self,key,value):
 		self.keyMap[key] = value
@@ -118,13 +119,11 @@ class World(DirectObject):
 			dy = dist * -math.cos(angle)
 			self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
 		
-<<<<<<< HEAD
 		#light testing
 		#self.lighttest.light.setPoint((self.player.getX(), self.player.getY(), self.player.getZ()+3))
 		
-=======
 		self.weapon.update(self.player.getX(), self.player.getY(), self.weapon.form.getZ(), deg2Rad(self.player.getH()), elapsed)
->>>>>>> 4eaad27051875b25fd21f75871c6b87f3a655533
+
 		self.prevtime = task.time
 		return Task.cont
 		

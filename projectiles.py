@@ -34,7 +34,7 @@ class Projectile(object):
 		#run through the gambit
 		#base.cTrav = CollisionTraverser()
 		self.cHandler = CollisionHandlerEvent()
-		self.cHandler.setInPattern("shot-%in")
+		self.cHandler.setInPattern("shot-up-%in")
 		
 		cSphere = CollisionSphere((0,0,0), 1)
 		cNode = CollisionNode("projectile")

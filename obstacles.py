@@ -22,7 +22,8 @@ class Spikes(DirectObject):
 	def loadModel(self):
 		"""loads the spikes"""
 #FLAG: waiting on spikes model
-	self.form = loader.loadModel("models/obstacles/spikesproxy")
+	self.form = loader.loadModel("models/panda-model")
+	self.form.setScale(.02)
 	self.form.reparentTo(render)
 		
 	def setupCollisions(self):
