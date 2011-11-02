@@ -122,7 +122,7 @@ class Flamethrower(Weapon):
 	
 #FLAG: waiting on image for this one
 	def LoadModel(self):
-		self.form = Actor("models/weapons/revolverProxy.egg")
+		self.form = Actor("models/weapons/revolverProxy")
 		self.form.reparentTo(render)
 
 	def fire(self):
@@ -144,7 +144,7 @@ class BombWeapon(Weapon):
 	#each individual method is going to need to load its own model
 #FLAG: needs image
 	def LoadModel(self):
-		self.form = Actor("models/weapons/revolverProxy.egg")
+		self.form = Actor("models/weapons/revolverProxy")
 		self.form.reparentTo(render)
 	
 	def fire(self):

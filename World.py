@@ -27,7 +27,7 @@ class World(DirectObject):
 		self.accept("arrow_left-up", self.setKey, ["left", 0])
 		self.accept("collide-wall", self.putPlayer)
 		
-		self.weapon = Weapon(0, 0, 20, 0, [])
+		self.weapon = GattlingGun(0, 0, 20, 0, [])
 		
 		
 	def setKey(self,key,value):
