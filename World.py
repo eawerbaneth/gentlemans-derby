@@ -19,6 +19,7 @@ class World(DirectObject):
 		
 		self.keyMap = {"left":0, "right":0, "forward":0, "down":0, "break":0}
 		taskMgr.add(self.move, "moveTask")
+		taskMgr.add(self.adjustCamera, "cameraTask")
 		self.prevtime = 0
 		self.velocity = 0
 		self.topspeed = 100
@@ -62,7 +63,8 @@ class World(DirectObject):
 
 		self.env.setScale(.25)
 		camera.reparentTo(self.player)
-		camera.setPos(0, 3000, 700)
+
+		camera.setPos(0, 4000, 1500)
 
 		
 	def	setupLights(self):
@@ -158,7 +160,10 @@ class World(DirectObject):
 
 		self.prevtime = task.time
 		return Task.cont
-		
+	
+	def adjustCamera(self, task):
+		camera.setPos(0, 4000+4000*self.velocity/100, 1500)	
+		return Task.cont
 		
 	def collisionInit(self):
 		base.cTrav = CollisionTraverser()
