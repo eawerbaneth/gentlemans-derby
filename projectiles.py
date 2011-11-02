@@ -32,7 +32,7 @@ class Projectile(object):
 	
 	def setupCollisions(self):
 		#run through the gambit
-		base.cTrav = CollisionTraverser()
+		#base.cTrav = CollisionTraverser()
 		self.cHandler = CollisionHandlerEvent()
 		self.cHandler.setInPattern("shot-%in")
 		
