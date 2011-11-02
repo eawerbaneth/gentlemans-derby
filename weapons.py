@@ -28,10 +28,10 @@ class Weapon(DirectObject):
 		self.ypos = y
 		self.zpos = z
 		
-		self.LoadModel
+		self.LoadModel()
 	
 	def LoadModel(self):
-		self.form = Actor("models/weapons/revolverProxy.egg")
+		self.form = Actor("models/weapons/revolverProxy")
 		self.form.reparentTo(render)
 	
 	def setKey(self, key, value):

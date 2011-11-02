@@ -37,7 +37,7 @@ class World(DirectObject):
 		self.player.setPos(0,0,0)	
 		
 	def loadModels(self):
-		self.player = Actor("models/panda-model")
+		self.player = Actor("models/revolverProxy.egg.pz")
 		self.player.setScale(.005)
 		self.player.setH(180)
 		self.player.reparentTo(render)
