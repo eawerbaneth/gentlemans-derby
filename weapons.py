@@ -9,14 +9,14 @@ import sys, math, random
 
 #default weapon (revolver)
 class Weapon(DirectObject):
-	def __init__(self, x, y, z, angle, projectiles):
+	def __init__(self, x, y, z, angle, bullets):
 		self.keyMap = {"firing":0}
 		self.prevtime = 0
 		
 		self.accept("space", self.setKey, ["firing", 1] )
 		self.accept("space-up", self.setKey, ["firing", 0] )
 		#note - projectiles should be an empty list the first time you create the weapon
-		self.projectiles = projectiles
+		self.bullets = bullets
 		
 		#set weapon cooldown and how long it slows a player down for
 		self.cooldown = 1.0
@@ -68,11 +68,11 @@ class Weapon(DirectObject):
 		if self.keyMap["firing"] and self.cooldown == 0 and self.ammo > 0:
 			self.fire()
 		
-		for i, projectile in enumerate(self.projectiles):
+		for i, projectile in enumerate(self.bullets):
 			#update all projectiles belonging to this weapon,
 			if not projectile.update(elapsed):
 				#if the projectile was destroyed, get rid of it
-				self.projectiles.pop(i)
+				self.bullets.pop(i)
 	
 		# if the player runs out of ammo (this will only happen on inherited classes, 
 		# kill the thing and revert back to the pistol
@@ -87,7 +87,7 @@ class Weapon(DirectObject):
 	def fire(self):
 		"""pulls the trigger"""
 		new_projectile = Projectile(5, self.xpos, self.ypos, self.zpos, self.angle, 30, self.penalty)
-		self.projectiles.append(new_projectile)
+		self.bullets.append(new_projectile)
 		self.cooldown = 1.0
 
 	def kill(self):
@@ -95,8 +95,8 @@ class Weapon(DirectObject):
 		self.form.removeNode()
 	
 class GattlingGun(Weapon):
-	def __init__(self, x, y, z, angle, projectiles):
-		Weapon.__init__(self, x, y, z, angle, projectiles)
+	def __init__(self, x, y, z, angle, bullets):
+		Weapon.__init__(self, x, y, z, angle, bullets)
 		self.coodown = 0.3
 		self.penalty = 0.3
 		self.ammo = 100
@@ -109,34 +109,39 @@ class GattlingGun(Weapon):
 	def fire(self):
 		"""pulls the trigger"""
 		Weapon.fire(self)
-		projectiles[projectiles.len()-1].penalty = 0.3
+		self.bullets[len(self.bullets)-1].penalty = 0.3
 		self.cooldown = 0.3
 		self.ammo -= 1
 	
 class Flamethrower(Weapon):
-	def __init__(self, x, y, z, angle, projectiles):
-		Weapon.__init__(self, x, y, z, angle)
+	def __init__(self, x, y, z, angle, bullets):
+		Weapon.__init__(self, x, y, z, angle, bullets)
 		self.ammo = 160
 		self.cooldown = 0
 		self.penalty = 0.1
 	
 #FLAG: waiting on image for this one
 	def LoadModel(self):
+<<<<<<< HEAD
 		self.form = Actor("models/weapons/revolverProxy")
+=======
+		self.form = Actor("models/panda-model")
+		self.form.setScale(.005)
+>>>>>>> df3701fbbbd5e0cc186db06c637cef48ec8f68f3
 		self.form.reparentTo(render)
 
 	def fire(self):
 		"""sprays fire"""
 		#note: fire doesn't inherit from projectile class
 		new_flames = Flames(self.xpos, self.ypos, self.zpos, self.angle)
-		self.projectiles.append(new_flames)
+		self.bullets.append(new_flames)
 		self.cooldown = 0
 		self.ammo -= 1
 		
 	
 class BombWeapon(Weapon):
-	def __init__(self, x, y, z, angle, projectiles):
-		Weapon.__init__(self, x, y, z, angle, projectiles)
+	def __init__(self, x, y, z, angle, bullets):
+		Weapon.__init__(self, x, y, z, angle, bullets)
 		self.cooldown = 5.0
 		self.penalty = 2.0
 		self.ammo = 3
@@ -144,14 +149,19 @@ class BombWeapon(Weapon):
 	#each individual method is going to need to load its own model
 #FLAG: needs image
 	def LoadModel(self):
+<<<<<<< HEAD
 		self.form = Actor("models/weapons/revolverProxy")
+=======
+		self.form = Actor("models/panda-model")
+		self.form.setScale(.005)
+>>>>>>> df3701fbbbd5e0cc186db06c637cef48ec8f68f3
 		self.form.reparentTo(render)
 	
 	def fire(self):
 		"""drops a bomb"""
 		#note: bombs don't inherit from projectile class
 		new_bomb = Bomb(self.xpos, self.ypos, self.zpos, self.angle)
-		self.projectiles.append(new_bomb)
+		self.bullets.append(new_bomb)
 		self.cooldown = 5.0
 		self.ammo -= 1
 	
