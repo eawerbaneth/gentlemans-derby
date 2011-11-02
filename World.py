@@ -12,19 +12,23 @@ class World(DirectObject):
 		base.disableMouse()
 		camera.setPosHpr(0, -15, 7, 0, -15, 0)
 		self.loadModels()
+		self.setupLights()
 		self.collisionInit()
 		
-		self.keyMap = {"left":0, "right":0, "forward":0}
+		self.keyMap = {"left":0, "right":0, "forward":0, "down":0}
 		taskMgr.add(self.move, "moveTask")
 		self.prevtime = 0
+		self.velocity = 0
 		
 		self.accept("escape", sys.exit)
 		self.accept("arrow_up", self.setKey, ["forward", 1])
 		self.accept("arrow_right", self.setKey, ["right", 1])
 		self.accept("arrow_left", self.setKey, ["left", 1])
+		self.accept("arrow_down", self.setKey, ["down", 1])
 		self.accept("arrow_up-up", self.setKey, ["forward", 0])
 		self.accept("arrow_right-up", self.setKey, ["right", 0])
 		self.accept("arrow_left-up", self.setKey, ["left", 0])
+		self.accept("arrow_down-up", self.setKey, ["down", 0])
 		self.accept("collide-wall", self.putPlayer)
 		
 		#self.weapon = GattlingGun(0, 0, 20, 0, [])
@@ -49,6 +53,38 @@ class World(DirectObject):
 		self.env.reparentTo(render)
 		self.env.setScale(.25)
 		
+	def	setupLights(self):
+		#ambient light
+		self.ambientLight = AmbientLight("ambientLight")
+		#four values, RGBA (alpha is largely irrelevent), value range is 0:1
+		self.ambientLight.setColor((.25, .25, .25, 1))
+		self.ambientLightNP = render.attachNewNode(self.ambientLight)
+		#the nodepath that calls setLight is what gets illuminated by the light
+		render.setLight(self.ambientLightNP)
+		#call clearLight() to turn it off
+		
+		self.keyLight = DirectionalLight("keyLight")
+		self.keyLight.setColor((.6,.6,.6, 1))
+		self.keyLightNP = render.attachNewNode(self.keyLight)
+		self.keyLightNP.setHpr(0, -26, 0)
+		render.setLight(self.keyLightNP)
+		self.fillLight = DirectionalLight("fillLight")
+		self.fillLight.setColor((.4,.4,.4, 1))
+		self.fillLightNP = render.attachNewNode(self.fillLight)
+		self.fillLightNP.setHpr(30, 0, 0)
+		render.setLight(self.fillLightNP)
+		
+		self.headlight = Spotlight("slight")
+		self.headlight.setColor(VBase4(1, 1, .5, 1))
+		lens = PerspectiveLens()
+		lens.setFov(100)
+		self.headlight.setLens(lens)
+		slnp = self.player.attachNewNode(self.headlight)
+		render.setLight(slnp)
+		slnp.setPos(0, -650, 300)
+		slnp.setHpr(0, 180, 0)
+		self.headlight.showFrustum()
+			
 	def move(self, task):
 		elapsed = task.time - self.prevtime
 		#camera.lookAt(self.player)
@@ -57,7 +93,24 @@ class World(DirectObject):
 		if self.keyMap["right"]:
 			self.player.setH(self.player.getH() - elapsed * 100)
 		if self.keyMap["forward"]:
-			dist = 8 * elapsed
+			dist = elapsed * self.velocity
+			self.velocity += elapsed * 20
+			angle = deg2Rad(self.player.getH())
+			dx = dist * math.sin(angle)
+			dy = dist * -math.cos(angle)
+			self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
+		if self.keyMap["down"]:
+			dist = -5 * elapsed
+			angle = deg2Rad(self.player.getH())
+			dx = dist * math.sin(angle)
+			dy = dist * -math.cos(angle)
+			self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
+		if (self.keyMap["forward"]==0):
+			dist = elapsed * self.velocity
+			if self.velocity >= 0:
+				self.velocity -= elapsed * 50
+			if self.velocity < 0:
+				self.velocity = 0
 			angle = deg2Rad(self.player.getH())
 			dx = dist * math.sin(angle)
 			dy = dist * -math.cos(angle)
