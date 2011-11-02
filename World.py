@@ -8,6 +8,7 @@ import sys, math, random
 from weapons import *
 from misc import *
 from obstacles import *
+from ai import *
 
 class World(DirectObject):
 	def __init__(self):
