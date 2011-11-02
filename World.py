@@ -33,7 +33,7 @@ class World(DirectObject):
 		self.accept("arrow_down-up", self.setKey, ["down", 0])
 		self.accept("collide-wall", self.putPlayer)
 		
-		self.weapon = GattlingGun(0, 0, 2, 0, [])
+		#self.weapon = GattlingGun(0, 0, 2, 0, [])
 		self.lighttest = StreetLamp(self.player.getX(), self.player.getY(), self.player.getZ())
 		self.spikestest = Spikes(3, 3, 3)
 		
