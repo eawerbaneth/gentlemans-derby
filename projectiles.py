@@ -66,21 +66,21 @@ class Projectile(object):
 	
 class Flames(DirectObject):
 	def __init__(self, x, y, z, angle):
-		self.xpos = x
-		self.ypos = y
+		self.xpos = x + 100
+		self.ypos = y + 100
 		self.zpos = z
 		self.angle = angle
 		self.loadModel()
 		self.setupCollisions()
 		self.prevtime = -1
 		#may need to play around with this value
-		self.duration = 5
+		self.duration = 100
 		self.penalty = 1
 		
 	def loadModel(self):
 		"""loads the flame model"""
 		#will likely need to change this to an actor
-		self.form = loader.loadModel("flameproxy")
+		self.form = loader.loadModel("models/panda-model")
 		self.form.reparentTo(render)
 		
 	def setupCollisions(self):
@@ -92,7 +92,7 @@ class Flames(DirectObject):
 		cSphere = CollisionSphere((0,0,0),3) 
 		cNode = CollisionNode("flames")
 		cNode.addSolid(cSphere)
-		cNode.Path = self.form.attachNewNode(cNode)
+		cNodePath = self.form.attachNewNode(cNode)
 		base.cTrav.addCollider(cNodePath, self.cHandler)
 	
 	def update(self, elapsed):
@@ -109,7 +109,7 @@ class Flames(DirectObject):
 		if self.duration <= 0:
 			self.form.removeNode()
 			return False
-			
+		
 		#	self.prevtime = task.time
 		#	return Task.cont
 		return True
@@ -130,7 +130,7 @@ class Bomb(DirectObject):
 	
 	def loadModel(self):
 		"""loads the bomb model"""
-		self.form = loader.loadModel("bombproxy")
+		self.form = loader.loadModel("models/panda-model")
 		self.form.reparentTo(render)
 		
 	def setupCollisions(self):
