@@ -45,8 +45,8 @@ class Weapon(DirectObject):
 		return Task.cont
 		
 	def LoadModel(self):
-		self.form = Actor("models/panda-model")
-		self.form.setScale(.005)
+		self.form = Actor("models/weapons/revolverProxy")
+		self.form.setScale(5)
 		self.form.reparentTo(render)
 	
 	def setKey(self, key, value):
@@ -103,7 +103,7 @@ class GattlingGun(Weapon):
 
 #using revolver proxy for now
 	def LoadModel(self):
-		self.form = Actor("models/weapons/revolverProxy.egg")
+		self.form = Actor("models/weapons/revolverProxy")
 		self.form.reparentTo(render)
 		
 	def fire(self):

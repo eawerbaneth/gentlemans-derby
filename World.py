@@ -27,7 +27,7 @@ class World(DirectObject):
 		self.accept("arrow_left-up", self.setKey, ["left", 0])
 		self.accept("collide-wall", self.putPlayer)
 		
-		self.weapon = Weapon(0, 0, 2, 0, [])
+		self.weapon = Weapon(0, 0, 20, 0, [])
 		
 		
 	def setKey(self,key,value):
@@ -37,9 +37,9 @@ class World(DirectObject):
 		self.player.setPos(0,0,0)	
 		
 	def loadModels(self):
-		self.player = Actor("models/revolverProxy.egg.pz")
-		self.player.setScale(.005)
-		self.player.setH(180)
+		self.player = Actor("models/weapons/revolverProxy")
+		self.player.setScale(3)
+		#self.player.setH(180)
 		self.player.reparentTo(render)
 		
 		self.env = loader.loadModel("models/environment")
