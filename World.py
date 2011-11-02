@@ -60,9 +60,12 @@ class World(DirectObject):
 		
 		self.env = loader.loadModel("models/environment")
 		self.env.reparentTo(render)
+
 		self.env.setScale(.25)
 		camera.reparentTo(self.player)
+
 		camera.setPos(0, 4000, 1500)
+
 		
 	def	setupLights(self):
 		#ambient light
