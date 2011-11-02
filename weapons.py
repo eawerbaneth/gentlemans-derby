@@ -4,17 +4,19 @@ from direct.showbase.DirectObject import DirectObject #for event handling
 from direct.actor.Actor import Actor #for animated models
 from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
+import projectiles
 import sys, math, random
 
 #default weapon (revolver)
 class Weapon(DirectObject):
-	def __init__(self, x, y, z, angle):
+	def __init__(self, x, y, z, angle, projectiles):
 		self.keyMap = {"firing":0}
 		self.prevtime = 0
 		
 		self.accept("space", self.setKey, ["firing", 1] )
 		self.accept("space-up", self.setKey, ["firing", 0] )
-		self.projectiles = []
+		#note - projectiles should be an empty list the first time you create the weapon
+		self.projectiles = projectiles
 		
 		#set weapon cooldown and how long it slows a player down for
 		self.cooldown = 1.0
@@ -34,7 +36,6 @@ class Weapon(DirectObject):
 	
 	def setKey(self, key, value):
 		self.keyMap[key] = value
-	
 	
 	#note: angle is the angle that the player is facing
 	#x, y, is the horizontal plane
@@ -63,12 +64,14 @@ class Weapon(DirectObject):
 		if self.ammo <= 0:
 			self.kill()
 			return false
+		#note, when update returns false, you need to pass the weapon's projecitles
+		#to the new pistol before destroying it
 			
 		return true
 	
 	def fire(self):
 		"""pulls the trigger"""
-		new_projectile = projectile(5, self.xpos, self.ypos, self.zpos, self.angle, self.range, self.penalty)
+		new_projectile = Projectile(5, self.xpos, self.ypos, self.zpos, self.angle, self.range, self.penalty)
 		self.projectiles.append(new_projectile)
 		self.cooldown = 1.0
 
@@ -77,8 +80,8 @@ class Weapon(DirectObject):
 		self.form.removeNode()
 	
 class GattlingGun(Weapon):
-	def __init__(self, x, y, z, angle):
-		Weapon.__init__(self, x, y, z, angle)
+	def __init__(self, x, y, z, angle, projectiles):
+		Weapon.__init__(self, x, y, z, angle, projectiles)
 		self.coodown = 0.3
 		self.penalty = 0.3
 		self.ammo = 100
@@ -91,11 +94,12 @@ class GattlingGun(Weapon):
 	def fire(self):
 		"""pulls the trigger"""
 		Weapon.fire(self)
+		projectiles[projectiles.len()-1].penalty = 0.3
 		self.cooldown = 0.3
-		self.ammo = self.ammo - 1
+		self.ammo = -= 1
 	
 class Flamethrower(Weapon):
-	def __init__(self, x, y, z, angle):
+	def __init__(self, x, y, z, angle, projectiles):
 		Weapon.__init__(self, x, y, z, angle)
 		self.ammo = 160
 		self.cooldown = 0
@@ -106,16 +110,18 @@ class Flamethrower(Weapon):
 		self.form = Actor("models/weapons/revolverProxy.egg")
 		self.form.reparentTo(render)
 
-#FLAG: need to finish this
 	def fire(self):
 	"""sprays fire"""
 	#note: fire doesn't inherit from projectile class
-	
-	
+	new_flames = Flames(self.xpos, self.ypos, self.zpos, self.angle)
+	self.projectiles.append(new_flames)
+	self.cooldown = 0
+	self.ammo -= 1
+		
 	
 class BombWeapon(Weapon):
-	def __init__(self, x, y, z, angle):
-		Weapon.__init__(self, x, y, z, angle)
+	def __init__(self, x, y, z, angle, projectiles):
+		Weapon.__init__(self, x, y, z, angle, projectiles)
 		self.cooldown = 5.0
 		self.penalty = 2.0
 		self.ammo = 3
@@ -129,9 +135,9 @@ class BombWeapon(Weapon):
 	def fire(self):
 		"""drops a bomb"""
 		#note: bombs don't inherit from projectile class
-		new_bomb = bomb(self.xpos, self.ypos, self.zpos, self.angle)
+		new_bomb = Bomb(self.xpos, self.ypos, self.zpos, self.angle)
 		self.projectiles.append(new_bomb)
 		self.cooldown = 5.0
-		self.ammo = self.ammo - 1
+		self.ammo -= 1
 	
 	
