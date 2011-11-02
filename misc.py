@@ -19,7 +19,8 @@ class Boost(DirectObject):
 	def loadModel(self):
 		"""loads the boost model"""
 #FLAG: still waiting on boost image
-		self.form = loader.loadModel("boostproxy")
+		self.form = loader.loadModel("models/panda-model")
+		self.form.setScape(.005)
 		self.form.reparentTo(render)	
 			
 	def setupCollisions(self):
@@ -28,9 +29,34 @@ class Boost(DirectObject):
 		self.cHandler = CollisionHandlerEvent()
 		self.cHandler.setInPattern('sped-up-%in')
 		
-		cQuad = CollisionPolygon(Point3(0, 0, 0), Point3(0, 0, 10), Point3(0, 10, 10), Point 3(0, 10, 0))
+		cQuad = CollisionPolygon(Point3(0, 0, 0), Point3(0, 0, 10), Point3(0, 10, 10), Point3(0, 10, 0))
 		cNode = CollisionNode("speed_boost")
 		cNode.addSolid(cQuad)
 		cNodePath = self.form.attachNewNode(cNode)
 		base.cTrav.addCollider(cNodePath, self.cHandler)
 		
+class StreetLamp(DirectObject):
+	def __init__(self, x, y, z):
+		self.xpos = x
+		self.ypos = y
+		self.zpos = z
+		self.LoadModel()
+		self.setupLights()
+		
+	def LoadModel(self):
+		"""loads the lamp model"""
+#FLAG: still waiting on model for this one
+		self.form = loader.loadModel("models/panda-model")
+		self.form.setScale(.007)
+		self.form.reparentTo(render)
+		#TESTING
+		self.form.setPos(self.xpos, self.ypos, self.zpos)
+		
+	def setupLights(self):
+		self.light = PointLight("streetlight")
+#FLAG: brighter for testing, change it back when you get model
+		self.light.setColor((5, 5, 5, 5))
+		self.light.setPoint((self.xpos, self.ypos, self.zpos+3))
+		self.nodepath = render.attachNewNode(self.light)
+		#self.nodepath.setPos(self.xpos, self.ypos, self.zpos)
+		render.setLight(self.nodepath)

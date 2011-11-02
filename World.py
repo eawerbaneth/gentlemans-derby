@@ -6,6 +6,8 @@ from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
 import sys, math, random
 from weapons import *
+from misc import *
+from obstacles import *
 
 class World(DirectObject):
 	def __init__(self):
@@ -31,8 +33,9 @@ class World(DirectObject):
 		self.accept("arrow_down-up", self.setKey, ["down", 0])
 		self.accept("collide-wall", self.putPlayer)
 		
-		#self.weapon = GattlingGun(0, 0, 20, 0, [])
-		
+		self.weapon = GattlingGun(0, 0, 2, 0, [])
+		self.lighttest = StreetLamp(self.player.getX(), self.player.getY(), self.player.getZ())
+		self.spikestest = Spikes(3, 3, 3)
 		
 	def setKey(self,key,value):
 		self.keyMap[key] = value
@@ -89,7 +92,7 @@ class World(DirectObject):
 			
 	def move(self, task):
 		elapsed = task.time - self.prevtime
-		#camera.lookAt(self.player)
+		camera.lookAt(self.player)
 		if self.keyMap["left"]:
 			self.player.setH(self.player.getH() + elapsed * 100)
 		if self.keyMap["right"]:
@@ -118,7 +121,11 @@ class World(DirectObject):
 			dy = dist * -math.cos(angle)
 			self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
 		
+		#light testing
+		#self.lighttest.light.setPoint((self.player.getX(), self.player.getY(), self.player.getZ()+3))
+		
 		self.weapon.update(self.player.getX(), self.player.getY(), self.weapon.form.getZ(), deg2Rad(self.player.getH()), elapsed)
+
 		self.prevtime = task.time
 		return Task.cont
 		
