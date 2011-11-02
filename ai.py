@@ -23,8 +23,10 @@ class ai_node(object):
 	def setupCollisions(self):
 		self.cHandler = CollisionHandlerEvent()
 		
-		cSphere = CollisionSphere(x, y, z, 10)
-		cNode = CollisionNode("ai-node-"+ str(i))
+		cSphere = CollisionSphere(0, 0, 0, 5)
+		name_string = "ai-node-"+str(self.id)
+		cNode = CollisionNode(name_string)
 		cNode.addSolid(cSphere)
 		cNodePath = self.form.attachNewNode(cNode)
+		cNodePath.show()
 		base.cTrav.addCollider(cNodePath, self.cHandler)
