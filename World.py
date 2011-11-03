@@ -37,14 +37,15 @@ class World(DirectObject):
 		self.accept("arrow_down-up", self.setKey, ["down", 0])
 		self.accept("z-up", self.setKey, ["break", 0])
 		self.accept("collide-wall", self.putPlayer)
-		#self.accept("colide-ai-node-", self.acknowledge)
+		self.accept("collide-ai-node0", self.acknowledge)
 		
 		#self.weapon = GattlingGun(0, 0, 2, 0, [])
 		#self.lighttest = StreetLamp(self.player.getX(), self.player.getY(), self.player.getZ())
 		#self.spikestest = Spikes(3, 3, 3)
 		#self.oiltest = oilSlick(3, 3, 3)
 		#self.bombtest = BombWeapon(10, 10, 3, 0, [])
-		self.testnode =ai_node(self.player.getX(), self.player.getY(), self.player.getZ(), 0)
+		self.aitest = ai_player(0)
+		
 		
 	def acknowledge(self, cEntry):
 		print "collision detected"
