@@ -28,6 +28,7 @@ class Weapon(DirectObject):
 		self.cooldown = 1.0
 		self.penalty = 0.5
 		self.ammo = 1000
+		self.range = 30
 		
 		self.angle = angle
 		self.xpos = x
@@ -152,6 +153,7 @@ class Flamethrower(Weapon):
 		self.ammo = 160
 		self.cooldown = 0
 		self.penalty = 0.1
+		self.range = 10
 	
 #FLAG: waiting on image for this one
 	def LoadModel(self):
@@ -174,6 +176,7 @@ class BombWeapon(Weapon):
 		self.cooldown = 5.0
 		self.penalty = 2.0
 		self.ammo = 3
+		self.range = 25
 	
 	#each individual method is going to need to load its own model
 #FLAG: needs image

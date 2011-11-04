@@ -11,8 +11,8 @@ from helper import *
 
 class ai_node(object):
 	def __init__(self, x, y, i):
-		self.xpos = x
-		self.ypos = y
+		self.xpos = x + int(i)
+		self.ypos = y + int(i)
 		self.id = i
 		self.loadModel()
 		self.setupCollisions()
@@ -76,6 +76,7 @@ class ai_player(DirectObject):
 		self.form.setScale(.004)
 		self.form.setH(90)
 		self.form.reparentTo(render)
+		self.form.setPos(self.form.getX()+ int(self.id), self.form.getY() + int(self.id), self.form.getZ())
 		
 		#load default weapon
 		self.weapon = Weapon(0, 0, 600, 0, [], self.id)
@@ -152,7 +153,7 @@ class ai_player(DirectObject):
 			
 		#update weapon
 		shootflag = False
-		if math.sqrt((self.form.getX() - players.players[0].player.getX())**2 + (self.form.getY() - players.players[0].player.getY())**2) < 30:
+		if math.sqrt((self.form.getX() - players.players[0].player.getX())**2 + (self.form.getY() - players.players[0].player.getY())**2) < self.weapon.range + 5:
 			shootflag = True
 		for i in range(1, 4):
 			if players.players[i].id != self.id:
