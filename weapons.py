@@ -5,16 +5,22 @@ from direct.actor.Actor import Actor #for animated models
 from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
 from projectiles import *
+from helper import *
 import sys, math, random
+
+players = helper()
 
 #default weapon (revolver)
 class Weapon(DirectObject):
-	def __init__(self, x, y, z, angle, bullets):
+	def __init__(self, x, y, z, angle, bullets, id):
 		self.keyMap = {"firing":0}
 		self.prevtime = 0
+		#id will be 0 for player, 1 - whatever for ai's
+		self.playerid = id
 		
-		self.accept("space", self.setKey, ["firing", 1] )
-		self.accept("space-up", self.setKey, ["firing", 0] )
+		if str(self.playerid) == "0":
+			self.accept("space", self.setKey, ["firing", 1] )
+			self.accept("space-up", self.setKey, ["firing", 0] )
 		#note - projectiles should be an empty list the first time you create the weapon
 		self.bullets = bullets
 		
@@ -27,9 +33,6 @@ class Weapon(DirectObject):
 		self.xpos = x
 		self.ypos = y
 		self.zpos = z
-		
-		
-		
 
 		#for debugging purposes only
 		#taskMgr.add(self.testing, "TESTING_WEAPON")
@@ -48,8 +51,8 @@ class Weapon(DirectObject):
 	#	return Task.cont
 		
 	def LoadModel(self):
-		self.form = Actor("models/weapons/revolverProxy")
-		self.form.setScale(5)
+		self.form = Actor("models/panda-model")
+		self.form.setScale(.9)
 		self.form.setPos(self.xpos,self.ypos,self.zpos)
 		#self.form.reparentTo(render)
 	
@@ -90,18 +93,40 @@ class Weapon(DirectObject):
 	
 	def fire(self):
 		"""pulls the trigger"""
-		new_projectile = Projectile(100, self.xpos, self.ypos, 0, self.angle, 30, self.penalty)
+		new_projectile = Projectile(100, self.xpos, self.ypos, 0, self.angle, 30, self.playerid, len(self.bullets))
 		self.bullets.append(new_projectile)
+		
+		if self.playerid != 0:
+			self.accept("projectile:" + str(self.playerid) + ":" + str(len(self.bullets)-1) + "-collision-player", self.address_bullet)
+		for i in range(1, 4):
+			if str(i) != self.playerid:
+				self.accept("projectile:" + str(self.playerid) + ":" + str(len(self.bullets)-1) + "-collision-ai"+str(i), self.address_bullet)
+			
 		self.cooldown = 1.0
 
+	#occurs when there is a bullet collision
+	def address_bullet(self, cEntry):
+		"""called when a projectile collides with a player or ai"""
+		print "bullet collision detected"
+		#have the injured party incur a penalty
+		handle = cEntry.getIntoNodePath().getName() #will be either ai<num> or player
+		if handle == "player":
+			players[0].take_damage(1)
+		else:
+			players[int(handle[2])].take_damage(1)
+		
+		#remove the bullet object
+		cEntry.getFromNodePath().getParent().remove()
+		
+		
 	def kill(self):
 		"""removes the weapon from the scene"""
 		self.form.cleanup()
 		self.form.removeNode()
 	
 class GattlingGun(Weapon):
-	def __init__(self, x, y, z, angle, bullets):
-		Weapon.__init__(self, x, y, z, angle, bullets)
+	def __init__(self, x, y, z, angle, bullets, id):
+		Weapon.__init__(self, x, y, z, angle, bullets, id)
 		self.coodown = 0.3
 		self.penalty = 0.3
 		self.ammo = 100
@@ -117,7 +142,7 @@ class GattlingGun(Weapon):
 	def fire(self):
 		"""pulls the trigger"""
 		Weapon.fire(self)
-		self.bullets[len(self.bullets)-1].penalty = 0.3
+		#self.bullets[len(self.bullets)-1].penalty = 0.3
 		self.cooldown = 0.3
 		self.ammo -= 1
 	
