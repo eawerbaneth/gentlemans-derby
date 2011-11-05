@@ -11,8 +11,8 @@ from helper import *
 
 class ai_node(object):
 	def __init__(self, x, y, i):
-		self.xpos = x + int(i)
-		self.ypos = y + int(i)
+		self.xpos = x
+		self.ypos = y
 		self.id = i
 		self.loadModel()
 		self.setupCollisions()
@@ -119,6 +119,7 @@ class ai_player(DirectObject):
 	def update(self, task):
 		elapsed = task.time - self.prevtime
 		
+		#if we're allowed to move, move
 		if self.time_penalty == 0:		
 			angle = rad2Deg(math.atan2((self.form.getY()-self.goal[1]), (self.form.getX()-self.goal[0])) - math.pi/2)
 			cur_heading = self.form.getH()
@@ -147,6 +148,7 @@ class ai_player(DirectObject):
 			dy = dist*-math.cos(deg2Rad(self.form.getH()))
 			self.form.setPos(self.form.getX() + dx, self.form.getY()+dy, 0)
 		
+		#reduce our penalty if we have one
 		self.time_penalty -= elapsed
 		if self.time_penalty < 0:
 			self.time_penalty = 0
