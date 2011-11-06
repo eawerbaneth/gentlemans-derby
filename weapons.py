@@ -49,8 +49,9 @@ class Weapon(DirectObject):
 		
 	def LoadModel(self):
 		self.form = Actor("models/weapons/revolverProxy")
-		self.form.setScale(5)
+		self.form.setScale(300)
 		self.form.setPos(self.xpos,self.ypos,self.zpos)
+		self.form.setH(90)
 		#self.form.reparentTo(render)
 	
 	def setKey(self, key, value):
@@ -90,12 +91,13 @@ class Weapon(DirectObject):
 	
 	def fire(self):
 		"""pulls the trigger"""
-		new_projectile = Projectile(5, self.xpos, self.ypos, 0, self.angle, 30, self.penalty)
+		new_projectile = Projectile(5, self.xpos, self.ypos, 2, self.angle, 30, self.penalty)
 		self.bullets.append(new_projectile)
 		self.cooldown = 1.0
 
 	def kill(self):
 		"""removes the weapon from the scene"""
+		self.form.cleanup()
 		self.form.removeNode()
 	
 class GattlingGun(Weapon):

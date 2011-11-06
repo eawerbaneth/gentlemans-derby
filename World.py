@@ -13,11 +13,15 @@ class World(DirectObject):
 	def __init__(self):
 		base.disableMouse()
 		camera.setPosHpr(0, -15, 7, 0, -15, 0)
+		
+		self.weapon = GattlingGun(0, 0, 800, 0, [])
+		
+		
 		self.loadModels()
 		self.setupLights()
 		self.collisionInit()
 		
-		self.keyMap = {"left":0, "right":0, "forward":0, "down":0, "break":0}
+		self.keyMap = {"left":0, "right":0, "forward":0, "down":0, "brake":0}
 		taskMgr.add(self.move, "moveTask")
 		self.prevtime = 0
 		self.velocity = 0
@@ -28,23 +32,29 @@ class World(DirectObject):
 		self.accept("arrow_right", self.setKey, ["right", 1])
 		self.accept("arrow_left", self.setKey, ["left", 1])
 		self.accept("arrow_down", self.setKey, ["down", 1])
-		self.accept("z", self.setKey, ["break", 1])
+		self.accept("z", self.setKey, ["brake", 1])
 		self.accept("arrow_up-up", self.setKey, ["forward", 0])
 		self.accept("arrow_right-up", self.setKey, ["right", 0])
 		self.accept("arrow_left-up", self.setKey, ["left", 0])
 		self.accept("arrow_down-up", self.setKey, ["down", 0])
-		self.accept("z-up", self.setKey, ["break", 0])
+		self.accept("z-up", self.setKey, ["brake", 0])
 		self.accept("collide-wall", self.putPlayer)
+		self.accept("collide-smiley", self.changeWeapons)
 		
-		#self.weapon = GattlingGun(0, 0, 2, 0, [])
+		
+		#self.weapon = Weapon(0, 0, 800, 0, [])
 		self.lighttest = StreetLamp(self.player.getX(), self.player.getY(), self.player.getZ())
 		self.spikestest = Spikes(3, 3, 3)
 		
 	def setKey(self,key,value):
 		self.keyMap[key] = value
 		
+		
 	def putPlayer(self, cEntry):
 		self.player.setPos(0,0,0)	
+		
+	def changeWeapons(self, cEntry):
+		self.weapon = GattlingGun(0,0,800,0,self.weapon.bullets)
 		
 	def loadModels(self):
 		self.player = Actor("models/panda-model")
@@ -54,7 +64,7 @@ class World(DirectObject):
 		self.player.setH(90)
 		self.player.reparentTo(render)
 		
-		self.weapon = GattlingGun(0, 0, 800, 0, [])
+		#self.weapon = Weapon(0, 0, 800, 0, [])
 		self.weapon.form.reparentTo(self.player)
 		
 		self.env = loader.loadModel("models/environment")
@@ -62,7 +72,11 @@ class World(DirectObject):
 
 		self.env.setScale(.25)
 		camera.reparentTo(self.player)
-		camera.setPos(0, 3000, 700)
+		camera.setPos(0, 4000, 1200)
+		
+		self.smiley = loader.loadModel("smiley")
+		self.smiley.setPos(30, 0, 0)
+		self.smiley.reparentTo(render)
 
 		
 	def	setupLights(self):
@@ -121,7 +135,7 @@ class World(DirectObject):
 			dx = dist * math.sin(angle)
 			dy = dist * -math.cos(angle)
 			self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
-		if self.keyMap["break"]:
+		if self.keyMap["brake"]:
 			dist = elapsed * self.velocity
 			self.velocity -= elapsed *75
 			if self.velocity < 0:
@@ -154,8 +168,11 @@ class World(DirectObject):
 		#light testing
 		#self.lighttest.light.setPoint((self.player.getX(), self.player.getY(), self.player.getZ()+3))
 		
-		self.weapon.update(self.player.getX(), self.player.getY(), self.weapon.form.getZ(), deg2Rad(self.player.getH()), elapsed)
+		live = self.weapon.update(self.player.getX(), self.player.getY(), self.weapon.form.getZ(), deg2Rad(self.player.getH()), elapsed)
 
+		if(not live):
+			self.weapon = Weapon(0,0,800,0,self.weapon.bullets)
+		
 		self.prevtime = task.time
 		return Task.cont
 		
@@ -173,6 +190,12 @@ class World(DirectObject):
 		cNodePath.show()
 		
 		base.cTrav.addCollider(cNodePath, self.cHandler)
+		
+		cSphere = CollisionSphere((0,0,0), 2)
+		cNode = CollisionNode("smiley")
+		cNode.addSolid(cSphere)
+		cNodePath = self.smiley.attachNewNode(cNode)
+		cNodePath.show()
 		
 		cSphere = CollisionInvSphere((0,0,0), 200)
 		cNode = CollisionNode("wall")

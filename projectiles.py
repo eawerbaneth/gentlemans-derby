@@ -6,7 +6,7 @@ from direct.actor.Actor import Actor #for animated models
 from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
 
-class Projectile(object):
+class Projectile(DirectObject):
 	def __init__(self, vel, x, y, z, angle, range, penalty):
 		self.xvel = vel*math.sin(angle)
 		self.yvel = vel*-math.cos(angle)
@@ -17,11 +17,14 @@ class Projectile(object):
 		self.xpos = x
 		self.ypos = y
 		self.zpos = z
+
 		self.loadModel()
 		self.setupCollisions()
 		self.prevtime = 0
 		self.range = range
 		self.penalty = penalty
+		
+		self.accept("shot-up-wall", self.kill)
 	
 	def loadModel(self):
 		"""loads the bullet model"""
@@ -36,15 +39,18 @@ class Projectile(object):
 		self.cHandler = CollisionHandlerEvent()
 		self.cHandler.setInPattern("shot-up-%in")
 		
-		cSphere = CollisionSphere((0,0,0), 1)
+		cSphere = CollisionSphere((0,0,300), 500)
 		cNode = CollisionNode("projectile")
 		cNode.addSolid(cSphere)
 		cNodePath = self.form.attachNewNode(cNode)
+		cNodePath.show()
 		base.cTrav.addCollider(cNodePath, self.cHandler)
 	
 	#def update(self, task):
 	def update(self, elapsed):
 		"""moves the bullet in a straight line relative to its trajectory"""
+		if(not self.form):
+			return False
 		#elapsed = task.time - self.prevtime
 		self.xpos = self.xpos + self.xvel*elapsed
 		self.ypos = self.ypos + self.yvel*elapsed
@@ -62,7 +68,9 @@ class Projectile(object):
 			
 	def kill(self, cEntry):
 		"""destroys the bullet upon entering a foreign body"""
-		cEntry.getIntoNodePath().getParent().remove()
+		#self.form.cleanup()
+		self.form.removeNode()
+		#cEntry.getIntoNodePath().getParent().remove()
 	
 class Flames(DirectObject):
 	def __init__(self, x, y, z, angle):
