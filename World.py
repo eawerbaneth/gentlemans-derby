@@ -8,6 +8,7 @@ import sys, math, random
 from weapons import *
 from misc import *
 from obstacles import *
+from hud import *
 
 class World(DirectObject):
 	def __init__(self):
@@ -16,10 +17,12 @@ class World(DirectObject):
 		self.loadModels()
 		self.setupLights()
 		self.collisionInit()
+		self.HUD = HUD()
 		
 		self.keyMap = {"left":0, "right":0, "forward":0, "down":0, "break":0}
 		taskMgr.add(self.move, "moveTask")
 		taskMgr.add(self.adjustCamera, "cameraTask")
+		taskMgr.add(self.updateHUD, "hudTask")
 		self.prevtime = 0
 		self.velocity = 0
 		self.topspeed = 100
@@ -125,7 +128,7 @@ class World(DirectObject):
 			self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
 		if self.keyMap["break"]:
 			dist = elapsed * self.velocity
-			self.velocity -= elapsed *75
+			self.velocity -= elapsed *60
 			if self.velocity < 0:
 				self.velocity = 0
 			angle = deg2Rad(self.player.getH())
@@ -135,7 +138,7 @@ class World(DirectObject):
 		if self.keyMap["forward"]==0:
 			if self.velocity >= 0:
 				dist = elapsed * self.velocity
-				self.velocity -= elapsed * 50
+				self.velocity -= elapsed * 40
 				if self.velocity < 0:
 					self.velocity = 0
 				angle = deg2Rad(self.player.getH())
@@ -145,7 +148,7 @@ class World(DirectObject):
 		if self.keyMap["down"]==0:
 			if self.velocity < 0:
 				dist = elapsed * self.velocity
-				self.velocity += elapsed * 50
+				self.velocity += elapsed * 40
 				if self.velocity > 0:
 					self.velocity = 0
 				angle = deg2Rad(self.player.getH())
@@ -164,7 +167,10 @@ class World(DirectObject):
 	def adjustCamera(self, task):
 		camera.setPos(0, 4000+4000*self.velocity/100, 1500)	
 		return Task.cont
-		
+	def updateHUD(self, task):
+		self.HUD.updateSpeed(self.velocity)
+		return Task.cont
+	
 	def collisionInit(self):
 		base.cTrav = CollisionTraverser()
 		self.cHandler = CollisionHandlerEvent()
