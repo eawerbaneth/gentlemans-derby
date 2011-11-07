@@ -18,7 +18,7 @@ class World(DirectObject):
 		camera.setPosHpr(0, -15, 7, 0, -15, 0)
 
 		#self.players = helper()
-		players.add_player(Player(0, 0, 0))
+		players.add_player(Player(0, 0, 20))
 		players.add_player(ai_player(1))
 		players.add_player(ai_player(2))
 		players.add_player(ai_player(3))
@@ -91,10 +91,10 @@ class World(DirectObject):
 		# self.weapon.form.reparentTo(self.player)
 
 		
-		self.env = loader.loadModel("models/environment")
+		self.env = loader.loadModel("models/courseExport")
 		self.env.reparentTo(render)
 
-		self.env.setScale(.25)
+		#self.env.setScale(.25)
 
 		
 		self.smiley = loader.loadModel("smiley")
@@ -108,6 +108,7 @@ class World(DirectObject):
 	def setupCollisions(self):
 		self.cHandler = CollisionHandlerEvent()
 		
+		self.cHandler.setInPattern("%in-collide")
 		cSphere = CollisionInvSphere((0,0,0), 200)
 		cNode = CollisionNode("wall")
 		cNode.addSolid(cSphere)

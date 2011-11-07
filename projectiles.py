@@ -7,7 +7,7 @@ from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
 
 class Projectile(DirectObject):
-	def __init__(self, vel, x, y, z, angle, range, penalty):
+	def __init__(self, vel, x, y, z, angle, range, playerid, id, penalty):
 		self.xvel = vel*math.sin(angle)
 		self.yvel = vel*-math.cos(angle)
 		self.zvel = 0
@@ -24,11 +24,14 @@ class Projectile(DirectObject):
 		#self.range = range
 		#self.penalty = penalty
 		
-		#self.accept("shot-up-wall", self.kill)
+		
 		self.prevtime = 0
 		self.range = range
 		self.playerid = playerid
 		self.id = id
+		
+		self.accept("projectile:" + str(self.playerid) + ":" + str(self.id) + "collide-wall", self.kill)
+		self.accept("shot-up-player", self.kill)
 		
 		self.loadModel()
 		self.setupCollisions()
@@ -52,7 +55,7 @@ class Projectile(DirectObject):
 		#base.cTrav = CollisionTraverser()
 		self.cHandler = CollisionHandlerEvent()
 		identifier = "projectile:" + str(self.playerid) + ":" + str(self.id)
-		self.cHandler.setInPattern(identifier+"-collide-%in")
+		self.cHandler.setInPattern("%fn-collide-%in")
 		
 
 		cSphere = CollisionSphere((0,0,0), 1)
@@ -87,11 +90,11 @@ class Projectile(DirectObject):
 		"""destroys the bullet upon entering a foreign body"""
 
 		#self.form.cleanup()
-		#self.form.removeNode()
+		self.form.removeNode()
 		#cEntry.getIntoNodePath().getParent().remove()
 
 		#player_identifier = cEntry.getIntoNodePath().getName()
-		cEntry.getFromNodePath().getParent().remove()
+		#cEntry.getFromNodePath().getParent().remove()
 
 	
 class Flames(DirectObject):

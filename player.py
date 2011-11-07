@@ -58,9 +58,16 @@ class player_node_handler(object):
 
 class Player(DirectObject):
 	def __init__(self, x, y, z):
+	
+		self.x = x
+		self.y = y
+		self.z = z
+		
+		
 		self.loadModels()
 		self.setupLights()
 		self.collisionInit()
+		
 		
 		self.keyMap = {"left":0, "right":0, "forward":0, "down":0, "break":0}
 		taskMgr.add(self.move, "moveTask")
@@ -102,9 +109,10 @@ class Player(DirectObject):
 		self.player.setScale(.005)
 		self.player.setH(90)
 		self.player.reparentTo(render)
+		self.player.setPos(self.x,self.y,self.z)
 		
 		#self.weapon = GattlingGun(0, 0, 800, 0, [], 0)
-		self.weapon = Weapon(0, 0, 600, 0, [], 0)
+		self.weapon = Weapon(0, 0, 600, 0, [], 0, self.z)
 		self.weapon.form.reparentTo(self.player)
 		self.weapon.form.setPos(self.weapon.form.getX(), self.weapon.form.getY(), self.weapon.form.getZ()+ 3)
 	
@@ -137,7 +145,7 @@ class Player(DirectObject):
 			angle = deg2Rad(self.player.getH())
 			dx = dist * math.sin(angle)
 			dy = dist * -math.cos(angle)
-			self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
+			self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, self.z)
 		elif self.keyMap["down"]:
 			dist = elapsed * self.velocity
 			self.velocity -= elapsed * 5
@@ -146,7 +154,7 @@ class Player(DirectObject):
 			angle = deg2Rad(self.player.getH())
 			dx = dist * math.sin(angle)
 			dy = dist * -math.cos(angle)
-			self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
+			self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, self.z)
 		if self.keyMap["break"]:
 			dist = elapsed * self.velocity
 			self.velocity -= elapsed *75
@@ -155,7 +163,7 @@ class Player(DirectObject):
 			angle = deg2Rad(self.player.getH())
 			dx = dist * math.sin(angle)
 			dy = dist * -math.cos(angle)
-			self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
+			self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, self.z)
 		if self.keyMap["forward"]==0:
 			if self.velocity >= 0:
 				dist = elapsed * self.velocity
@@ -165,7 +173,7 @@ class Player(DirectObject):
 				angle = deg2Rad(self.player.getH())
 				dx = dist * math.sin(angle)
 				dy = dist * -math.cos(angle)
-				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
+				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, self.z)
 		if self.keyMap["down"]==0:
 			if self.velocity < 0:
 				dist = elapsed * self.velocity
@@ -175,7 +183,7 @@ class Player(DirectObject):
 				angle = deg2Rad(self.player.getH())
 				dx = dist * math.sin(angle)
 				dy = dist * -math.cos(angle)
-				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
+				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, self.z)
 		
 		#light testing
 		#self.lighttest.light.setPoint((self.player.getX(), self.player.getY(), self.player.getZ()+3))

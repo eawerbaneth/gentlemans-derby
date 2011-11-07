@@ -10,9 +10,11 @@ import sys, math, random
 
 players = helper()
 
+
+
 #default weapon (revolver)
 class Weapon(DirectObject):
-	def __init__(self, x, y, z, angle, bullets, id):
+	def __init__(self, x, y, z, angle, bullets, id, projZ):
 		self.keyMap = {"firing":0}
 		self.prevtime = 0
 		#id will be 0 for player, 1 - whatever for ai's
@@ -29,11 +31,14 @@ class Weapon(DirectObject):
 		self.penalty = 0.5
 		self.ammo = 1000
 		self.range = 30
+		self.idLim = 1000
+		self.projId = 0
 		
 		self.angle = angle
 		self.xpos = x
 		self.ypos = y
 		self.zpos = z
+		self.projZ = projZ
 
 		#for debugging purposes only
 		#taskMgr.add(self.testing, "TESTING_WEAPON")
@@ -98,8 +103,11 @@ class Weapon(DirectObject):
 	def fire(self):
 		"""pulls the trigger"""
 
-		new_projectile = Projectile(100, self.xpos, self.ypos, 0, self.angle, 30, self.playerid, len(self.bullets))
+		if(self.projId >= self.idLim):
+			self.projId = 0
+		new_projectile = Projectile(100, self.xpos, self.ypos, self.projZ, self.angle, 30, self.playerid, self.projId, len(self.bullets))
 		self.bullets.append(new_projectile)
+		self.projId = self.projId + 1
 		
 		if self.playerid != 0:
 			self.accept("projectile:" + str(self.playerid) + ":" + str(len(self.bullets)-1) + "-collision-player", self.address_bullet)
@@ -130,8 +138,8 @@ class Weapon(DirectObject):
 		self.form.removeNode()
 	
 class GattlingGun(Weapon):
-	def __init__(self, x, y, z, angle, bullets, id):
-		Weapon.__init__(self, x, y, z, angle, bullets, id)
+	def __init__(self, x, y, z, angle, bullets, id, projZ):
+		Weapon.__init__(self, x, y, z, angle, bullets, id, projZ)
 		self.coodown = 0.3
 		self.penalty = 0.3
 		self.ammo = 100
@@ -152,8 +160,8 @@ class GattlingGun(Weapon):
 		self.ammo -= 1
 	
 class Flamethrower(Weapon):
-	def __init__(self, x, y, z, angle, bullets):
-		Weapon.__init__(self, x, y, z, angle, bullets)
+	def __init__(self, x, y, z, angle, bullets, id, projZ):
+		Weapon.__init__(self, x, y, z, angle, bullets, id, projZ)
 		self.ammo = 160
 		self.cooldown = 0
 		self.penalty = 0.1
@@ -175,8 +183,8 @@ class Flamethrower(Weapon):
 		
 	
 class BombWeapon(Weapon):
-	def __init__(self, x, y, z, angle, bullets):
-		Weapon.__init__(self, x, y, z, angle, bullets)
+	def __init__(self, x, y, z, angle, bullets, id, projZ):
+		Weapon.__init__(self, x, y, z, angle, bullets, id, projZ)
 		self.cooldown = 5.0
 		self.penalty = 2.0
 		self.ammo = 3
