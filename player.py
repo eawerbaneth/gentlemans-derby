@@ -38,7 +38,7 @@ class player_node_handler(object):
 		self.populate_nodes()
 		
 	def populate_nodes(self):
-		print os.getcwd()
+		#print os.getcwd()
 #NOTE: you guys need to move path_nodes.txt into your panda python folder
 		f = open("path_nodes.txt", "r")
 		#read in nodes from file
@@ -130,7 +130,7 @@ class Player(DirectObject):
 		
 	def move(self, task):
 		elapsed = task.time - self.prevtime
-		startpos = self.player.getPos()
+		startzed = self.player.getZ()
 		camera.lookAt(self.player)
 		
 		
@@ -197,13 +197,13 @@ class Player(DirectObject):
 		for i in range(self.playerHandler.getNumEntries()):
 			entry = self.playerHandler.getEntry(i)
 			entries.append(entry)
-			print(entry.getIntoNode().getName())
+			#print(entry.getIntoNode().getName())
 			
 		entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
 		if (len(entries) > 0) and (entries[0].getIntoNode().getName() == "courseOBJ:polySurface1"):
 			self.player.setZ(entries[0].getSurfacePoint(render).getZ())
-		#else:
-		#	self.player.setPos(startpos)
+		else:
+			self.player.setZ(startzed)
 		
 		self.prevtime = task.time
 		return Task.cont
@@ -246,7 +246,7 @@ class Player(DirectObject):
 		#self.ray = CollisionRay(0, 0, 1, 0, 0, -1)
 		#self.playerRay = self.player.attachNewNode(CollisionNode('ray'))
 		#self.playerRay.node().addSolid(self.ray)
-		self.playerColNp.show()
+		#self.playerColNp.show()
 		
 		# self.fromObject = self.player.attachNewNode(CollisionNode('floor_collider'))
 		# self.fromObject.node().addSolid(CollisionRay(0, 0, 0, 0, 0, -1))

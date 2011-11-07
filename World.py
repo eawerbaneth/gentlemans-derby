@@ -4,7 +4,7 @@ from direct.showbase.DirectObject import DirectObject #for event handling
 from direct.actor.Actor import Actor #for animated models
 from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
-import sys, math, random
+import sys, math, random, os
 from weapons import *
 from misc import *
 from obstacles import *
@@ -23,6 +23,8 @@ class World(DirectObject):
 		players.add_player(ai_player(2))
 		players.add_player(ai_player(3))
 		players.add_player(ai_player(4))
+		
+		self.lights = []
 		
 		self.loadModels()
 		self.setupLights()
@@ -83,11 +85,11 @@ class World(DirectObject):
 		# self.weapon = GattlingGun(0, 0, 800, 0, [])
 		# self.weapon.form.reparentTo(self.player)
 		
-		self.env = loader.loadModel("models/colcourse")
+		self.env = loader.loadModel("models/easy")
 		self.env.reparentTo(render)
 		self.env.setPos(self.env.getX(), self.env.getY(), self.env.getZ()-30)
 
-		#self.env.setScale(2)
+		self.env.setScale(8)
 		camera.reparentTo(players.players[0].player)
 		
 		players.players[0].env = self.env
@@ -120,28 +122,40 @@ class World(DirectObject):
 		#self.floor.addCollider(players.players[0].playerRay, players.players[0].player)
 		
 		#base.cTrav.addCollider(cNodePath, self.cHandler)
-	
+		
+		
+	def loadLamps(self):
+		#NOTE: you guys need to move lights.txt into your panda python folder
+		f = open("lights.txt", "r")
+		#read in nodes from file
+		for line in f:
+			print "creating new light"
+			words = line.split()
+			self.lights.append(StreetLamp(int(words[0]), int(words[1]), int(words[2])))
+		f.close()
 		
 	def	setupLights(self):
-		#ambient light
-		self.ambientLight = AmbientLight("ambientLight")
-		#four values, RGBA (alpha is largely irrelevent), value range is 0:1
-		self.ambientLight.setColor((.25, .25, .25, 1))
-		self.ambientLightNP = render.attachNewNode(self.ambientLight)
-		#the nodepath that calls setLight is what gets illuminated by the light
-		render.setLight(self.ambientLightNP)
-		#call clearLight() to turn it off
+		## ambient light
+		#self.ambientLight = AmbientLight("ambientLight")
+		## four values, RGBA (alpha is largely irrelevent), value range is 0:1
+		#self.ambientLight.setColor((.25, .25, .25, 1))
+		#self.ambientLightNP = render.attachNewNode(self.ambientLight)
+		## the nodepath that calls setLight is what gets illuminated by the light
+		#render.setLight(self.ambientLightNP)
+		## call clearLight() to turn it off
 		
-		self.keyLight = DirectionalLight("keyLight")
-		self.keyLight.setColor((.6,.6,.6, 1))
-		self.keyLightNP = render.attachNewNode(self.keyLight)
-		self.keyLightNP.setHpr(0, -26, 0)
-		render.setLight(self.keyLightNP)
-		self.fillLight = DirectionalLight("fillLight")
-		self.fillLight.setColor((.4,.4,.4, 1))
-		self.fillLightNP = render.attachNewNode(self.fillLight)
-		self.fillLightNP.setHpr(30, 0, 0)
-		render.setLight(self.fillLightNP)
+		self.loadLamps()
+		
+		#self.keyLight = DirectionalLight("keyLight")
+		#self.keyLight.setColor((.6,.6,.6, 1))
+		#self.keyLightNP = render.attachNewNode(self.keyLight)
+		#self.keyLightNP.setHpr(0, -26, 0)
+		#render.setLight(self.keyLightNP)
+		#self.fillLight = DirectionalLight("fillLight")
+		#self.fillLight.setColor((.4,.4,.4, 1))
+		#self.fillLightNP = render.attachNewNode(self.fillLight)
+		#self.fillLightNP.setHpr(30, 0, 0)
+		#render.setLight(self.fillLightNP)
 		
 		# self.headlight = Spotlight("slight")
 		# self.headlight.setColor(VBase4(1, 1, .5, 1))

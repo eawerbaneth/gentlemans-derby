@@ -87,6 +87,18 @@ class ai_player(DirectObject):
 		self.cHandler = CollisionHandlerEvent()
 		self.cHandler.setInPattern("ai" + str(self.id) + "-collide-%in")
 		
+		#keep ai rooted to the ground
+		self.aiRay = CollisionRay()
+		self.aiRay.setOrigin(0, 0, 3)
+		self.aiRay.setDirection(0, 0, -1)
+		self.aiCol = CollisionNode('aiRay')
+		self.aiCol.addSolid(self.aiRay)
+		self.aiCol.setFromCollideMask(BitMask32.bit(0))
+		self.aiCol.setIntoCollideMask(BitMask32.allOff())
+		self.aiColNp = self.form.attachNewNode(self.aiCol)
+		self.aiHandler = CollisionHandlerQueue()
+		base.cTrav.addCollider(self.aiColNp, self.aiHandler)
+		
 		cSphere = CollisionSphere((0,0,0), 3)
 		cNode = CollisionNode("ai"+str(self.id))
 		cNode.addSolid(cSphere)
@@ -165,6 +177,20 @@ class ai_player(DirectObject):
 					shootflag = True
 		self.weapon.setKey("firing", shootflag)
 		self.weapon.update(self.form.getX(), self.form.getY(), self.weapon.form.getZ(), deg2Rad(self.form.getH()), elapsed) 
+		
+		#keep ai rooted to ground
+		base.cTrav.traverse(render)
+		
+		#deal with terrain collisions
+		entries = []
+		for i in range(self.aiHandler.getNumEntries()):
+			entry = self.aiHandler.getEntry(i)
+			entries.append(entry)
+			#print(entry.getIntoNode().getName())
+			
+		entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
+		if (len(entries) > 0) and (entries[0].getIntoNode().getName() == "courseOBJ:polySurface1"):
+			self.form.setZ(entries[0].getSurfacePoint(render).getZ())
 		
 		self.prevtime = task.time
 		return Task.cont
