@@ -222,13 +222,13 @@ class Player(DirectObject):
 				#self.player.loop('pedal', restart = 0, fromFrame = self.player.getCurrentFrame('pedal'))
 			self.stopped = False
 		
-<<<<<<< HEAD
+		
+		
 		live = self.weapon.update(self.player.getX(), self.player.getY(), self.weapon.form.getZ(), deg2Rad(self.player.getH()), elapsed)
 
 		if(not live):
 			self.weapon = Weapon(0,0,800,0,self.weapon.bullets)
-=======
-		self.weapon.update(self.player.getX(), self.player.getY(), self.weapon.form.getZ(), deg2Rad(self.player.getH()), elapsed)
+		#self.weapon.update(self.player.getX(), self.player.getY(), self.weapon.form.getZ(), deg2Rad(self.player.getH()), elapsed)
 		
 		base.cTrav.traverse(render)
 		
@@ -246,7 +246,6 @@ class Player(DirectObject):
 		else:
 			self.player.setZ(startzed)
 		
->>>>>>> 7fe76445a91f5f4e94b6d29dc9275341e48ac1c9
 		self.prevtime = task.time
 		return Task.cont
 	
