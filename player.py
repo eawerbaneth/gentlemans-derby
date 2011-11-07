@@ -79,6 +79,7 @@ class Player(DirectObject):
 		self.checkpoints = player_node_handler()
 		self.goal = self.checkpoints.next()
 		self.env = 0
+		self.stopped = True
 		
 		self.accept("escape", sys.exit)
 		self.accept("arrow_up", self.setKey, ["forward", 1])
@@ -106,7 +107,7 @@ class Player(DirectObject):
 	def loadModels(self):
 		#self.panda = Actor("models/panda-model", {"walk":"panda-walk4", "eat":"panda-eat"})
 		self.player = Actor("models/bikeExport", {"pedal":"models/bikeExport"})
-		self.player.loop('pedal')
+		#self.player.loop('pedal')
 		#self.player.setScale(.005)
 		self.player.setH(-180)
 		self.player.reparentTo(render)
@@ -188,8 +189,27 @@ class Player(DirectObject):
 				dy = dist * -math.cos(angle)
 				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
 		
-		#light testing
-		#self.lighttest.light.setPoint((self.player.getX(), self.player.getY(), self.player.getZ()+3))
+		#control animation speed
+		animControl = self.player.getAnimControl('pedal')
+		if self.velocity == 0:
+			#self.player.pose('pedal', animControl.getFrame())#, self.player.getCurrentFrame('pedal'))
+			self.player.stop()
+			self.stopped = True
+		elif self.velocity > 0:
+			if self.stopped:
+				print "starting again"
+				self.player.setPlayRate(0.3, 'pedal')
+				self.player.loop('pedal')
+				#self.player.loop('pedal', restart = 0, fromFrame = self.player.getCurrentFrame('pedal'))
+			else:
+				self.player.setPlayRate(self.velocity/10, 'pedal')
+			self.stopped = False
+		else:
+			if self.stopped:
+				self.player.setPlayRate(-1, 'pedal')
+				self.player.loop('pedal')
+				#self.player.loop('pedal', restart = 0, fromFrame = self.player.getCurrentFrame('pedal'))
+			self.stopped = False
 		
 		self.weapon.update(self.player.getX(), self.player.getY(), self.weapon.form.getZ(), deg2Rad(self.player.getH()), elapsed)
 		
