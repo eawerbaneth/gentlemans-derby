@@ -82,24 +82,43 @@ class World(DirectObject):
 		# self.weapon = GattlingGun(0, 0, 800, 0, [])
 		# self.weapon.form.reparentTo(self.player)
 		
-		self.env = loader.loadModel("models/environment")
+		self.env = loader.loadModel("models/courseExport")
 		self.env.reparentTo(render)
+		self.env.setPos(self.env.getX(), self.env.getY(), self.env.getZ()-30)
 
-		self.env.setScale(.25)
+		#self.env.setScale(2)
 		camera.reparentTo(players.players[0].player)
+		
+		players.players[0].env = self.env
 
-		camera.setPos(0, 4000, 1500)
+		camera.setPos(0, 4, 1)
 
 	def setupCollisions(self):
 		self.cHandler = CollisionHandlerEvent()
 		
-		cSphere = CollisionInvSphere((0,0,0), 200)
-		cNode = CollisionNode("wall")
-		cNode.addSolid(cSphere)
-		cNodePath = self.env.attachNewNode(cNode)
-		cNodePath.show()
+		envCol = CollisionNode("floor")
+		envCol.setFromCollideMask(BitMask32.bit(0))
+		test = CollisionPolygon(Point3(0, 0, 0), Point3(10, 10, 0), Point3(10, 0, 10), Point3(0, 10, 10))
+		envCol.addSolid(test)
+		#envCol.setIntoCollideMask(BitMask32.allOff())
+		nodepath = self.env.attachNewNode(envCol)
+		nodepath.show()
+		#cSphere = CollisionInvSphere((0,0,0), 200)
+		#cNode = CollisionNode("wall")
+		#cNode.addSolid(cSphere)
+		#cNodePath = self.env.attachNewNode(cNode)
+		#cNodePath.show()
 		
-		base.cTrav.addCollider(cNodePath, self.cHandler)
+		#self.env.setCollideMask(BitMask32.allOff())
+		
+		#players.players[0].lifter.addCollider(players.players[0].fromObject, self.env)
+		
+		#do collision with ground
+		#self.floor = CollisionHandlerFloor()
+		#base.cTrav.addCollider(players.players[0].playerRay, self.floor)
+		#self.floor.addCollider(players.players[0].playerRay, players.players[0].player)
+		
+		#base.cTrav.addCollider(cNodePath, self.cHandler)
 	
 		
 	def	setupLights(self):
