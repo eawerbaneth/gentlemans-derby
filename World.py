@@ -12,6 +12,7 @@ from ai import *
 from helper import *
 from player import *
 
+
 class World(DirectObject):
 	def __init__(self):
 		base.disableMouse()
@@ -152,7 +153,7 @@ class World(DirectObject):
 		# slnp.setPos(0, -650, 300)
 		# slnp.setHpr(0, 180, 0)
 		# self.headlight.showFrustum()
-			
+
 	# def move(self, task):
 		# elapsed = task.time - self.prevtime
 		# camera.lookAt(self.player)
@@ -215,6 +216,7 @@ class World(DirectObject):
 		# self.prevtime = task.time
 		# return Task.cont
 	
+
 	# def adjustCamera(self, task):
 		# camera.setPos(0, 4000+4000*self.velocity/100, 1500)	
 		# return Task.cont
