@@ -27,7 +27,7 @@ class Boost(DirectObject):
 		"""sets up the booster to detect collisions"""
 		base.cTrav = CollisionTraverser()
 		self.cHandler = CollisionHandlerEvent()
-		self.cHandler.setInPattern('sped-up-%in')
+		#self.cHandler.setInPattern('%fn-sped-up')
 		
 		cQuad = CollisionPolygon(Point3(0, 0, 0), Point3(0, 0, 10), Point3(0, 10, 10), Point3(0, 10, 0))
 		cNode = CollisionNode("speed_boost")
