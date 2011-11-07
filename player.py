@@ -8,7 +8,7 @@ import sys, math, random
 from weapons import *
 from helper import *
 from ai import *
-from hud import *
+#from hud import *
 
 
 class playerCheckpoint(ai_node):
@@ -63,12 +63,12 @@ class Player(DirectObject):
 		self.loadModels()
 		self.setupLights()
 		self.collisionInit()
-		self.HUD = HUD()
+		#self.HUD = HUD()
 		
 		self.keyMap = {"left":0, "right":0, "forward":0, "down":0, "break":0}
 		taskMgr.add(self.move, "moveTask")
 		taskMgr.add(self.adjustCamera, "cameraTask")
-		taskMgr.add(self.updateHUD, "hudTask")
+		#taskMgr.add(self.updateHUD, "hudTask")
 		self.prevtime = 0
 		self.velocity = 0
 		self.topspeed = 100
@@ -200,7 +200,7 @@ class Player(DirectObject):
 			print(entry.getIntoNode().getName())
 			
 		entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
-		if (len(entries) > 0) and (entries[0].getIntoNode().getName() == "floor"):
+		if (len(entries) > 0) and (entries[0].getIntoNode().getName() == "courseOBJ:polySurface1"):
 			self.player.setZ(entries[0].getSurfacePoint(render).getZ())
 		#else:
 		#	self.player.setPos(startpos)
@@ -212,9 +212,9 @@ class Player(DirectObject):
 		camera.setPos(0, 30+5*self.velocity/30, 15)	
 		return Task.cont
 	
-	def updateHUD(self, task):
-		self.HUD.updateSpeed(self.velocity)
-		return Task.cont
+	#def updateHUD(self, task):
+	#	self.HUD.updateSpeed(self.velocity)
+	#	return Task.cont
 		
 	def collisionInit(self):
 		base.cTrav = CollisionTraverser()

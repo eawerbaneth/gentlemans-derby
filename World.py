@@ -83,7 +83,7 @@ class World(DirectObject):
 		# self.weapon = GattlingGun(0, 0, 800, 0, [])
 		# self.weapon.form.reparentTo(self.player)
 		
-		self.env = loader.loadModel("models/easy_course")
+		self.env = loader.loadModel("models/colcourse")
 		self.env.reparentTo(render)
 		self.env.setPos(self.env.getX(), self.env.getY(), self.env.getZ()-30)
 
@@ -97,13 +97,13 @@ class World(DirectObject):
 	def setupCollisions(self):
 		self.cHandler = CollisionHandlerEvent()
 		
-		envCol = CollisionNode("floor")
-		envCol.setFromCollideMask(BitMask32.bit(0))
-		test = CollisionPolygon(Point3(0, 0, 0), Point3(50, 0, 50), Point3(50, 1, 50), Point3(0, 1, 0))
-		envCol.addSolid(test)
+		#envCol = CollisionNode("floor")
+		#envCol.setFromCollideMask(BitMask32.bit(0))
+		#test = CollisionPolygon(Point3(0, 0, 0), Point3(50, 0, 50), Point3(50, 1, 50), Point3(0, 1, 0))
+		#envCol.addSolid(test)
 		#envCol.setIntoCollideMask(BitMask32.allOff())
-		nodepath = self.env.attachNewNode(envCol)
-		nodepath.show()
+		#nodepath = self.env.attachNewNode(envCol)
+		#nodepath.show()
 		#cSphere = CollisionInvSphere((0,0,0), 200)
 		#cNode = CollisionNode("wall")
 		#cNode.addSolid(cSphere)
