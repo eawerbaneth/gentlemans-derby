@@ -72,9 +72,10 @@ class ai_player(DirectObject):
 		self.prevtime = 0
 	
 	def loadModel(self):
-		self.form = Actor("models/bikeExport")
+		self.form = Actor("models/bikeExport", {"pedal":"models/bikeExport"})
 		#self.form.setScale(.004)
 		self.form.setH(45)
+		self.form.loop('pedal')
 		self.form.reparentTo(render)
 		self.form.setPos(self.form.getX()+ int(self.id), self.form.getY() + int(self.id), self.form.getZ())
 		

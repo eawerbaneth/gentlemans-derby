@@ -71,7 +71,8 @@ class Player(DirectObject):
 		taskMgr.add(self.updateHUD, "hudTask")
 		self.prevtime = 0
 		self.velocity = 0
-		self.topspeed = 100
+		self.topspeed = 30
+		self.worldspeed = 1
 		self.penalty = 0
 		self.id = 0
 		#handle checkpoints
@@ -103,7 +104,9 @@ class Player(DirectObject):
 			self.accept("collide-checkpoint" + str(self.goal[2]), self.checkpoint)
 	
 	def loadModels(self):
-		self.player = Actor("models/bikeExport")
+		#self.panda = Actor("models/panda-model", {"walk":"panda-walk4", "eat":"panda-eat"})
+		self.player = Actor("models/bikeExport", {"pedal":"models/bikeExport"})
+		self.player.loop('pedal')
 		#self.player.setScale(.005)
 		self.player.setH(-180)
 		self.player.reparentTo(render)
@@ -140,7 +143,7 @@ class Player(DirectObject):
 			self.player.setH(self.player.getH() - elapsed * 100)
 		if self.keyMap["forward"]:
 			dist = elapsed * self.velocity
-			self.velocity += elapsed * 20
+			self.velocity += elapsed * 20 * self.worldspeed
 			if self.velocity > self.topspeed: self.velocity = self.topspeed
 			angle = deg2Rad(self.player.getH())
 			dx = dist * math.sin(angle)
@@ -167,7 +170,7 @@ class Player(DirectObject):
 		if self.keyMap["forward"]==0:
 			if self.velocity >= 0:
 				dist = elapsed * self.velocity
-				self.velocity -= elapsed * 50
+				self.velocity -= elapsed * 50 * self.worldspeed
 				if self.velocity < 0:
 					self.velocity = 0
 				angle = deg2Rad(self.player.getH())
@@ -197,11 +200,12 @@ class Player(DirectObject):
 		for i in range(self.playerHandler.getNumEntries()):
 			entry = self.playerHandler.getEntry(i)
 			entries.append(entry)
-			#print(entry.getIntoNode().getName())
+			print(entry.getIntoNode().getName())
 			
-		entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
+		#entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
 		if (len(entries) > 0) and (entries[0].getIntoNode().getName() == "courseOBJ:polySurface1"):
 			self.player.setZ(entries[0].getSurfacePoint(render).getZ())
+			print "changing Z"
 		else:
 			self.player.setZ(startzed)
 		
