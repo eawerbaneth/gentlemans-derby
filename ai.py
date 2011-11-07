@@ -72,9 +72,10 @@ class ai_player(DirectObject):
 		self.prevtime = 0
 	
 	def loadModel(self):
-		self.form = Actor("models/panda-model")
-		self.form.setScale(.004)
-		self.form.setH(90)
+		self.form = Actor("models/bikeExport", {"pedal":"models/bikeExport"})
+		#self.form.setScale(.004)
+		self.form.setH(45)
+		self.form.loop('pedal')
 		self.form.reparentTo(render)
 		self.form.setPos(self.form.getX()+ int(self.id), self.form.getY() + int(self.id), self.form.getZ())
 		
@@ -87,7 +88,19 @@ class ai_player(DirectObject):
 		self.cHandler = CollisionHandlerEvent()
 		self.cHandler.setInPattern("ai" + str(self.id) + "-collide-%in")
 		
-		cSphere = CollisionSphere((0,0,0), 500)
+		#keep ai rooted to the ground
+		self.aiRay = CollisionRay()
+		self.aiRay.setOrigin(0, 0, 3)
+		self.aiRay.setDirection(0, 0, -1)
+		self.aiCol = CollisionNode('aiRay')
+		self.aiCol.addSolid(self.aiRay)
+		self.aiCol.setFromCollideMask(BitMask32.bit(0))
+		self.aiCol.setIntoCollideMask(BitMask32.allOff())
+		self.aiColNp = self.form.attachNewNode(self.aiCol)
+		self.aiHandler = CollisionHandlerQueue()
+		base.cTrav.addCollider(self.aiColNp, self.aiHandler)
+		
+		cSphere = CollisionSphere((0,0,0), 3)
 		cNode = CollisionNode("ai"+str(self.id))
 		cNode.addSolid(cSphere)
 		cNode.setIntoCollideMask(BitMask32.allOff())
@@ -120,13 +133,14 @@ class ai_player(DirectObject):
 		elapsed = task.time - self.prevtime
 		
 		#if we're allowed to move, move
-		if self.time_penalty == 0:		
+		if self.time_penalty == 0:
 			angle = rad2Deg(math.atan2((self.form.getY()-self.goal[1]), (self.form.getX()-self.goal[0])) - math.pi/2)
 			cur_heading = self.form.getH()
+			cos_heading = self.form.getH()
 			
 			if abs(angle - cur_heading) > 25 and abs(angle - cur_heading+360) > 25:
 				#get ai turning in the correct direction
-				self.form.setH(cur_heading + ((angle-cur_heading)%360)*elapsed)
+				self.form.setH(cos_heading + ((angle-cur_heading)%360)*elapsed)
 
 				#SLOW DOWN FOR TURNS
 				if abs(angle - cur_heading) > 90 and abs(angle - cur_heading+360) > 90:
@@ -164,6 +178,20 @@ class ai_player(DirectObject):
 					shootflag = True
 		self.weapon.setKey("firing", shootflag)
 		self.weapon.update(self.form.getX(), self.form.getY(), self.weapon.form.getZ(), deg2Rad(self.form.getH()), elapsed) 
+		
+		#keep ai rooted to ground
+		base.cTrav.traverse(render)
+		
+		#deal with terrain collisions
+		entries = []
+		for i in range(self.aiHandler.getNumEntries()):
+			entry = self.aiHandler.getEntry(i)
+			entries.append(entry)
+			#print(entry.getIntoNode().getName())
+			
+		entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
+		if (len(entries) > 0) and (entries[0].getIntoNode().getName() == "courseOBJ:polySurface1"):
+			self.form.setZ(entries[0].getSurfacePoint(render).getZ())
 		
 		self.prevtime = task.time
 		return Task.cont
