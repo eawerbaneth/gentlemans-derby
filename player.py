@@ -100,12 +100,12 @@ class Player(DirectObject):
 			self.accept("collide-checkpoint" + str(self.goal[2]), self.checkpoint)
 	
 	def loadModels(self):
-		self.player = Actor("models/panda-model")
-		self.player.setScale(.005)
-		self.player.setH(90)
+		self.player = Actor("models/bikeExport")
+		#self.player.setScale(.005)
+		self.player.setH(-180)
 		self.player.reparentTo(render)
 		
-		#self.weapon = GattlingGun(0, 0, 800, 0, [], 0)
+		self.weapon = GattlingGun(0, 0, 800, 0, [], 0)
 		self.weapon = Weapon(0, 0, 600, 0, [], 0)
 		self.weapon.form.reparentTo(self.player)
 		self.weapon.form.setPos(self.weapon.form.getX(), self.weapon.form.getY(), self.weapon.form.getZ()+ 3)
@@ -206,7 +206,7 @@ class Player(DirectObject):
 		return Task.cont
 	
 	def adjustCamera(self, task):
-		camera.setPos(0, 4000+4000*self.velocity/100, 1500)	
+		camera.setPos(0, 30+5*self.velocity/30, 15)	
 		return Task.cont
 		
 	def collisionInit(self):
@@ -214,7 +214,7 @@ class Player(DirectObject):
 		self.cHandler = CollisionHandlerEvent()
 		self.cHandler.setInPattern("collide-%in")
 		
-		cSphere = CollisionSphere((0,0,0), 500)
+		cSphere = CollisionSphere((0,0,0), 3)
 		cNode = CollisionNode("player")
 		cNode.addSolid(cSphere)
 		cNode.setIntoCollideMask(BitMask32.allOff())
@@ -254,7 +254,3 @@ class Player(DirectObject):
 		
 	def setKey(self,key,value):
 		self.keyMap[key] = value
-		
-	
-		
-	

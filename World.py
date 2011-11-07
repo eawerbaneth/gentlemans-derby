@@ -89,23 +89,20 @@ class World(DirectObject):
 		#self.env.setScale(2)
 		camera.reparentTo(players.players[0].player)
 		
-		self.floater = NodePath(PandaNode("floater"))
-		self.floater.reparentTo(render)
-		
 		players.players[0].env = self.env
 
-		camera.setPos(0, 4000, 1500)
+		camera.setPos(0, 4, 1)
 
 	def setupCollisions(self):
 		self.cHandler = CollisionHandlerEvent()
 		
 		envCol = CollisionNode("floor")
 		envCol.setFromCollideMask(BitMask32.bit(0))
-		test = CollisionPolygon(Point3(0, 0, 0), Point3(10, 0, 10), Point3(10, 10, 0), Point3(0, 10, 10))
+		test = CollisionPolygon(Point3(0, 0, 0), Point3(10, 10, 0), Point3(10, 0, 10), Point3(0, 10, 10))
 		envCol.addSolid(test)
 		#envCol.setIntoCollideMask(BitMask32.allOff())
-		self.env.attachNewNode(envCol)
-		
+		nodepath = self.env.attachNewNode(envCol)
+		nodepath.show()
 		#cSphere = CollisionInvSphere((0,0,0), 200)
 		#cNode = CollisionNode("wall")
 		#cNode.addSolid(cSphere)
