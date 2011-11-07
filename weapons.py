@@ -52,7 +52,7 @@ class Weapon(DirectObject):
 	#	return Task.cont
 		
 	def LoadModel(self):
-		self.form = Actor("models/weapons/revolverProxy")
+		self.form = loader.loadModel("models/weapons/revolverProxy")
 		#self.form.setScale(.9)
 		self.form.setPos(self.xpos,self.ypos,self.zpos)
 		#self.form.reparentTo(render)
