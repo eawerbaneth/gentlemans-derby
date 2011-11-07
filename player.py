@@ -9,6 +9,7 @@ from weapons import *
 from helper import *
 from ai import *
 
+
 class playerCheckpoint(ai_node):
 	def __init__(self, x, y, i):
 		ai_node.__init__(self, x, y, i)
@@ -73,6 +74,7 @@ class Player(DirectObject):
 		#handle checkpoints
 		self.checkpoints = player_node_handler()
 		self.goal = self.checkpoints.next()
+		self.env = 0
 		
 		self.accept("escape", sys.exit)
 		self.accept("arrow_up", self.setKey, ["forward", 1])
@@ -125,7 +127,10 @@ class Player(DirectObject):
 		
 	def move(self, task):
 		elapsed = task.time - self.prevtime
+		startpos = self.player.getPos()
 		camera.lookAt(self.player)
+		
+		
 		if self.keyMap["left"]:
 			self.player.setH(self.player.getH() + elapsed * 100)
 		if self.keyMap["right"]:
@@ -181,7 +186,22 @@ class Player(DirectObject):
 		#self.lighttest.light.setPoint((self.player.getX(), self.player.getY(), self.player.getZ()+3))
 		
 		self.weapon.update(self.player.getX(), self.player.getY(), self.weapon.form.getZ(), deg2Rad(self.player.getH()), elapsed)
-
+		
+		base.cTrav.traverse(render)
+		
+		#deal with terrain collisions
+		entries = []
+		for i in range(self.playerHandler.getNumEntries()):
+			entry = self.playerHandler.getEntry(i)
+			entries.append(entry)
+			print(entry.getIntoNode().getName())
+			
+		entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
+		if (len(entries) > 0) and (entries[0].getIntoNode().getName() == "floor"):
+			self.player.setZ(entries[0].getSurfacePoint(render).getZ())
+		#else:
+		#	self.player.setPos(startpos)
+		
 		self.prevtime = task.time
 		return Task.cont
 	
@@ -200,6 +220,32 @@ class Player(DirectObject):
 		cNode.setIntoCollideMask(BitMask32.allOff())
 		cNodePath = self.player.attachNewNode(cNode)
 		cNodePath.show()
+		
+		#experiment with lifter
+		self.playerRay = CollisionRay()
+		self.playerRay.setOrigin(0, 0, 3)
+		self.playerRay.setDirection(0, 0, -1)
+		self.playerCol = CollisionNode('playerRay')
+		self.playerCol.addSolid(self.playerRay)
+		self.playerCol.setFromCollideMask(BitMask32.bit(0))
+		self.playerCol.setIntoCollideMask(BitMask32.allOff())
+		self.playerColNp = self.player.attachNewNode(self.playerCol)
+		self.playerHandler = CollisionHandlerQueue()
+		base.cTrav.addCollider(self.playerColNp, self.playerHandler)
+		#self.playerHandler = CollisionHandlerFloor()
+		#self.playerHandler.addCollider(self.playerColNp, self.player)
+		#base.cTrav.addCollider(self.playerColNp, self.playerHandler)
+		
+		#self.ray = CollisionRay(0, 0, 1, 0, 0, -1)
+		#self.playerRay = self.player.attachNewNode(CollisionNode('ray'))
+		#self.playerRay.node().addSolid(self.ray)
+		self.playerColNp.show()
+		
+		# self.fromObject = self.player.attachNewNode(CollisionNode('floor_collider'))
+		# self.fromObject.node().addSolid(CollisionRay(0, 0, 0, 0, 0, -1))
+		
+		# self.lifter = CollisionHandlerFloor()
+		#lifter.addCollider(fromObject, self.player)
 		
 		base.cTrav.addCollider(cNodePath, self.cHandler)
 	
