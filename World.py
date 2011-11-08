@@ -19,7 +19,7 @@ class World(DirectObject):
 		camera.setPosHpr(0, -15, 7, 0, -15, 0)
 
 		#self.players = helper()
-		players.add_player(Player(0, 0, 0))
+		players.add_player(Player(0, 0, -30))
 		players.add_player(ai_player(1))
 		players.add_player(ai_player(2))
 		players.add_player(ai_player(3))
@@ -98,7 +98,7 @@ class World(DirectObject):
 		
 		self.env = loader.loadModel("models/easy_course")
 		#self.env = loader.loadModel("models/easy")
-		self.env.setPos(0,0,0)
+		self.env.setPos(0,0,-30)
 		self.env.reparentTo(render)
 		#self.env.setPos(self.env.getX(), self.env.getY(), self.env.getZ())
 
@@ -121,7 +121,7 @@ class World(DirectObject):
 		self.cHandler = CollisionHandlerEvent()
 		
 		#self.cHandler.setInPattern("%in-collide")
-		#cSphere = CollisionInvSphere((0,0,0), 1000000)
+		#cSphere = CollisionInvSphere((0,0,0), 1)
 		#cNode = CollisionNode("wall")
 		#cNode.addSolid(cSphere)
 		#cNodePath = self.env.attachNewNode(cNode)
