@@ -57,3 +57,4 @@ class StreetLamp(DirectObject):
 		self.nodepath = render.attachNewNode(self.light)
 		#self.nodepath.setPos(self.xpos, self.ypos, self.zpos)
 		render.setLight(self.nodepath)
+		

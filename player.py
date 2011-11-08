@@ -89,7 +89,9 @@ class Player(DirectObject):
 		self.checkpoints = player_node_handler()
 		self.goal = self.checkpoints.next()
 		self.env = 0
+		#jumping 'n' such
 		self.stopped = True
+		self.airborne = False
 		
 		self.accept("escape", sys.exit)
 		self.accept("arrow_up", self.setKey, ["forward", 1])
@@ -107,6 +109,15 @@ class Player(DirectObject):
 		self.accept("collide-wall", self.putPlayer)
 		#add an acceptor for the first checkpoint
 		self.accept("collide-checkpoint1", self.checkpoint)
+		self.accept("collide-oil-slick", self.oil_slicked)
+		self.accept("collide-spikes", self.spiked)
+	
+	#triggers when player runs into an oil slick
+	def oil_slicked(self, cEntry):
+		print "player oil slicked!"
+	
+	def spiked(self, cEntry):
+		print "player spiked!"
 	
 	#triggers when the player his next checkpoint
 	def checkpoint(self, cEntry):
@@ -118,7 +129,7 @@ class Player(DirectObject):
 	
 	def loadModels(self):
 		#self.panda = Actor("models/panda-model", {"walk":"panda-walk4", "eat":"panda-eat"})
-		self.player = Actor("models/bikeExport", {"pedal":"models/bikeExport"})
+		self.player = Actor("models/gentlemanBike_Pistol", {"pedal":"models/gentlemanBike_Pistol"})
 		#self.player.loop('pedal')
 		#self.player.setScale(.005)
 		self.player.setPos(0, 0, -30)
@@ -127,8 +138,8 @@ class Player(DirectObject):
 		self.player.setPos(self.x,self.y,self.z)
 
 
-		self.weapon = GattlingGun(0, 0, 0, 0, [], 0, self.z+3)
-		#self.weapon = Weapon(0, 0, 600, 0, [], 0, self.z)
+		#self.weapon = GattlingGun(0, 0, 0, 0, [], 0, self.z+3)
+		self.weapon = Weapon(0, 0, 0, 0, [], 0, self.z)
 		#self.weapon = GattlingGun(0, 0, 800, 0, [], 0)
 		#self.weapon = Weapon(0, 0, 600, 0, [], 0)
 
@@ -160,25 +171,52 @@ class Player(DirectObject):
 		camera.lookAt(self.player)
 		
 		if(self.penalty == 0):
+			
 			#testing jumping
 			startP = self.player.getP()
 			startP = -startP
 			if -startP > 0:
 				self.player.setP(-startP + 5*elapsed)
-			print "TESTING:", self.player.getP()
+			#print "TESTING:", self.player.getP()
 			
-		
-		
 			if self.keyMap["left"]:
 				self.player.setH(self.player.getH() + elapsed * 45)
 			if self.keyMap["right"]:
 				self.player.setH(self.player.getH() - elapsed * 45)
 			if self.keyMap["test"]:
 				print "\tDEBUGGING!!!", self.player.getX(), self.player.getY(), self.player.getZ()
-			if self.keyMap["forward"]:
+			#only allow them to accelerate if they are on the ground
+			if self.keyMap["forward"] and not self.airborne:
 				dist = elapsed * self.velocity
 				self.velocity += elapsed * 20 * self.worldspeed
 				if self.velocity > self.topspeed: self.velocity = self.topspeed
+				angle = deg2Rad(self.player.getH())
+				dx = dist * math.sin(angle)
+				dy = dist * -math.cos(angle)
+				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
+			elif self.keyMap["down"]:
+				dist = elapsed * self.velocity
+				self.velocity -= elapsed * 5
+				if self.velocity < -10:
+					self.velocity = -10
+				angle = deg2Rad(self.player.getH())
+				dx = dist * math.sin(angle)
+				dy = dist * -math.cos(angle)
+				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
+			if self.keyMap["break"]:
+				dist = elapsed * self.velocity
+				self.velocity -= elapsed *75
+				if self.velocity < 0:
+					self.velocity = 0
+				angle = deg2Rad(self.player.getH())
+				dx = dist * math.sin(angle)
+				dy = dist * -math.cos(angle)
+				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
+			if self.keyMap["forward"]==0 or self.airborne:
+				if self.velocity >= 0:
+					dist = elapsed * self.velocity
+					self.velocity += elapsed * 20 * self.worldspeed
+					if self.velocity > self.topspeed: self.velocity = self.topspeed
 				angle = deg2Rad(self.player.getH())
 				dx = dist * math.sin(angle)
 				dy = dist * -math.cos(angle)
@@ -294,20 +332,22 @@ class Player(DirectObject):
 			#print(entry.getIntoNode().getName())
 			
 		#entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
-		if (len(entries) > 0) and (entries[0].getIntoNode().getName() == "courseOBJ:polySurface1"):
+		if (len(entries) > 0) and (entries[0].getIntoNode().getName() == "terrain_collider"):
 			#if our Z is greater than terrain Z, make player fall
 			if self.player.getZ() > entries[0].getSurfacePoint(render).getZ():
 				self.player.setZ(startzed-25*elapsed)
 				self.player.setP(-startP + 5*elapsed)
-				if self.player.getP() < 0:
+				if self.player.getP() > 0:
 					self.player.setP(0)
-				#print "falling...new Z is ", self.player.getZ()
+				self.airborne = True
+				print "falling...new Z is ", self.player.getZ(), "heading is ", self.player.getP()
 				#print "offset is ", 1*elapsed
 			#if our Z is less than terrain Z, change it
 			if self.player.getZ() < entries[0].getSurfacePoint(render).getZ():
 				if self.velocity > 5:
 					self.player.setP(-startP - 5*elapsed)
 				self.player.setZ(entries[0].getSurfacePoint(render).getZ())
+				self.airborne = False
 				#print "not falling..."
 			#self.player.setZ(entries[0].getSurfacePoint(render).getZ())
 			
