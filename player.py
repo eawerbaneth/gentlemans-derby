@@ -127,13 +127,13 @@ class Player(DirectObject):
 		self.player.setPos(self.x,self.y,self.z)
 
 
-		#self.weapon = GattlingGun(0, 0, 800, 0, [], 0, self.z)
+		self.weapon = GattlingGun(0, 0, 0, 0, [], 0, self.z+3)
 		#self.weapon = Weapon(0, 0, 600, 0, [], 0, self.z)
 		#self.weapon = GattlingGun(0, 0, 800, 0, [], 0)
 		#self.weapon = Weapon(0, 0, 600, 0, [], 0)
 
 		#self.weapon = GattlingGun(0, 0, 0, self.player.getH(), [], 0)
-		self.weapon = BombWeapon(0, 0, -30, 0, [], 0, self.z)
+		#self.weapon = BombWeapon(0, 0, -30, 0, [], 0, self.z)
 		
 		self.weapon.form.reparentTo(self.player)
 		self.weapon.form.setPos(self.weapon.form.getX(), self.weapon.form.getY(), self.weapon.form.getZ()+ 3)
@@ -281,7 +281,7 @@ class Player(DirectObject):
 		live = self.weapon.update(self.player.getX(), self.player.getY(), self.weapon.form.getZ(), deg2Rad(self.player.getH()), elapsed)
 
 		if(not live):
-			self.weapon = Weapon(0,0,800,0,self.weapon.bullets)
+			self.weapon = Weapon(0,0,800,0,self.weapon.bullets, self.id, self.z)
 		#self.weapon.update(self.player.getX(), self.player.getY(), self.weapon.form.getZ(), deg2Rad(self.player.getH()), elapsed)
 		
 		base.cTrav.traverse(render)

@@ -76,7 +76,7 @@ class Projectile(DirectObject):
 		
 		#print(identifier)
 
-		cSphere = CollisionSphere((0,0,0), 500)
+		cSphere = CollisionSphere((0,0,0), 1)
 		cNode = CollisionNode(identifier)
 
 		cNode.addSolid(cSphere)
