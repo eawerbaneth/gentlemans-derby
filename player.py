@@ -141,6 +141,12 @@ class Player(DirectObject):
 		startzed = self.player.getZ()
 		camera.lookAt(self.player)
 		
+		#testing jumping
+		startP = self.player.getP()
+		startP = -startP
+		if -startP > 0:
+			self.player.setP(-startP + 5*elapsed)
+		print "TESTING:", self.player.getP()
 		
 		if self.keyMap["left"]:
 			self.player.setH(self.player.getH() + elapsed * 45)
@@ -232,17 +238,23 @@ class Player(DirectObject):
 		if (len(entries) > 0) and (entries[0].getIntoNode().getName() == "courseOBJ:polySurface1"):
 			#if our Z is greater than terrain Z, make player fall
 			if self.player.getZ() > entries[0].getSurfacePoint(render).getZ():
-				self.player.setZ(startzed-1*elapsed)
+				self.player.setZ(startzed-25*elapsed)
+				self.player.setP(-startP + 5*elapsed)
+				if self.player.getP() < 0:
+					self.player.setP(0)
 				#print "falling...new Z is ", self.player.getZ()
 				#print "offset is ", 1*elapsed
 			#if our Z is less than terrain Z, change it
 			if self.player.getZ() < entries[0].getSurfacePoint(render).getZ():
+				if self.velocity > 5:
+					self.player.setP(-startP - 5*elapsed)
 				self.player.setZ(entries[0].getSurfacePoint(render).getZ())
 				#print "not falling..."
 			#self.player.setZ(entries[0].getSurfacePoint(render).getZ())
 			
 		else:
 			self.player.setZ(startzed)
+			self.player.setP(0)
 			print "no collision"
 		
 		self.prevtime = task.time
