@@ -1,13 +1,17 @@
-import sys, math, random
+import sys, math, random, os
 import direct.directbase.DirectStart #starts Panda
 from pandac.PandaModules import * #basic Panda modules
 from direct.showbase.DirectObject import DirectObject #for event handling
 from direct.actor.Actor import Actor #for animated models
 from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
+from helper import *
+#from player import *
+
+players = helper()
 
 class Projectile(DirectObject):
-	def __init__(self, vel, x, y, z, angle, range, playerid, id, penalty):
+	def __init__(self, vel, x, y, z, angle, range, playerid, id, penalty, playerList):
 		self.xvel = vel*math.sin(angle)
 		self.yvel = vel*-math.cos(angle)
 		self.zvel = 0
@@ -17,6 +21,8 @@ class Projectile(DirectObject):
 		self.xpos = x
 		self.ypos = y
 		self.zpos = z
+		self.players = playerList
+		#print(len(self.players.players))
 
 		#self.loadModel()
 		#self.setupCollisions()
@@ -30,8 +36,16 @@ class Projectile(DirectObject):
 		self.playerid = playerid
 		self.id = id
 		
-		self.accept("projectile:" + str(self.playerid) + ":" + str(self.id) + "collide-wall", self.kill)
-		self.accept("shot-up-player", self.kill)
+
+		
+		if(self.playerid == 0):
+		
+			self.accept("projectile:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai1", self.kill, [1])
+			self.accept("projectile:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai2", self.kill, [2])
+			self.accept("projectile:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai3", self.kill, [3])
+			self.accept("projectile:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai4", self.kill, [4])
+		else:
+			self.accept("projectile:" + str(self.playerid) + ":" + str(self.id) + "-collide-player", self.kill, [0])
 		
 		self.loadModel()
 		self.setupCollisions()
@@ -57,15 +71,21 @@ class Projectile(DirectObject):
 		identifier = "projectile:" + str(self.playerid) + ":" + str(self.id)
 		self.cHandler.setInPattern("%fn-collide-%in")
 		
+		#print(identifier)
 
-		cSphere = CollisionSphere((0,0,0), 1)
+		cSphere = CollisionSphere((0,0,0), 500)
 		cNode = CollisionNode(identifier)
 
 		cNode.addSolid(cSphere)
 		cNodePath = self.form.attachNewNode(cNode)
 		cNodePath.show()
+		
+		self.bulletHandler = CollisionHandlerQueue()
+		
+		
+		base.cTrav.addCollider(cNodePath, self.bulletHandler)
 		base.cTrav.addCollider(cNodePath, self.cHandler)
-	
+		
 	#def update(self, task):
 	def update(self, elapsed):
 		"""moves the bullet in a straight line relative to its trajectory"""
@@ -75,6 +95,11 @@ class Projectile(DirectObject):
 		self.xpos = self.xpos + self.xvel*elapsed
 		self.ypos = self.ypos + self.yvel*elapsed
 		self.form.setPos(self.xpos, self.ypos, self.zpos)
+		
+		for i in range(self.bulletHandler.getNumEntries()):
+			entry = self.bulletHandler.getEntry(i)
+			print(entry.getIntoNode().getName())
+			print(entry.getFromNode().getName())
 		
 		#check to see if the projectile is out of range
 		if math.sqrt((self.origx-self.xpos)**2 + (self.origy-self.ypos)**2) > self.range:
@@ -86,14 +111,20 @@ class Projectile(DirectObject):
 		#return Task.cont
 		return True
 			
-	def kill(self, cEntry):
+	def kill(self, hitId, cEntry):
 		"""destroys the bullet upon entering a foreign body"""
 
 		#self.form.cleanup()
+		#print(self.players.players[1])
+		
+		
+		print("LOLOLOLOLOLOL")
+		#print(self.players.players[hitId])
+		self.players.players[hitId].take_damage(3)
 		self.form.removeNode()
 		#cEntry.getIntoNodePath().getParent().remove()
 
-		#player_identifier = cEntry.getIntoNodePath().getName()
+		#print(cEntry.getIntoNodePath().getName())
 		#cEntry.getFromNodePath().getParent().remove()
 
 	

@@ -20,6 +20,8 @@ class Weapon(DirectObject):
 		#id will be 0 for player, 1 - whatever for ai's
 		self.playerid = id
 		
+		#print(players.players[1])
+		
 		if str(self.playerid) == "0":
 			self.accept("space", self.setKey, ["firing", 1] )
 			self.accept("space-up", self.setKey, ["firing", 0] )
@@ -108,17 +110,18 @@ class Weapon(DirectObject):
 	def fire(self):
 		"""pulls the trigger"""
 
+		#print(len(players.players))
 		if(self.projId >= self.idLim):
 			self.projId = 0
-		new_projectile = Projectile(100, self.xpos, self.ypos, self.projZ, self.angle, 30, self.playerid, self.projId, len(self.bullets))
+		new_projectile = Projectile(100, self.xpos, self.ypos, self.projZ, self.angle, 100, self.playerid, self.projId, len(self.bullets), players)
 		self.bullets.append(new_projectile)
 		self.projId = self.projId + 1
 		
-		if self.playerid != 0:
-			self.accept("projectile:" + str(self.playerid) + ":" + str(len(self.bullets)-1) + "-collision-player", self.address_bullet)
-		for i in range(1, 4):
-			if str(i) != self.playerid:
-				self.accept("projectile:" + str(self.playerid) + ":" + str(len(self.bullets)-1) + "-collision-ai"+str(i), self.address_bullet)
+		#if self.playerid != 0:
+		#	self.accept("projectile:" + str(self.playerid) + ":" + str(len(self.bullets)-1) + "-collision-player", self.address_bullet)
+		#for i in range(1, 4):
+		#	if str(i) != self.playerid:
+		#		self.accept("projectile:" + str(self.playerid) + ":" + str(len(self.bullets)-1) + "-collision-ai"+str(i), self.address_bullet)
 			
 		self.cooldown = 1.0
 

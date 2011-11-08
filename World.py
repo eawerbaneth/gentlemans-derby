@@ -19,11 +19,13 @@ class World(DirectObject):
 		camera.setPosHpr(0, -15, 7, 0, -15, 0)
 
 		#self.players = helper()
-		players.add_player(Player(0, 0, 20))
+		players.add_player(Player(0, 0, 0))
 		players.add_player(ai_player(1))
 		players.add_player(ai_player(2))
 		players.add_player(ai_player(3))
 		players.add_player(ai_player(4))
+		
+		#print(len(helper.glob_players))
 		
 		self.lights = []
 		
@@ -94,19 +96,15 @@ class World(DirectObject):
 		# self.weapon.form.reparentTo(self.player)
 
 		
-		#self.env = loader.loadModel("models/courseExport")
-		self.env = loader.loadModel("models/easy")
-
+		self.env = loader.loadModel("models/easy_course")
+		#self.env = loader.loadModel("models/easy")
+		self.env.setPos(0,0,0)
 		self.env.reparentTo(render)
-		self.env.setPos(self.env.getX(), self.env.getY(), self.env.getZ()-30)
+		#self.env.setPos(self.env.getX(), self.env.getY(), self.env.getZ())
 
 
 		#self.env.setScale(.25)
 
-		
-		self.smiley = loader.loadModel("smiley")
-		self.smiley.setPos(30, 0, 0)
-		self.smiley.reparentTo(render)
 		
 		#camera.reparentTo(players.players[0].player)
 		#camera.setPos(0, 4000, 1200)
@@ -123,7 +121,7 @@ class World(DirectObject):
 		self.cHandler = CollisionHandlerEvent()
 		
 		#self.cHandler.setInPattern("%in-collide")
-		#cSphere = CollisionInvSphere((0,0,0), 200)
+		#cSphere = CollisionInvSphere((0,0,0), 1000000)
 		#cNode = CollisionNode("wall")
 		#cNode.addSolid(cSphere)
 		#cNodePath = self.env.attachNewNode(cNode)
