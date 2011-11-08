@@ -30,68 +30,18 @@ class World(DirectObject):
 		self.setupLights()
 		self.setupCollisions()
 		
-		# self.loadModels()
-		# self.setupLights()
-		# self.collisionInit()
-		
-		# self.keyMap = {"left":0, "right":0, "forward":0, "down":0, "break":0}
-		# taskMgr.add(self.move, "moveTask")
-		# taskMgr.add(self.adjustCamera, "cameraTask")
-		# self.prevtime = 0
-		# self.velocity = 0
-		# self.topspeed = 100
-		# self.penalty = 0
-		
-		# self.accept("escape", sys.exit)
-		# self.accept("arrow_up", self.setKey, ["forward", 1])
-		# self.accept("arrow_right", self.setKey, ["right", 1])
-		# self.accept("arrow_left", self.setKey, ["left", 1])
-		# self.accept("arrow_down", self.setKey, ["down", 1])
-		# self.accept("z", self.setKey, ["break", 1])
-		# self.accept("arrow_up-up", self.setKey, ["forward", 0])
-		# self.accept("arrow_right-up", self.setKey, ["right", 0])
-		# self.accept("arrow_left-up", self.setKey, ["left", 0])
-		# self.accept("arrow_down-up", self.setKey, ["down", 0])
-		# self.accept("z-up", self.setKey, ["break", 0])
-		# self.accept("collide-wall", self.putPlayer)
-		# self.accept("collide-ai-node0", self.acknowledge)
-		
-		#self.weapon = GattlingGun(0, 0, 2, 0, [])
-		#self.lighttest = StreetLamp(self.player.getX(), self.player.getY(), self.player.getZ())
-		#self.spikestest = Spikes(3, 3, 3)
-		#self.oiltest = oilSlick(3, 3, 3)
-		#self.bombtest = BombWeapon(10, 10, 3, 0, [])
-		
-	# def take_damage(self, amount):
-		# penalty += amount
-		
-	# def acknowledge(self, cEntry):
-		# print "collision detected"
-		
-	# def setKey(self,key,value):
-		# self.keyMap[key] = value
-		
-	# def putPlayer(self, cEntry):
-		# self.player.setPos(0,0,0)	
-		
 	def loadModels(self):
-		# self.player = Actor("models/panda-model")
-		# self.player.setScale(.005)
-		#self.player = Actor("models/weapons/revolverProxy")
-		#self.player.setScale(3)
-		# self.player.setH(90)
-		# self.player.reparentTo(render)
+		self.env = loader.loadModel("models/intermediate_course_export")
+		cNode = self.env.find("**/terrain_collider")
+		cNode.show()
 		
-		# self.weapon = GattlingGun(0, 0, 800, 0, [])
-		# self.weapon.form.reparentTo(self.player)
-		
-		self.env = loader.loadModel("models/easy")
 		self.env.reparentTo(render)
 		self.env.setPos(self.env.getX(), self.env.getY(), self.env.getZ()-30)
 		
-		#self.oil = oilSlick(32, 50, -30)
+		self.oil = oilSlick(32, 50, -30)
+		self.spikes = Spikes(32, 40, -30)
 
-		self.env.setScale(8)
+		self.env.setScale(4)
 		camera.reparentTo(players.players[0].player)
 		
 		players.players[0].env = self.env
@@ -169,69 +119,6 @@ class World(DirectObject):
 		# slnp.setPos(0, -650, 300)
 		# slnp.setHpr(0, 180, 0)
 		# self.headlight.showFrustum()
-
-	# def move(self, task):
-		# elapsed = task.time - self.prevtime
-		# camera.lookAt(self.player)
-		# if self.keyMap["left"]:
-			# self.player.setH(self.player.getH() + elapsed * 100)
-		# if self.keyMap["right"]:
-			# self.player.setH(self.player.getH() - elapsed * 100)
-		# if self.keyMap["forward"]:
-			# dist = elapsed * self.velocity
-			# self.velocity += elapsed * 20
-			# if self.velocity > self.topspeed: self.velocity = self.topspeed
-			# angle = deg2Rad(self.player.getH())
-			# dx = dist * math.sin(angle)
-			# dy = dist * -math.cos(angle)
-			# self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
-		# elif self.keyMap["down"]:
-			# dist = elapsed * self.velocity
-			# self.velocity -= elapsed * 5
-			# if self.velocity < -10:
-				# self.velocity = -10
-			# angle = deg2Rad(self.player.getH())
-			# dx = dist * math.sin(angle)
-			# dy = dist * -math.cos(angle)
-			# self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
-		# if self.keyMap["break"]:
-			# dist = elapsed * self.velocity
-			# self.velocity -= elapsed *75
-			# if self.velocity < 0:
-				# self.velocity = 0
-			# angle = deg2Rad(self.player.getH())
-			# dx = dist * math.sin(angle)
-			# dy = dist * -math.cos(angle)
-			# self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
-		# if self.keyMap["forward"]==0:
-			# if self.velocity >= 0:
-				# dist = elapsed * self.velocity
-				# self.velocity -= elapsed * 50
-				# if self.velocity < 0:
-					# self.velocity = 0
-				# angle = deg2Rad(self.player.getH())
-				# dx = dist * math.sin(angle)
-				# dy = dist * -math.cos(angle)
-				# self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
-		# if self.keyMap["down"]==0:
-			# if self.velocity < 0:
-				# dist = elapsed * self.velocity
-				# self.velocity += elapsed * 50
-				# if self.velocity > 0:
-					# self.velocity = 0
-				# angle = deg2Rad(self.player.getH())
-				# dx = dist * math.sin(angle)
-				# dy = dist * -math.cos(angle)
-				# self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
-		
-		#light testing
-		#self.lighttest.light.setPoint((self.player.getX(), self.player.getY(), self.player.getZ()+3))
-		
-		# self.weapon.update(self.player.getX(), self.player.getY(), self.weapon.form.getZ(), deg2Rad(self.player.getH()), elapsed)
-
-		# self.prevtime = task.time
-		# return Task.cont
-	
 
 	# def adjustCamera(self, task):
 		# camera.setPos(0, 4000+4000*self.velocity/100, 1500)	

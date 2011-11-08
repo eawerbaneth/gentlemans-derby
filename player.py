@@ -99,6 +99,15 @@ class Player(DirectObject):
 		self.accept("collide-wall", self.putPlayer)
 		#add an acceptor for the first checkpoint
 		self.accept("collide-checkpoint1", self.checkpoint)
+		self.accept("collide-oil-slick", self.oil_slicked)
+		self.accept("collide-spikes", self.spiked)
+	
+	#triggers when player runs into an oil slick
+	def oil_slicked(self, cEntry):
+		print "player oil slicked!"
+	
+	def spiked(self, cEntry):
+		print "player spiked!"
 	
 	#triggers when the player his next checkpoint
 	def checkpoint(self, cEntry):
@@ -238,7 +247,7 @@ class Player(DirectObject):
 			#print(entry.getIntoNode().getName())
 			
 		#entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
-		if (len(entries) > 0) and (entries[0].getIntoNode().getName() == "courseOBJ:polySurface1"):
+		if (len(entries) > 0) and (entries[0].getIntoNode().getName() == "terrain_collider"):
 			#if our Z is greater than terrain Z, make player fall
 			if self.player.getZ() > entries[0].getSurfacePoint(render).getZ():
 				self.player.setZ(startzed-25*elapsed)

@@ -124,8 +124,12 @@ class ai_player(DirectObject):
 		for i in self.brain.path:
 			self.accept("ai" + str(self.id) + "-collide-ai-node"+ i.id, self.checkpoint)
 		self.accept("ai" + str(self.id) + "-collide-spikes", self.penalty)
+		self.accept("ai" + str(self.id) + "-collide-oil-slick", self.oil_slicked)
 		
 		base.cTrav.addCollider(cNodePath, self.cHandler)
+	
+	def oil_slicked(self, cEntry):
+		print "ai " + str(self.id) + " oil slicked!"
 	
 	def penalty(self, cEntry):
 		if cEntry.getIntoNodePath().getName() == "spikes":
@@ -150,7 +154,7 @@ class ai_player(DirectObject):
 		startP = self.form.getP()
 		startP = -startP
 		if -startP > 0:
-			self.player.setP(-startP + 5*elapsed)
+			self.form.setP(-startP + 5*elapsed)
 			startP = -(-startP + 5*elapsed)
 		
 		#if we're allowed to move, move
