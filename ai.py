@@ -196,6 +196,28 @@ class ai_player(DirectObject):
 		#keep ai rooted to ground
 		base.cTrav.traverse(render)
 		
+		#do animations
+		animControl = self.form.getAnimControl('pedal')
+		if self.velocity == 0:
+			#self.player.pose('pedal', animControl.getFrame())#, self.player.getCurrentFrame('pedal'))
+			self.form.stop()
+			self.stopped = True
+		elif self.velocity > 0:
+			if self.stopped:
+				#print "starting again"
+				self.form.setPlayRate(0.3, 'pedal')
+				self.form.loop('pedal')
+				#self.player.loop('pedal', restart = 0, fromFrame = self.player.getCurrentFrame('pedal'))
+			else:
+				self.form.setPlayRate(self.velocity/10, 'pedal')
+			self.stopped = False
+		else:
+			if self.stopped:
+				self.form.setPlayRate(-1, 'pedal')
+				self.form.loop('pedal')
+				#self.player.loop('pedal', restart = 0, fromFrame = self.player.getCurrentFrame('pedal'))
+			self.stopped = False
+		
 		#deal with terrain collisions
 		entries = []
 		for i in range(self.aiHandler.getNumEntries()):

@@ -115,10 +115,11 @@ class Player(DirectObject):
 		self.player.setH(-180)
 		self.player.reparentTo(render)
 		
-		self.weapon = GattlingGun(0, 0, 800, 0, [], 0)
-		self.weapon = Weapon(0, 0, 600, 0, [], 0)
+		#self.weapon = GattlingGun(0, 0, 0, self.player.getH(), [], 0)
+		self.weapon = BombWeapon(0, 0, -30, 0, [], 0)
 		self.weapon.form.reparentTo(self.player)
 		self.weapon.form.setPos(self.weapon.form.getX(), self.weapon.form.getY(), self.weapon.form.getZ()+ 3)
+		#print "\t", self.weapon.form.getH(), self.player.getH()
 	
 	def putPlayer(self, cEntry):
 		self.player.setPos(0,0,-30)	
@@ -248,7 +249,7 @@ class Player(DirectObject):
 		return Task.cont
 	
 	def adjustCamera(self, task):
-		camera.setPos(0, 15+10*self.velocity/15, 5)	
+		camera.setPos(0, 25+10*self.velocity/15, 5)	
 		return Task.cont
 	
 	def updateHUD(self, task):
