@@ -49,6 +49,9 @@ class Projectile(DirectObject):
 		
 		self.loadModel()
 		self.setupCollisions()
+		
+		#if self.playerid != 0:
+		#	print "spawning projectile", self.playerid
 		#if self.playerid != 0:
 		#	self.accept("projectile:" + self.playerid + ":" + self.id + "-collide-player", self.kill)
 		
@@ -60,8 +63,8 @@ class Projectile(DirectObject):
 	def loadModel(self):
 		"""loads the bullet model"""
 		#load the proxy model
-		self.form = loader.loadModel("models/panda-model")
-		self.form.setScale(.005)
+		self.form = loader.loadModel("models/bullet")
+		#self.form.setScale(.005)
 		self.form.reparentTo(render)
 	
 	def setupCollisions(self):
@@ -190,12 +193,15 @@ class Bomb(DirectObject):
 		self.countdown = 3.0
 		self.exploderange = 10.0
 		self.penalty = 100
+		self.exploded = False
 		self.accept('bomb-detonated-player', self.explode)
+		print "spawning bomb...", self.xpos, self.ypos, self.zpos
 	
 	def loadModel(self):
 		"""loads the bomb model"""
-		self.form = loader.loadModel("models/panda-model")
+		self.form = loader.loadModel("models/bombExport")
 		self.form.reparentTo(render)
+		self.form.setPos(self.xpos, self.ypos, self.zpos+3)
 		
 	def setupCollisions(self):
 		"""sets the bomb up to collide with things"""
@@ -207,6 +213,7 @@ class Bomb(DirectObject):
 		cNode = CollisionNode("bomb")
 		cNode.addSolid(cSphere)
 		cNodePath = self.form.attachNewNode(cNode)
+		cNodePath.show()
 		base.cTrav.addCollider(cNodePath, self.cHandler)
 		
 	def update(self, elapsed):
@@ -218,10 +225,15 @@ class Bomb(DirectObject):
 		#else:
 		#	elapsed = task.time - self.prevtime
 		
-		self.countdown = self.countdown - elapsed
+		#camera.lookAt(self.form)
 		
-		if self.countdown <= 0:
+		self.countdown = self.countdown - elapsed
+		print "bomb countdown: ", self.countdown
+		
+		if self.countdown <= 0 and not self.exploded:
 			self.explode()
+			
+		if self.countdown <= -1:
 			self.form.removeNode()
 			return False
 		
@@ -233,13 +245,15 @@ class Bomb(DirectObject):
 	#before being removed
 	def explode(self):	
 		"""the bomb explodes"""
+		self.exploded = True
 		#base.cTrav = CollisionTraverser()
 		self.cHandler2 = CollisionHandlerEvent()
 		self.cHandler2.setInPattern('blew-up-%in')
 		
-		explosionSphere = CollisionSphere(self.xpos, self.ypos, self.zpos, self.exploderange)
+		explosionSphere = CollisionSphere(0, 0, 0, self.exploderange)
 		cNode = CollisionNode("explosion")
 		cNode.addSolid(explosionSphere)
 		cNodePath = self.form.attachNewNode(cNode)
+		cNodePath.show()
 		base.cTrav.addCollider(cNodePath, self.cHandler2)
 		

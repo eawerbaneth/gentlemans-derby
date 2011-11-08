@@ -20,7 +20,7 @@ class ai_node(object):
 	def loadModel(self):
 		self.form = loader.loadModel("models/teapot")
 		self.form.reparentTo(render)
-		self.form.setPos(self.xpos, self.ypos, 0)
+		self.form.setPos(self.xpos, self.ypos, -30)
 		
 	def setupCollisions(self):
 		self.cHandler = CollisionHandlerEvent()
@@ -31,7 +31,7 @@ class ai_node(object):
 		cNode = CollisionNode(name_string)
 		cNode.addSolid(cSphere)
 		cNodePath = self.form.attachNewNode(cNode)
-		cNodePath.show()
+		#cNodePath.show()
 		base.cTrav.addCollider(cNodePath, self.cHandler)
 		
 class node_handler(object):
@@ -42,7 +42,7 @@ class node_handler(object):
 	def populate_nodes(self):
 		print os.getcwd()
 #NOTE: you guys need to move path_nodes.txt into your panda python folder
-		f = open("path_nodes.txt", "r")
+		f = open("test_track.txt", "r")
 		#read in nodes from file
 		for line in f:
 			words = line.split()
@@ -61,16 +61,29 @@ class ai_player(DirectObject):
 		self.goal = self.brain.next()
 		self.id = id
 		self.velocity = 0
-		self.topspeed = 100
+		self.topspeed = 30
 		self.time_penalty = 0
 		self.invincible = False
 		
 		self.loadModel()
+		self.setupLights()
 		self.setupCollision()
 		self.handle = "ai" + str(id)
 		
 		taskMgr.add(self.update, "ai-update")
 		self.prevtime = 0
+	
+	def setupLights(self):
+		self.headlight = Spotlight("slight")
+		self.headlight.setColor(VBase4(1, 1, .5, 1))
+		lens = PerspectiveLens()
+		lens.setFov(100)
+		self.headlight.setLens(lens)
+		slnp = self.form.attachNewNode(self.headlight)
+		render.setLight(slnp)
+		slnp.setPos(0, -1, 1)
+		slnp.setHpr(0, 180, 0)
+		#self.headlight.showFrustum()
 	
 	def loadModel(self):
 		self.form = Actor("models/bikeExport", {"pedal":"models/bikeExport"})
@@ -78,7 +91,7 @@ class ai_player(DirectObject):
 		self.form.setH(45)
 		self.form.loop('pedal')
 		self.form.reparentTo(render)
-		self.form.setPos(self.form.getX()+ int(self.id), self.form.getY() + int(self.id), self.form.getZ())
+		self.form.setPos(self.form.getX()+ int(self.id), self.form.getY() + int(self.id), -30)
 		
 		#load default weapon
 		self.weapon = Weapon(0, 0, 600, 0, [], self.id, self.form.getZ())
@@ -107,7 +120,7 @@ class ai_player(DirectObject):
 		cNode.addSolid(cSphere)
 		#cNode.setIntoCollideMask(BitMask32.allOff())
 		cNodePath = self.form.attachNewNode(cNode)
-		cNodePath.show()
+		#cNodePath.show()
 		
 		#add acceptors
 		for i in self.brain.path:
@@ -135,6 +148,7 @@ class ai_player(DirectObject):
 	
 	def update(self, task):
 		elapsed = task.time - self.prevtime
+		startzed = self.form.getZ()
 		
 		#if we're allowed to move, move
 		if self.time_penalty == 0:
@@ -189,6 +203,28 @@ class ai_player(DirectObject):
 		#keep ai rooted to ground
 		base.cTrav.traverse(render)
 		
+		#do animations
+		animControl = self.form.getAnimControl('pedal')
+		if self.velocity == 0:
+			#self.player.pose('pedal', animControl.getFrame())#, self.player.getCurrentFrame('pedal'))
+			self.form.stop()
+			self.stopped = True
+		elif self.velocity > 0:
+			if self.stopped:
+				#print "starting again"
+				self.form.setPlayRate(0.3, 'pedal')
+				self.form.loop('pedal')
+				#self.player.loop('pedal', restart = 0, fromFrame = self.player.getCurrentFrame('pedal'))
+			else:
+				self.form.setPlayRate(self.velocity/10, 'pedal')
+			self.stopped = False
+		else:
+			if self.stopped:
+				self.form.setPlayRate(-1, 'pedal')
+				self.form.loop('pedal')
+				#self.player.loop('pedal', restart = 0, fromFrame = self.player.getCurrentFrame('pedal'))
+			self.stopped = False
+		
 		#deal with terrain collisions
 		entries = []
 		for i in range(self.aiHandler.getNumEntries()):
@@ -197,9 +233,23 @@ class ai_player(DirectObject):
 			#print(entry.getIntoNode().getName())
 			#print(entry.getFromNode().getName())
 			
-		entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
+		#entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
 		if (len(entries) > 0) and (entries[0].getIntoNode().getName() == "courseOBJ:polySurface1"):
-			self.form.setZ(entries[0].getSurfacePoint(render).getZ())
+			#if our Z is greater than terrain Z, make player fall
+			if self.form.getZ() > entries[0].getSurfacePoint(render).getZ():
+				self.form.setZ(startzed-1*elapsed)
+				#print "falling...new Z is ", self.form.getZ()
+				#print "offset is ", 1*elapsed
+			#if our Z is less than terrain Z, change it
+			if self.form.getZ() < entries[0].getSurfacePoint(render).getZ():
+				self.form.setZ(entries[0].getSurfacePoint(render).getZ())
+				#print "not falling..."
+			#self.player.setZ(entries[0].getSurfacePoint(render).getZ())
+			
+		else:
+			self.form.setZ(startzed)
+			#print "no collision"
+		
 		
 		self.prevtime = task.time
 		return Task.cont

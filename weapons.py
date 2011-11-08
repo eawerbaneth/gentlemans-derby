@@ -61,15 +61,15 @@ class Weapon(DirectObject):
 	def LoadModel(self):
 
 
-		self.form = Actor("models/weapons/revolverProxy")
-		self.form.setScale(300)
-
 
 		#self.form = loader.loadModel("models/weapons/revolverProxy")
 		#self.form.setScale(.9)
 
-		self.form.setPos(self.xpos,self.ypos,self.zpos)
-		self.form.setH(90)
+		self.form = loader.loadModel("models/weapons/revolverProxy")
+		self.form.setScale(5)
+		self.form.setPos(self.xpos,self.ypos,self.zpos+3)
+		self.form.setH(self.angle)
+
 		#self.form.reparentTo(render)
 	
 	def setKey(self, key, value):
@@ -191,8 +191,10 @@ class Flamethrower(Weapon):
 		
 	
 class BombWeapon(Weapon):
+
 	def __init__(self, x, y, z, angle, bullets, id, projZ):
 		Weapon.__init__(self, x, y, z, angle, bullets, id, projZ)
+
 		self.cooldown = 5.0
 		self.penalty = 2.0
 		self.ammo = 3
@@ -209,7 +211,7 @@ class BombWeapon(Weapon):
 	def fire(self):
 		"""drops a bomb"""
 		#note: bombs don't inherit from projectile class
-		new_bomb = Bomb(self.xpos, self.ypos, self.zpos, self.angle)
+		new_bomb = Bomb(self.xpos, self.ypos, -30, self.angle-180)
 		self.bullets.append(new_bomb)
 		self.cooldown = 5.0
 		self.ammo -= 1
