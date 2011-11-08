@@ -24,6 +24,8 @@ class Projectile(object):
 		
 		self.loadModel()
 		self.setupCollisions()
+		
+		print "spawning projectile"
 		#if self.playerid != 0:
 		#	self.accept("projectile:" + self.playerid + ":" + self.id + "-collide-player", self.kill)
 		
@@ -35,8 +37,8 @@ class Projectile(object):
 	def loadModel(self):
 		"""loads the bullet model"""
 		#load the proxy model
-		self.form = loader.loadModel("models/panda-model")
-		self.form.setScale(.005)
+		self.form = loader.loadModel("models/bullet")
+		#self.form.setScale(.005)
 		self.form.reparentTo(render)
 	
 	def setupCollisions(self):

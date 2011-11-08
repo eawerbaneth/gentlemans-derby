@@ -29,7 +29,7 @@ class playerCheckpoint(ai_node):
 		cNode = CollisionNode(name_string)
 		cNode.addSolid(cSphere)
 		cNodePath = self.form.attachNewNode(cNode)
-		cNodePath.show()
+		#cNodePath.show()
 		base.cTrav.addCollider(cNodePath, self.cHandler)
 		
 class player_node_handler(object):
@@ -87,13 +87,13 @@ class Player(DirectObject):
 		self.accept("arrow_left", self.setKey, ["left", 1])
 		self.accept("arrow_down", self.setKey, ["down", 1])
 		self.accept("z", self.setKey, ["break", 1])
-		self.accept("space", self.setKey, ["test", 1])
+		self.accept("w", self.setKey, ["test", 1])
 		self.accept("arrow_up-up", self.setKey, ["forward", 0])
 		self.accept("arrow_right-up", self.setKey, ["right", 0])
 		self.accept("arrow_left-up", self.setKey, ["left", 0])
 		self.accept("arrow_down-up", self.setKey, ["down", 0])
 		self.accept("z-up", self.setKey, ["break", 0])
-		self.accept("space-up", self.setKey, ["test", 0])
+		self.accept("w-up", self.setKey, ["test", 0])
 		self.accept("collide-wall", self.putPlayer)
 		#add an acceptor for the first checkpoint
 		self.accept("collide-checkpoint1", self.checkpoint)
@@ -131,7 +131,7 @@ class Player(DirectObject):
 		self.headlight.setLens(lens)
 		slnp = self.player.attachNewNode(self.headlight)
 		render.setLight(slnp)
-		slnp.setPos(0, -650, 300)
+		slnp.setPos(0, -1, 1)
 		slnp.setHpr(0, 180, 0)
 		self.headlight.showFrustum()
 		
@@ -232,12 +232,12 @@ class Player(DirectObject):
 			#if our Z is greater than terrain Z, make player fall
 			if self.player.getZ() > entries[0].getSurfacePoint(render).getZ():
 				self.player.setZ(startzed-1*elapsed)
-				print "falling...new Z is ", self.player.getZ()
+				#print "falling...new Z is ", self.player.getZ()
 				#print "offset is ", 1*elapsed
 			#if our Z is less than terrain Z, change it
 			if self.player.getZ() < entries[0].getSurfacePoint(render).getZ():
 				self.player.setZ(entries[0].getSurfacePoint(render).getZ())
-				print "not falling..."
+				#print "not falling..."
 			#self.player.setZ(entries[0].getSurfacePoint(render).getZ())
 			
 		else:

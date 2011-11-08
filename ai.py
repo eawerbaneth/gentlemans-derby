@@ -31,7 +31,7 @@ class ai_node(object):
 		cNode = CollisionNode(name_string)
 		cNode.addSolid(cSphere)
 		cNodePath = self.form.attachNewNode(cNode)
-		cNodePath.show()
+		#cNodePath.show()
 		base.cTrav.addCollider(cNodePath, self.cHandler)
 		
 class node_handler(object):
@@ -61,15 +61,28 @@ class ai_player(DirectObject):
 		self.goal = self.brain.next()
 		self.id = id
 		self.velocity = 0
-		self.topspeed = 100
+		self.topspeed = 30
 		self.time_penalty = 0
 		
 		self.loadModel()
+		self.setupLights()
 		self.setupCollision()
 		self.handle = "ai" + str(id)
 		
 		taskMgr.add(self.update, "ai-update")
 		self.prevtime = 0
+	
+	def setupLights(self):
+		self.headlight = Spotlight("slight")
+		self.headlight.setColor(VBase4(1, 1, .5, 1))
+		lens = PerspectiveLens()
+		lens.setFov(100)
+		self.headlight.setLens(lens)
+		slnp = self.form.attachNewNode(self.headlight)
+		render.setLight(slnp)
+		slnp.setPos(0, -1, 1)
+		slnp.setHpr(0, 180, 0)
+		#self.headlight.showFrustum()
 	
 	def loadModel(self):
 		self.form = Actor("models/bikeExport", {"pedal":"models/bikeExport"})
@@ -77,7 +90,7 @@ class ai_player(DirectObject):
 		self.form.setH(45)
 		self.form.loop('pedal')
 		self.form.reparentTo(render)
-		self.form.setPos(self.form.getX()+ int(self.id), self.form.getY() + int(self.id), self.form.getZ())
+		self.form.setPos(self.form.getX()+ int(self.id), self.form.getY() + int(self.id), -30)
 		
 		#load default weapon
 		self.weapon = Weapon(0, 0, 600, 0, [], self.id)
@@ -105,7 +118,7 @@ class ai_player(DirectObject):
 		cNode.addSolid(cSphere)
 		cNode.setIntoCollideMask(BitMask32.allOff())
 		cNodePath = self.form.attachNewNode(cNode)
-		cNodePath.show()
+		#cNodePath.show()
 		
 		#add acceptors
 		for i in self.brain.path:
@@ -190,12 +203,12 @@ class ai_player(DirectObject):
 			entries.append(entry)
 			#print(entry.getIntoNode().getName())
 			
-		entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
+		#entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
 		if (len(entries) > 0) and (entries[0].getIntoNode().getName() == "courseOBJ:polySurface1"):
 			#if our Z is greater than terrain Z, make player fall
 			if self.form.getZ() > entries[0].getSurfacePoint(render).getZ():
 				self.form.setZ(startzed-1*elapsed)
-				#print "falling...new Z is ", self.player.getZ()
+				#print "falling...new Z is ", self.form.getZ()
 				#print "offset is ", 1*elapsed
 			#if our Z is less than terrain Z, change it
 			if self.form.getZ() < entries[0].getSurfacePoint(render).getZ():
