@@ -70,6 +70,8 @@ class Player(DirectObject):
 		self.setupLights()
 		self.collisionInit()
 		self.HUD = HUD()
+		self.checkpointCount = 0
+		self.laps = 0
 		
 
 		self.keyMap = {"left":0, "right":0, "forward":0, "down":0, "break":0, "test":0}
@@ -124,6 +126,10 @@ class Player(DirectObject):
 		if cEntry.getIntoNodePath().getName() == "checkpoint" + str(self.goal[2]):
 			self.checkpoints.checkpoint()
 			self.goal = self.checkpoints.next()
+			self.checkpointCount += 1
+			if self.checkpointCount >= 8:
+				self.checkpointCount = 0
+				self.laps += 1
 			#add an acceptor for our next checkpoint
 			self.accept("collide-checkpoint" + str(self.goal[2]), self.checkpoint)
 	
@@ -364,9 +370,9 @@ class Player(DirectObject):
 		return Task.cont
 	
 	def updateHUD(self, task):
-		self.HUD.updateSpeed(self.velocity)
+		self.HUD.update(self.velocity, self.player.getX(), self.player.getY(), self.laps)
 		self.HUD.getDist(self.player.getX(), self.player.getY(), self.goal)
-		self.HUD.updateMiniMap(self.player.getX(), self.player.getY())
+		#self.HUD.updateMiniMap(self.player.getX(), self.player.getY())
 		return Task.cont
 		
 	def collisionInit(self):

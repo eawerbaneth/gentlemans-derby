@@ -6,6 +6,7 @@ from direct.actor.Actor import Actor #for animated models
 from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
 from direct.gui.OnscreenImage import OnscreenImage
+from direct.gui.OnscreenText import OnscreenText
 import sys, math, random
 from weapons import *
 from misc import *
@@ -20,12 +21,16 @@ class HUD():
         self.speedPin.setScale(.25)
         self.speedPin.setHpr(0, 0, 0)
         self.dot = OnscreenImage(image = 'img/dot.png', pos = (1, 0, -.7))
-        self.dot.setScale(.05)
+        self.dot.setScale(.025)
+        self.lapText = OnscreenText(text = "0/10", pos = (1, -.3, 0))
+        self.lapText.setScale(.05)
         
-    def updateSpeed(self, velocity):
+    def update(self, velocity, x, y, laps):
         if velocity < 0:
             velocity = -velocity
         self.speedPin.setHpr(0, 0, 1.8*velocity)
+        self.dot.setPos(1+(x/1500), 0, -.7+(y/1500))
+        self.lapText.setText(str(laps)+"/10")
     
     def getDist(self, x, y, checkpoint):
         cx = checkpoint[0]
@@ -39,7 +44,7 @@ class HUD():
         dToCheckpoint = dist - newX
         return dToCheckpoint
     
-    def updateMiniMap(self, x, y):
-        self.dot.setPos(1+(x/1000), 0, -.7+(y/1000))
+    """def updateMiniMap(self, x, y):
+        self.dot.setPos(1+(x/1000), 0, -.7+(y/1000))"""
         
         
