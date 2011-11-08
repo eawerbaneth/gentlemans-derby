@@ -271,6 +271,8 @@ class Player(DirectObject):
 	
 	def updateHUD(self, task):
 		self.HUD.updateSpeed(self.velocity)
+		self.HUD.getDist(self.player.getX(), self.player.getY(), self.goal)
+		self.HUD.updateMiniMap(self.player.getX(), self.player.getY())
 		return Task.cont
 		
 	def collisionInit(self):
