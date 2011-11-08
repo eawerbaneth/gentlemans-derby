@@ -17,6 +17,7 @@ class World(DirectObject):
 	def __init__(self):
 		base.disableMouse()
 		camera.setPosHpr(0, -15, 7, 0, -15, 0)
+
 		#self.players = helper()
 		players.add_player(Player(0, 0, 0))
 		players.add_player(ai_player(1))
@@ -24,11 +25,17 @@ class World(DirectObject):
 		players.add_player(ai_player(3))
 		players.add_player(ai_player(4))
 		
+		#print(len(helper.glob_players))
+		
 		self.lights = []
 		
 		self.loadModels()
 		self.setupLights()
 		self.setupCollisions()
+		
+		
+	def changeWeapons(self, cEntry):
+		self.weapon = GattlingGun(0,0,800,0,self.weapon.bullets)
 		
 	def loadModels(self):
 		self.env = loader.loadModel("models/intermediate_course_export")
@@ -41,6 +48,7 @@ class World(DirectObject):
 		self.oil = oilSlick(32, 50, -30)
 		self.spikes = Spikes(32, 40, -30)
 
+
 		self.env.setScale(4)
 		camera.reparentTo(players.players[0].player)
 		
@@ -51,6 +59,13 @@ class World(DirectObject):
 	def setupCollisions(self):
 		self.cHandler = CollisionHandlerEvent()
 		
+		#self.cHandler.setInPattern("%in-collide")
+		#cSphere = CollisionInvSphere((0,0,0), 1000000)
+		#cNode = CollisionNode("wall")
+		#cNode.addSolid(cSphere)
+		#cNodePath = self.env.attachNewNode(cNode)
+		#cNodePath.show()
+
 		#envCol = CollisionNode("floor")
 		#envCol.setFromCollideMask(BitMask32.bit(0))
 		#test = CollisionPolygon(Point3(0, 0, 0), Point3(50, 0, 50), Point3(50, 1, 50), Point3(0, 1, 0))
@@ -63,6 +78,7 @@ class World(DirectObject):
 		#cNode.addSolid(cSphere)
 		#cNodePath = self.env.attachNewNode(cNode)
 		#cNodePath.show()
+
 		
 		#self.env.setCollideMask(BitMask32.allOff())
 		
@@ -120,6 +136,7 @@ class World(DirectObject):
 		# slnp.setHpr(0, 180, 0)
 		# self.headlight.showFrustum()
 
+
 	# def adjustCamera(self, task):
 		# camera.setPos(0, 4000+4000*self.velocity/100, 1500)	
 		# return Task.cont
@@ -143,6 +160,7 @@ class World(DirectObject):
 		# cNode.addSolid(cSphere)
 		# cNodePath = self.env.attachNewNode(cNode)
 		# cNodePath.show()
+
 	
 w = World()
 run()	

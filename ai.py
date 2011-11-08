@@ -63,6 +63,7 @@ class ai_player(DirectObject):
 		self.velocity = 0
 		self.topspeed = 30
 		self.time_penalty = 0
+		self.invincible = False
 		
 		self.loadModel()
 		self.setupLights()
@@ -85,7 +86,7 @@ class ai_player(DirectObject):
 		#self.headlight.showFrustum()
 	
 	def loadModel(self):
-		self.form = Actor("models/bikeExport", {"pedal":"models/bikeExport"})
+		self.form = Actor("models/gentlemanBike_Pistol", {"pedal":"models/gentlemanBike_Pistol"})
 		#self.form.setScale(.004)
 		self.form.setH(45)
 		self.form.loop('pedal')
@@ -93,7 +94,7 @@ class ai_player(DirectObject):
 		self.form.setPos(self.form.getX()+ int(self.id), self.form.getY() + int(self.id), -30)
 		
 		#load default weapon
-		self.weapon = Weapon(0, 0, 600, 0, [], self.id)
+		self.weapon = Weapon(0, 0, 600, 0, [], self.id, self.form.getZ())
 		self.weapon.form.reparentTo(self.form)
 		self.weapon.form.setPos(self.weapon.form.getX(), self.weapon.form.getY(), self.weapon.form.getZ()+3)
 	
@@ -115,8 +116,9 @@ class ai_player(DirectObject):
 		
 		cSphere = CollisionSphere((0,0,0), 3)
 		cNode = CollisionNode("ai"+str(self.id))
+		#print("ai"+str(self.id))
 		cNode.addSolid(cSphere)
-		cNode.setIntoCollideMask(BitMask32.allOff())
+		#cNode.setIntoCollideMask(BitMask32.allOff())
 		cNodePath = self.form.attachNewNode(cNode)
 		#cNodePath.show()
 		
@@ -137,7 +139,9 @@ class ai_player(DirectObject):
 		#if cEntry.getIntoNodePath().getName() == "
 	
 	def take_damage(self, amount):
-		self.time_penalty += amount
+		if(not self.invincible):
+			self.time_penalty += amount
+			self.invincible = True
 	
 	def checkpoint(self, cEntry):
 		#print "checkpoint!"
@@ -191,16 +195,19 @@ class ai_player(DirectObject):
 		self.time_penalty -= elapsed
 		if self.time_penalty < 0:
 			self.time_penalty = 0
+			self.invincible = False
 			
+		#print(len(players.players))	
+		
 		#update weapon
 		shootflag = False
 		if math.sqrt((self.form.getX() - players.players[0].player.getX())**2 + (self.form.getY() - players.players[0].player.getY())**2) < self.weapon.range + 5:
-			shootflag = True
-		for i in range(1, 4):
+			shootflag = False
+		for i in range(1, 5):
 			if players.players[i].id != self.id:
 				#check to see if anyone is in range, shoot if they are
 				if math.sqrt((self.form.getX() - players.players[i].form.getX())**2 + (self.form.getY() - players.players[i].form.getY())**2) <= 30:
-					shootflag = True
+					shootflag = False
 		self.weapon.setKey("firing", shootflag)
 		self.weapon.update(self.form.getX(), self.form.getY(), self.weapon.form.getZ(), deg2Rad(self.form.getH()), elapsed) 
 		
@@ -235,6 +242,7 @@ class ai_player(DirectObject):
 			entry = self.aiHandler.getEntry(i)
 			entries.append(entry)
 			#print(entry.getIntoNode().getName())
+			#print(entry.getFromNode().getName())
 			
 		#entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
 		if (len(entries) > 0) and (entries[0].getIntoNode().getName() == "courseOBJ:polySurface1"):

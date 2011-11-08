@@ -60,12 +60,20 @@ class player_node_handler(object):
 
 class Player(DirectObject):
 	def __init__(self, x, y, z):
+	
+		self.x = x
+		self.y = y
+		self.z = z
+		
+		
 		self.loadModels()
 		self.setupLights()
 		self.collisionInit()
 		self.HUD = HUD()
 		
+
 		self.keyMap = {"left":0, "right":0, "forward":0, "down":0, "break":0, "test":0}
+
 		taskMgr.add(self.move, "moveTask")
 		taskMgr.add(self.adjustCamera, "cameraTask")
 		taskMgr.add(self.updateHUD, "hudTask")
@@ -75,6 +83,8 @@ class Player(DirectObject):
 		self.worldspeed = 1
 		self.penalty = 0
 		self.id = 0
+		self.invincible = False
+		
 		#handle checkpoints
 		self.checkpoints = player_node_handler()
 		self.goal = self.checkpoints.next()
@@ -119,15 +129,23 @@ class Player(DirectObject):
 	
 	def loadModels(self):
 		#self.panda = Actor("models/panda-model", {"walk":"panda-walk4", "eat":"panda-eat"})
-		self.player = Actor("models/bikeExport", {"pedal":"models/bikeExport"})
+		self.player = Actor("models/gentlemanBike_Pistol", {"pedal":"models/gentlemanBike_Pistol"})
 		#self.player.loop('pedal')
 		#self.player.setScale(.005)
 		self.player.setPos(0, 0, -30)
 		self.player.setH(-180)
 		self.player.reparentTo(render)
-		
+		self.player.setPos(self.x,self.y,self.z)
+
+
+		#self.weapon = GattlingGun(0, 0, 0, 0, [], 0, self.z+3)
+		self.weapon = Weapon(0, 0, 0, 0, [], 0, self.z)
+		#self.weapon = GattlingGun(0, 0, 800, 0, [], 0)
+		#self.weapon = Weapon(0, 0, 600, 0, [], 0)
+
 		#self.weapon = GattlingGun(0, 0, 0, self.player.getH(), [], 0)
-		self.weapon = BombWeapon(0, 0, -30, 0, [], 0)
+		#self.weapon = BombWeapon(0, 0, -30, 0, [], 0, self.z)
+		
 		self.weapon.form.reparentTo(self.player)
 		self.weapon.form.setPos(self.weapon.form.getX(), self.weapon.form.getY(), self.weapon.form.getZ()+ 3)
 		#print "\t", self.weapon.form.getH(), self.player.getH()
@@ -152,66 +170,127 @@ class Player(DirectObject):
 		startzed = self.player.getZ()
 		camera.lookAt(self.player)
 		
-		#testing jumping
-		startP = self.player.getP()
-		startP = -startP
-		if -startP > 0:
-			self.player.setP(-startP + 5*elapsed)
-		#print "TESTING:", self.player.getP()
-		
-		if self.keyMap["left"]:
-			self.player.setH(self.player.getH() + elapsed * 45)
-		if self.keyMap["right"]:
-			self.player.setH(self.player.getH() - elapsed * 45)
-		if self.keyMap["test"]:
-			print "\tDEBUGGING!!!", self.player.getX(), self.player.getY(), self.player.getZ()
-		#only allow them to accelerate if they are on the ground
-		if self.keyMap["forward"] and not self.airborne:
-			dist = elapsed * self.velocity
-			self.velocity += elapsed * 20 * self.worldspeed
-			if self.velocity > self.topspeed: self.velocity = self.topspeed
-			angle = deg2Rad(self.player.getH())
-			dx = dist * math.sin(angle)
-			dy = dist * -math.cos(angle)
-			self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
-		elif self.keyMap["down"]:
-			dist = elapsed * self.velocity
-			self.velocity -= elapsed * 5
-			if self.velocity < -10:
-				self.velocity = -10
-			angle = deg2Rad(self.player.getH())
-			dx = dist * math.sin(angle)
-			dy = dist * -math.cos(angle)
-			self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
-		if self.keyMap["break"]:
-			dist = elapsed * self.velocity
-			self.velocity -= elapsed *75
-			if self.velocity < 0:
-				self.velocity = 0
-			angle = deg2Rad(self.player.getH())
-			dx = dist * math.sin(angle)
-			dy = dist * -math.cos(angle)
-			self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
-		if self.keyMap["forward"]==0 or self.airborne:
-			if self.velocity >= 0:
+		if(self.penalty == 0):
+			
+			#testing jumping
+			startP = self.player.getP()
+			startP = -startP
+			if -startP > 0:
+				self.player.setP(-startP + 5*elapsed)
+			#print "TESTING:", self.player.getP()
+			
+			if self.keyMap["left"]:
+				self.player.setH(self.player.getH() + elapsed * 45)
+			if self.keyMap["right"]:
+				self.player.setH(self.player.getH() - elapsed * 45)
+			if self.keyMap["test"]:
+				print "\tDEBUGGING!!!", self.player.getX(), self.player.getY(), self.player.getZ()
+			#only allow them to accelerate if they are on the ground
+			if self.keyMap["forward"] and not self.airborne:
 				dist = elapsed * self.velocity
-				self.velocity -= elapsed * 50 * self.worldspeed
+				self.velocity += elapsed * 20 * self.worldspeed
+				if self.velocity > self.topspeed: self.velocity = self.topspeed
+				angle = deg2Rad(self.player.getH())
+				dx = dist * math.sin(angle)
+				dy = dist * -math.cos(angle)
+				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
+			elif self.keyMap["down"]:
+				dist = elapsed * self.velocity
+				self.velocity -= elapsed * 5
+				if self.velocity < -10:
+					self.velocity = -10
+				angle = deg2Rad(self.player.getH())
+				dx = dist * math.sin(angle)
+				dy = dist * -math.cos(angle)
+				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
+			if self.keyMap["break"]:
+				dist = elapsed * self.velocity
+				self.velocity -= elapsed *75
 				if self.velocity < 0:
 					self.velocity = 0
 				angle = deg2Rad(self.player.getH())
 				dx = dist * math.sin(angle)
 				dy = dist * -math.cos(angle)
 				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
-		if self.keyMap["down"]==0:
-			if self.velocity < 0:
+			if self.keyMap["forward"]==0 or self.airborne:
+				if self.velocity >= 0:
+					dist = elapsed * self.velocity
+					self.velocity += elapsed * 20 * self.worldspeed
+					if self.velocity > self.topspeed: self.velocity = self.topspeed
+				angle = deg2Rad(self.player.getH())
+				dx = dist * math.sin(angle)
+				dy = dist * -math.cos(angle)
+				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
+			elif self.keyMap["down"]:
 				dist = elapsed * self.velocity
-				self.velocity += elapsed * 50
-				if self.velocity > 0:
+				self.velocity -= elapsed * 5
+				if self.velocity < -10:
+					self.velocity = -10
+				angle = deg2Rad(self.player.getH())
+				dx = dist * math.sin(angle)
+				dy = dist * -math.cos(angle)
+				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
+			if self.keyMap["break"]:
+				dist = elapsed * self.velocity
+				self.velocity -= elapsed *75
+				if self.velocity < 0:
 					self.velocity = 0
 				angle = deg2Rad(self.player.getH())
 				dx = dist * math.sin(angle)
 				dy = dist * -math.cos(angle)
 				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
+			if self.keyMap["forward"]==0:
+				if self.velocity >= 0:
+					dist = elapsed * self.velocity
+					self.velocity += elapsed * 20 * self.worldspeed
+					if self.velocity > self.topspeed: self.velocity = self.topspeed
+					angle = deg2Rad(self.player.getH())
+					dx = dist * math.sin(angle)
+					dy = dist * -math.cos(angle)
+					self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, self.z)
+				elif self.keyMap["down"]:
+					dist = elapsed * self.velocity
+					self.velocity -= elapsed * 5
+					if self.velocity < -10:
+						self.velocity = -10
+					angle = deg2Rad(self.player.getH())
+					dx = dist * math.sin(angle)
+					dy = dist * -math.cos(angle)
+					self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, self.z)
+				if self.keyMap["break"]:
+					dist = elapsed * self.velocity
+					self.velocity -= elapsed *75
+					if self.velocity < 0:
+						self.velocity = 0
+					angle = deg2Rad(self.player.getH())
+					dx = dist * math.sin(angle)
+					dy = dist * -math.cos(angle)
+					self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, self.z)
+				if self.keyMap["forward"]==0:
+					if self.velocity >= 0:
+						dist = elapsed * self.velocity
+						self.velocity -= elapsed * 50 * self.worldspeed
+						if self.velocity < 0:
+							self.velocity = 0
+						angle = deg2Rad(self.player.getH())
+						dx = dist * math.sin(angle)
+						dy = dist * -math.cos(angle)
+						self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, self.z)
+				if self.keyMap["down"]==0:
+					if self.velocity < 0:
+						dist = elapsed * self.velocity
+						self.velocity += elapsed * 50
+						if self.velocity > 0:
+							self.velocity = 0
+						angle = deg2Rad(self.player.getH())
+						dx = dist * math.sin(angle)
+						dy = dist * -math.cos(angle)
+						self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, self.z)
+			
+		self.penalty -= elapsed
+		if(self.penalty < 0):
+			self.penalty = 0
+			self.invincible = False
 		
 		#control animation speed
 		animControl = self.player.getAnimControl('pedal')
@@ -235,7 +314,13 @@ class Player(DirectObject):
 				#self.player.loop('pedal', restart = 0, fromFrame = self.player.getCurrentFrame('pedal'))
 			self.stopped = False
 		
-		self.weapon.update(self.player.getX(), self.player.getY(), self.weapon.form.getZ(), deg2Rad(self.player.getH()), elapsed)
+		
+		
+		live = self.weapon.update(self.player.getX(), self.player.getY(), self.weapon.form.getZ(), deg2Rad(self.player.getH()), elapsed)
+
+		if(not live):
+			self.weapon = Weapon(0,0,800,0,self.weapon.bullets, self.id, self.z)
+		#self.weapon.update(self.player.getX(), self.player.getY(), self.weapon.form.getZ(), deg2Rad(self.player.getH()), elapsed)
 		
 		base.cTrav.traverse(render)
 		
@@ -325,7 +410,9 @@ class Player(DirectObject):
 		base.cTrav.addCollider(cNodePath, self.cHandler)
 	
 	def take_damage(self, amount):
-		self.penalty += amount
+		if(not self.invincible):
+			self.penalty += amount
+			self.invincible = True
 		
 	def setKey(self,key,value):
 		self.keyMap[key] = value
