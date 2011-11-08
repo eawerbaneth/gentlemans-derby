@@ -174,7 +174,7 @@ class Player(DirectObject):
 	def move(self, task):
 		elapsed = task.time - self.prevtime
 		startzed = self.player.getZ()
-		camera.lookAt(self.player)
+		
 		
 		if(self.penalty == 0):
 			
@@ -219,8 +219,8 @@ class Player(DirectObject):
 				dy = dist * -math.cos(angle)
 				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
 			if self.keyMap["forward"]==0 or self.airborne:
-				if self.velocity >= 0:
-					dist = elapsed * self.velocity
+				dist = elapsed * self.velocity
+				if self.velocity >= 0:	
 					self.velocity += elapsed * 20 * self.worldspeed
 					if self.velocity > self.topspeed: self.velocity = self.topspeed
 				angle = deg2Rad(self.player.getH())
@@ -362,11 +362,19 @@ class Player(DirectObject):
 			self.player.setP(0)
 			print "no collision"
 		
+		
+		#deal with camera
+		camera.lookAt(self.player)
+		camera.setPos(0, 25+10*self.velocity/15, 5+2*self.velocity/15)
+		camera.setP(0)
+		#print "camera pitch is ", camera.getP()
+		
+		
 		self.prevtime = task.time
 		return Task.cont
 	
 	def adjustCamera(self, task):
-		camera.setPos(0, 25+10*self.velocity/15, 5)	
+		#camera.setPos(0, 25+10*self.velocity/15, 5)	
 		return Task.cont
 	
 	def updateHUD(self, task):
