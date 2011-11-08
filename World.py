@@ -88,6 +88,8 @@ class World(DirectObject):
 		self.env = loader.loadModel("models/easy")
 		self.env.reparentTo(render)
 		self.env.setPos(self.env.getX(), self.env.getY(), self.env.getZ()-30)
+		
+		#self.oil = oilSlick(32, 50, -30)
 
 		self.env.setScale(8)
 		camera.reparentTo(players.players[0].player)

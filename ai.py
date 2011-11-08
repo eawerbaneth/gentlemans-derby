@@ -146,6 +146,13 @@ class ai_player(DirectObject):
 		elapsed = task.time - self.prevtime
 		startzed = self.form.getZ()
 		
+		#jumping
+		startP = self.form.getP()
+		startP = -startP
+		if -startP > 0:
+			self.player.setP(-startP + 5*elapsed)
+			startP = -(-startP + 5*elapsed)
+		
 		#if we're allowed to move, move
 		if self.time_penalty == 0:
 			angle = rad2Deg(math.atan2((self.form.getY()-self.goal[1]), (self.form.getX()-self.goal[0])) - math.pi/2)
@@ -229,17 +236,23 @@ class ai_player(DirectObject):
 		if (len(entries) > 0) and (entries[0].getIntoNode().getName() == "courseOBJ:polySurface1"):
 			#if our Z is greater than terrain Z, make player fall
 			if self.form.getZ() > entries[0].getSurfacePoint(render).getZ():
-				self.form.setZ(startzed-1*elapsed)
+				self.form.setZ(startzed-25*elapsed)
+				self.form.setP(-startP + 5*elapsed)
+				if self.form.getP() < 0:
+					self.form.setP(0)
 				#print "falling...new Z is ", self.form.getZ()
 				#print "offset is ", 1*elapsed
 			#if our Z is less than terrain Z, change it
 			if self.form.getZ() < entries[0].getSurfacePoint(render).getZ():
 				self.form.setZ(entries[0].getSurfacePoint(render).getZ())
+				if self.velocity > 5:
+					self.form.setP(-startP - 5*elapsed)
 				#print "not falling..."
 			#self.player.setZ(entries[0].getSurfacePoint(render).getZ())
 			
 		else:
 			self.form.setZ(startzed)
+			self.form.setP(0)
 			#print "no collision"
 		
 		

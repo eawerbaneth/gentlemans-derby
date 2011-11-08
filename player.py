@@ -79,7 +79,9 @@ class Player(DirectObject):
 		self.checkpoints = player_node_handler()
 		self.goal = self.checkpoints.next()
 		self.env = 0
+		#jumping 'n' such
 		self.stopped = True
+		self.airborne = False
 		
 		self.accept("escape", sys.exit)
 		self.accept("arrow_up", self.setKey, ["forward", 1])
@@ -146,7 +148,7 @@ class Player(DirectObject):
 		startP = -startP
 		if -startP > 0:
 			self.player.setP(-startP + 5*elapsed)
-		print "TESTING:", self.player.getP()
+		#print "TESTING:", self.player.getP()
 		
 		if self.keyMap["left"]:
 			self.player.setH(self.player.getH() + elapsed * 45)
@@ -154,7 +156,8 @@ class Player(DirectObject):
 			self.player.setH(self.player.getH() - elapsed * 45)
 		if self.keyMap["test"]:
 			print "\tDEBUGGING!!!", self.player.getX(), self.player.getY(), self.player.getZ()
-		if self.keyMap["forward"]:
+		#only allow them to accelerate if they are on the ground
+		if self.keyMap["forward"] and not self.airborne:
 			dist = elapsed * self.velocity
 			self.velocity += elapsed * 20 * self.worldspeed
 			if self.velocity > self.topspeed: self.velocity = self.topspeed
@@ -180,7 +183,7 @@ class Player(DirectObject):
 			dx = dist * math.sin(angle)
 			dy = dist * -math.cos(angle)
 			self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
-		if self.keyMap["forward"]==0:
+		if self.keyMap["forward"]==0 or self.airborne:
 			if self.velocity >= 0:
 				dist = elapsed * self.velocity
 				self.velocity -= elapsed * 50 * self.worldspeed
@@ -240,15 +243,17 @@ class Player(DirectObject):
 			if self.player.getZ() > entries[0].getSurfacePoint(render).getZ():
 				self.player.setZ(startzed-25*elapsed)
 				self.player.setP(-startP + 5*elapsed)
-				if self.player.getP() < 0:
+				if self.player.getP() > 0:
 					self.player.setP(0)
-				#print "falling...new Z is ", self.player.getZ()
+				self.airborne = True
+				print "falling...new Z is ", self.player.getZ(), "heading is ", self.player.getP()
 				#print "offset is ", 1*elapsed
 			#if our Z is less than terrain Z, change it
 			if self.player.getZ() < entries[0].getSurfacePoint(render).getZ():
 				if self.velocity > 5:
 					self.player.setP(-startP - 5*elapsed)
 				self.player.setZ(entries[0].getSurfacePoint(render).getZ())
+				self.airborne = False
 				#print "not falling..."
 			#self.player.setZ(entries[0].getSurfacePoint(render).getZ())
 			

@@ -22,18 +22,21 @@ class oilSlick(DirectObject):
 	def loadModel(self):
 		"""loads the oil slick model"""
 #FLAG: waiting on oil slick model
-		self.form = loader.loadModel("models/panda-model")
-		self.form.setScale(.005)
+		self.form = loader.loadModel("models/oilslick")
+		self.form.setPos(self.xpos, self.ypos, self.zpos)
+		self.form.setScale(3)
 		self.form.reparentTo(render)
 		
 	def setupCollisions(self):
 		self.cHandler = CollisionHandlerEvent()
 		#self.cHandler.setInPattern("%fn-oil-slicked")
 		
-		cQuad = CollisionPolygon(Point3(0, 0, 0), Point3(0,0,1), Point3(0, 5, 1), Point3(0, 5, 0))
+		cSphere = CollisionSphere(0, 0, 0, 1)
+		#cQuad = CollisionPolygon(Point3(0, 0, 0), Point3(0,0,1), Point3(0, 5, 1), Point3(0, 5, 0))
 		cNode = CollisionNode("oil-slick")
-		cNode.addSolid(cQuad)
+		cNode.addSolid(cSphere)
 		cNodePath = self.form.attachNewNode(cNode)
+		cNodePath.show()
 		base.cTrav.addCollider(cNodePath, self.cHandler)
 		
 	def kill(self):
