@@ -136,12 +136,12 @@ class World(DirectObject):
 		
 	def	setupLights(self):
 		## ambient light
-		#self.ambientLight = AmbientLight("ambientLight")
+		self.ambientLight = AmbientLight("ambientLight")
 		## four values, RGBA (alpha is largely irrelevent), value range is 0:1
-		#self.ambientLight.setColor((.25, .25, .25, 1))
-		#self.ambientLightNP = render.attachNewNode(self.ambientLight)
+		self.ambientLight.setColor((.005, .005, .005, 1))
+		self.ambientLightNP = render.attachNewNode(self.ambientLight)
 		## the nodepath that calls setLight is what gets illuminated by the light
-		#render.setLight(self.ambientLightNP)
+		render.setLight(self.ambientLightNP)
 		## call clearLight() to turn it off
 		
 		self.loadLamps()

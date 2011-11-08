@@ -48,12 +48,11 @@ class StreetLamp(DirectObject):
 		self.form = loader.loadModel("models/lampExport")
 		#self.form.setScale(.007)
 		self.form.reparentTo(render)
-		self.form.setPos(self.xpos, self.ypos, self.zpos)
+		self.form.setPos(self.xpos, self.ypos, -30)
 		
 	def setupLights(self):
 		self.light = PointLight("streetlight")
-#FLAG: brighter for testing, change it back when you get model
-		self.light.setColor((.1, .1, .1, 1))
+		self.light.setColor((.2, .2, .2, .2))
 		self.light.setPoint((self.xpos, self.ypos, self.zpos+3))
 		self.nodepath = render.attachNewNode(self.light)
 		#self.nodepath.setPos(self.xpos, self.ypos, self.zpos)

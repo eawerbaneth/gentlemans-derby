@@ -20,7 +20,7 @@ class ai_node(object):
 	def loadModel(self):
 		self.form = loader.loadModel("models/teapot")
 		self.form.reparentTo(render)
-		self.form.setPos(self.xpos, self.ypos, 0)
+		self.form.setPos(self.xpos, self.ypos, -30)
 		
 	def setupCollisions(self):
 		self.cHandler = CollisionHandlerEvent()
@@ -42,7 +42,7 @@ class node_handler(object):
 	def populate_nodes(self):
 		print os.getcwd()
 #NOTE: you guys need to move path_nodes.txt into your panda python folder
-		f = open("path_nodes.txt", "r")
+		f = open("test_track.txt", "r")
 		#read in nodes from file
 		for line in f:
 			words = line.split()
@@ -131,6 +131,7 @@ class ai_player(DirectObject):
 	
 	def update(self, task):
 		elapsed = task.time - self.prevtime
+		startzed = self.form.getZ()
 		
 		#if we're allowed to move, move
 		if self.time_penalty == 0:
@@ -191,7 +192,21 @@ class ai_player(DirectObject):
 			
 		entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
 		if (len(entries) > 0) and (entries[0].getIntoNode().getName() == "courseOBJ:polySurface1"):
-			self.form.setZ(entries[0].getSurfacePoint(render).getZ())
+			#if our Z is greater than terrain Z, make player fall
+			if self.form.getZ() > entries[0].getSurfacePoint(render).getZ():
+				self.form.setZ(startzed-1*elapsed)
+				#print "falling...new Z is ", self.player.getZ()
+				#print "offset is ", 1*elapsed
+			#if our Z is less than terrain Z, change it
+			if self.form.getZ() < entries[0].getSurfacePoint(render).getZ():
+				self.form.setZ(entries[0].getSurfacePoint(render).getZ())
+				#print "not falling..."
+			#self.player.setZ(entries[0].getSurfacePoint(render).getZ())
+			
+		else:
+			self.form.setZ(startzed)
+			#print "no collision"
+		
 		
 		self.prevtime = task.time
 		return Task.cont
