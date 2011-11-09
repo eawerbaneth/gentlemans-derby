@@ -20,11 +20,7 @@ class World(DirectObject):
 		camera.setPosHpr(0, -15, 7, 0, -15, 0)
 
 		#self.players = helper()
-		players.add_player(Player(0, 0, 0))
-		players.add_player(ai_player(1))
-		players.add_player(ai_player(2))
-		players.add_player(ai_player(3))
-		players.add_player(ai_player(4))
+		players.add_player(Player(17, -100, -30))
 		
 		
 		#print(len(helper.glob_players))
@@ -47,12 +43,31 @@ class World(DirectObject):
 		self.env.reparentTo(render)
 		self.env.setPos(self.env.getX(), self.env.getY(), self.env.getZ()-30)
 		
-		self.oil = oilSlick(32, 50, -30)
-		self.spikes = Spikes(32, 40, -30)
-
+		#self.oil = oilSlick(32, 50, -30)
+		#self.spikes = Spikes(32, 40, -30)
+		
+		#read in nodes from file
+		for x in range(1, 4):
+			ainodes = open("final_path.txt", "r")
+			path = []
+			i = 0
+			for line in ainodes:
+				words = line.split()
+				path.append(ai_node(float(words[0]), float(words[1]), float(words[2]), str(i)))
+				i +=1
+			players.add_player(ai_player(x, path))
+			ainodes.close()
+		
+		
+		
+		#players.add_player(ai_player(1, path))
+		#players.add_player(ai_player(2, path))
+		#players.add_player(ai_player(3, path))
+		#players.add_player(ai_player(4, path))
 
 		self.env.setScale(4)
-		camera.reparentTo(players.players[0].player)
+		#camera.reparentTo(players.players[0].player)
+		camera.reparentTo(players.players[1].form)
 		
 		players.players[0].env = self.env
 

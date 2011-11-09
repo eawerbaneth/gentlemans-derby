@@ -22,6 +22,7 @@ class ai_node(object):
 		self.form = loader.loadModel("models/teapot")
 		self.form.reparentTo(render)
 		self.form.setPos(self.xpos, self.ypos, self.zpos)
+
 		
 	def setupCollisions(self):
 		self.cHandler = CollisionHandlerEvent()
@@ -36,14 +37,14 @@ class ai_node(object):
 		base.cTrav.addCollider(cNodePath, self.cHandler)
 		
 class node_handler(object):
-	def __init__(self):
-		self.path = []
-		self.populate_nodes()
+	def __init__(self, path):
+		self.path = path
+		#self.populate_nodes()
 		
 	def populate_nodes(self):
 		#print os.getcwd()
 #NOTE: you guys need to move path_nodes.txt into your panda python folder
-		f = open("final_path.txt", "r")
+		f = open("test_track.txt", "r")
 		#read in nodes from file
 		i = 1
 		for line in f:
@@ -56,11 +57,11 @@ class node_handler(object):
 		self.path.append(self.path.pop(0))
 		
 	def next(self):
-		return [self.path[0].xpos, self.path[0].ypos, self.path[0].id]
+		return [self.path[0].xpos, self.path[0].ypos, self.path[0].zpos, self.path[0].id]
 		
 class ai_player(DirectObject):
-	def __init__(self, id):
-		self.brain = node_handler()
+	def __init__(self, id, path):
+		self.brain = node_handler(path)
 		self.goal = self.brain.next()
 		self.id = id
 		self.velocity = 0
@@ -73,6 +74,7 @@ class ai_player(DirectObject):
 		self.setupLights()
 		self.setupCollision()
 		self.handle = "ai" + str(id)
+		self.gravity = 4
 		
 		taskMgr.add(self.update, "ai-update")
 		self.prevtime = 0
@@ -95,10 +97,10 @@ class ai_player(DirectObject):
 		self.form.setH(45)
 		self.form.loop('pedal')
 		self.form.reparentTo(render)
-		self.form.setPos(self.form.getX()+ int(self.id), self.form.getY() + int(self.id), -30)
+		self.form.setPos(17 + int(self.id), -100 + int(self.id), -30)
 		
 		#load default weapon
-		self.weapon = Weapon(0, 0, 600, 0, [], self.id, self.form.getZ())
+		self.weapon = Weapon(0, 0, 0, 0, [], self.id, self.form.getZ())
 		self.weapon.form.reparentTo(self.form)
 		self.weapon.form.setPos(self.weapon.form.getX(), self.weapon.form.getY(), self.weapon.form.getZ()+3)
 	
@@ -149,31 +151,31 @@ class ai_player(DirectObject):
 	
 	def checkpoint(self, cEntry):
 		#print "checkpoint!"
-		if cEntry.getIntoNodePath().getName() == "ai-node" + str(self.goal[2]):
+		print "ai ", self.id, "reached checkpoint ", self.goal[3]
+		if cEntry.getIntoNodePath().getName() == "ai-node" + str(self.goal[3]):
 			self.brain.checkpoint()
 			self.goal = self.brain.next()
 			#print self.goal[0], self.goal[1], self.goal[2]
 	
 	def update(self, task):
 		elapsed = task.time - self.prevtime
-		startzed = self.form.getZ()
+		#startzed = self.form.getZ()
 		
-		#jumping
-		startP = self.form.getP()
-		startP = -startP
-		if -startP > 0:
-			self.form.setP(-startP + 5*elapsed)
-			startP = -(-startP + 5*elapsed)
+		if int(self.id)==1:
+			camera.lookAt(self.form)
+			print "Pitch is ", self.form.getP()
+		#	print "heading to ai-node ", self.goal[3], "(", self.goal[0], ",", self.goal[1], ",", self.goal[2], ")"
+		#	print "current Z is ", self.form.getZ()
 		
 		#if we're allowed to move, move
 		if self.time_penalty == 0:
+			#deal with heading
 			angle = rad2Deg(math.atan2((self.form.getY()-self.goal[1]), (self.form.getX()-self.goal[0])) - math.pi/2)
 			cur_heading = self.form.getH()
-			cos_heading = self.form.getH()
 			
 			if abs(angle - cur_heading) > 25 and abs(angle - cur_heading+360) > 25:
 				#get ai turning in the correct direction
-				self.form.setH(cos_heading + ((angle-cur_heading)%360)*elapsed)
+				self.form.setH(cur_heading + ((angle-cur_heading)%360)*elapsed)
 
 				#SLOW DOWN FOR TURNS
 				if abs(angle - cur_heading) > 90 and abs(angle - cur_heading+360) > 90:
@@ -186,6 +188,19 @@ class ai_player(DirectObject):
 					self.velocity = .99*self.velocity
 			else:
 				self.form.setH(angle)
+			#deal with pitch
+			otherangle = rad2Deg(math.atan2((self.form.getZ()-self.goal[2]), ((self.form.getY()-self.goal[1])))) #- math.pi/2)
+			if otherangle > 90 and otherangle < 180:
+				otherangle = 180 - otherangle
+			
+			#print otherangle, "(",self.form.getZ(),",",self.form.getY(),") (",self.goal[2],",",self.goal[1],")"
+			cur_pitch = self.form.getP()
+			
+			#if abs(otherangle - cur_pitch) > 25 and abs(otherangle - cur_pitch+360) > 25:
+			#	self.form.setP(cur_pitch + ((otherangle - cur_pitch)%360)*elapsed)
+			#else:
+			self.form.setP(-otherangle)
+			#print "new pitch is ", self.form.getP()
 			
 			dist = elapsed*self.velocity
 			self.velocity += elapsed * 20
@@ -193,7 +208,9 @@ class ai_player(DirectObject):
 				self.velocity = self.topspeed
 			dx = dist* math.sin(deg2Rad(self.form.getH()))
 			dy = dist*-math.cos(deg2Rad(self.form.getH()))
-			self.form.setPos(self.form.getX() + dx, self.form.getY()+dy, 0)
+			dz = dist* math.sin(deg2Rad(self.form.getP()))
+			#print self.form.getZ(), self.goal[2], dz
+			self.form.setPos(self.form.getX() + dx, self.form.getY()+dy, self.form.getZ() + dz)
 		
 		#reduce our penalty if we have one
 		self.time_penalty -= elapsed
@@ -207,7 +224,7 @@ class ai_player(DirectObject):
 		shootflag = False
 		if math.sqrt((self.form.getX() - players.players[0].player.getX())**2 + (self.form.getY() - players.players[0].player.getY())**2) < self.weapon.range + 5:
 			shootflag = False
-		for i in range(1, 5):
+		for i in range(1, 4):
 			if players.players[i].id != self.id:
 				#check to see if anyone is in range, shoot if they are
 				if math.sqrt((self.form.getX() - players.players[i].form.getX())**2 + (self.form.getY() - players.players[i].form.getY())**2) <= 30:
@@ -240,37 +257,7 @@ class ai_player(DirectObject):
 				#self.player.loop('pedal', restart = 0, fromFrame = self.player.getCurrentFrame('pedal'))
 			self.stopped = False
 		
-		#deal with terrain collisions
-		entries = []
-		for i in range(self.aiHandler.getNumEntries()):
-			entry = self.aiHandler.getEntry(i)
-			entries.append(entry)
-			#print(entry.getIntoNode().getName())
-			#print(entry.getFromNode().getName())
-			
-		#entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
-		if (len(entries) > 0) and (entries[0].getIntoNode().getName() == "courseOBJ:polySurface1"):
-			#if our Z is greater than terrain Z, make player fall
-			if self.form.getZ() > entries[0].getSurfacePoint(render).getZ():
-				self.form.setZ(startzed-25*elapsed)
-				self.form.setP(-startP + 5*elapsed)
-				if self.form.getP() < 0:
-					self.form.setP(0)
-				#print "falling...new Z is ", self.form.getZ()
-				#print "offset is ", 1*elapsed
-			#if our Z is less than terrain Z, change it
-			if self.form.getZ() < entries[0].getSurfacePoint(render).getZ():
-				self.form.setZ(entries[0].getSurfacePoint(render).getZ())
-				if self.velocity > 5:
-					self.form.setP(-startP - 5*elapsed)
-				#print "not falling..."
-			#self.player.setZ(entries[0].getSurfacePoint(render).getZ())
-			
-		else:
-			self.form.setZ(startzed)
-			self.form.setP(0)
-			#print "no collision"
-		
+
 		
 		self.prevtime = task.time
 		return Task.cont

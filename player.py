@@ -41,7 +41,7 @@ class player_node_handler(object):
 	def populate_nodes(self):
 		#print os.getcwd()
 #NOTE: you guys need to move path_nodes.txt into your panda python folder
-		f = open("final_path.txt", "r")
+		f = open("player_checkpoints.txt", "r")
 		#read in nodes from file
 		i = 1
 		for line in f:
@@ -53,7 +53,7 @@ class player_node_handler(object):
 	#for this one, we aren't recycling nodes, we're getting rid of them and generating a new one
 	#in the same position but with a different id
 	def checkpoint(self):
-		print "player checkpoint!", self.path[0].id
+		#print "player checkpoint!", self.path[0].id
 		self.path.append(playerCheckpoint(self.path[0].form.getX(), self.path[0].form.getY(), self.path[0].form.getZ(), str(int(self.path[len(self.path)-1].id)+1)))
 		self.path[0].form.removeNode()
 		self.path.pop(0)
@@ -68,7 +68,7 @@ class Player(DirectObject):
 		self.y = y
 		self.z = z
 		self.lastz = z
-		#self.f = open("final_path.txt", "w")
+		#self.f = open("player_checkpoints.txt", "w")
 		
 		
 		self.loadModels()
@@ -85,7 +85,6 @@ class Player(DirectObject):
 		self.keyMap = {"left":0, "right":0, "forward":0, "down":0, "break":0, "test":0}
 
 		taskMgr.add(self.move, "moveTask")
-		taskMgr.add(self.adjustCamera, "cameraTask")
 		taskMgr.add(self.updateHUD, "hudTask")
 		self.prevtime = 0
 		self.velocity = 0
@@ -94,6 +93,7 @@ class Player(DirectObject):
 		self.penalty = 0
 		self.id = 0
 		self.invincible = False
+		self.gravity = 5
 		
 		#handle checkpoints
 		self.checkpoints = player_node_handler()
@@ -133,6 +133,11 @@ class Player(DirectObject):
 	def checkpoint(self, cEntry):
 		if cEntry.getIntoNodePath().getName() == "checkpoint" + str(self.goal[2]):
 			self.checkpoints.checkpoint()
+			if (int(self.goal[2])-1)%4==3:
+				self.gravity = 25
+				print "changing gravity to ", self.gravity
+			else:
+				self.gravity = 4
 			self.goal = self.checkpoints.next()
 			print("checkpoint")
 			self.checkpointCount += 1
@@ -141,7 +146,7 @@ class Player(DirectObject):
 				self.laps += 1
 			#add an acceptor for our next checkpoint
 			self.accept("collide-checkpoint" + str(self.goal[2]), self.checkpoint)
-			print "checkpoint!"
+			#print "checkpoint!"
 	
 	def loadModels(self):
 		#self.panda = Actor("models/panda-model", {"walk":"panda-walk4", "eat":"panda-eat"})
@@ -310,7 +315,7 @@ class Player(DirectObject):
 				print "other level detected: ", entries[0].getSurfacePoint(render).getZ(), entries[1].getSurfacePoint(render).getZ()
 			#if our Z is greater than terrain Z, make player fall
 			if self.player.getZ() > entries[0].getSurfacePoint(render).getZ():
-				self.player.setZ(startzed-5*elapsed)
+				self.player.setZ(startzed-self.gravity*elapsed)
 				self.player.setP(self.player.getP()+elapsed)
 				
 				if self.player.getP() > 25:
@@ -323,6 +328,7 @@ class Player(DirectObject):
 				self.ramp = entries[0].getIntoNodePath()
 				if self.velocity > 5:
 					self.player.setP(self.ramp.getP())
+					self.velocity -= 5*elapsed
 				self.player.setZ(entries[0].getSurfacePoint(render).getZ())
 				self.airborne = False
 				#print "bumping up from ", startzed, " to ", self.player.getZ()
@@ -331,37 +337,37 @@ class Player(DirectObject):
 			#self.player.setZ(entries[0].getSurfacePoint(render).getZ())
 			
 		else:
-			self.player.setZ(startzed)
+			self.player.setZ(startzed-self.gravity*elapsed)
 			self.player.setP(0)
 			print "no collision"
 			self.airborne = False
 		
 		
-		#deal with camera
-		offset = self.player.getP()
-		if offset > 15:
-			self.player.setP(15)
-			offset = 15
-		elif offset < -15:
-			self.player.setP(-15)
-			offset = -15
+		#######deal with camera
+		# offset = self.player.getP()
+		# if offset > 15:
+			# self.player.setP(15)
+			# offset = 15
+		# elif offset < -15:
+			# self.player.setP(-15)
+			# offset = -15
 		
-		offset = deg2Rad(offset)
-		camera.setP(0)
-		yoffset = abs(math.cos(offset)*(25+(10*abs(self.velocity)/15))+math.sin(offset)*(5+(10*abs(self.velocity)/10)))
-		zoffset = abs(math.cos(offset)*(25+(10*abs(self.velocity)/15))+math.sin(offset)*(5+(10*abs(self.velocity)/10)))
-		#print "offset is ", offset, " yoffset is ", yoffset, " zoffzet is ", zoffset
+		# offset = deg2Rad(offset)
+		# camera.setP(0)
+		# yoffset = abs(math.cos(offset)*(25+(10*abs(self.velocity)/10))+math.sin(offset)*(5+(5*abs(self.velocity)/10)))
+		# zoffset = abs(math.cos(offset)*(25+(10*abs(self.velocity)/10))+math.sin(offset)*(5+(5*abs(self.velocity)/10)))
+		#######print "offset is ", offset, " yoffset is ", yoffset, " zoffzet is ", zoffset
 		
-		camera.setPos(0, yoffset, zoffset)
-		camera.lookAt(self.player)
+		# camera.setPos(0, yoffset, zoffset)
+		# camera.lookAt(self.player)
 		
 		self.prevtime = task.time
 		self.lastz = self.player.getZ()
 		return Task.cont
 	
-	def adjustCamera(self, task):
+	#def adjustCamera(self, task):
 		#camera.setPos(0, 25+10*self.velocity/15, 5)	
-		return Task.cont
+	#	return Task.cont
 	
 	def updateHUD(self, task):
 		self.HUD.update(self.velocity, self.player.getX(), self.player.getY(), self.laps, self.place)
