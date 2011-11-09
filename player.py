@@ -32,7 +32,7 @@ class playerCheckpoint(ai_node):
 		cNode.addSolid(cSphere)
 		cNodePath = self.form.attachNewNode(cNode)
 		#if int(self.id) == 0:
-		cNodePath.show()
+		#cNodePath.show()
 		base.cTrav.addCollider(cNodePath, self.cHandler)
 		
 class player_node_handler(object):
@@ -155,7 +155,7 @@ class Player(DirectObject):
 				self.gravity = 25
 				print "changing gravity to ", self.gravity
 			else:
-				self.gravity = 3
+				self.gravity = 2.5
 			self.goal = self.checkpoints.next()
 			print("checkpoint")
 			self.checkpointCount += 1
@@ -409,7 +409,7 @@ class Player(DirectObject):
 		cNode.addSolid(cSphere)
 		#cNode.setIntoCollideMask(BitMask32.allOff())
 		cNodePath = self.player.attachNewNode(cNode)
-		cNodePath.show()
+		#cNodePath.show()
 		
 		#experiment with lifter
 		self.playerRay = CollisionRay()
