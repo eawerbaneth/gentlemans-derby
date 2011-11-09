@@ -35,7 +35,6 @@ class Menu(DirectObject):
         else:
             self.instructions = True
             self.title.setImage('img/instructions.png')
-            self.pointer.setAlphaScale(1)
             
     def back(self):
         if self.instructions == True:
@@ -55,3 +54,14 @@ class Menu(DirectObject):
         self.ignoreAll()
     
         
+
+class EndScreen(DirectObject):
+	def __init__(self, endState):
+		if(endState):
+			self.end = OnscreenImage(image = 'img/win_screen.png', pos = (0,0,0))
+		else:
+			self.end = OnscreenImage(image = 'img/lose_screen.png', pos = (0,0,0))
+		self.accept("enter", sys.exit)
+		
+	def destroy(self):
+		self.ignoreAll()

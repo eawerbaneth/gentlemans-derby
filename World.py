@@ -20,8 +20,8 @@ class World(DirectObject):
 
 		players.add_player(Player(17, -100, -30))
 		
-		players.add_spawn(gatSpawn(-105, -10, -30))
-		players.add_spawn(bombSpawn(228,-341,-30))
+		players.add_spawn(gatSpawn(-105, -10, -10))
+		players.add_spawn(bombSpawn(228,-341,-10))
 		
 		self.lights = []
 		
@@ -209,10 +209,19 @@ class World(DirectObject):
 		L.sort()
 		
 		players.players[0].place = L.index(players.players[0].distanceLeft)+1
+
 	#"""print "Distance " +str(p1.getDist(players.players[1].form.getX(), players.players[1].form.getY(), players.players[1].goal))
 	#	print "Distance " + str(players.players[1].distanceLeft)"""
 		#print "Player distance " +str(players.players[1].distanceLeft)
 		return Task.cont
+		
+	def destroy(self):
+		taskMgr.remove("moveTask")
+		taskMgr.remove("hudTask")
+		taskMgr.remove("placeTask")
+		taskMgr.remove("ai-update")
+		taskMgr.remove("bombSpawnUpdate")
+		taskMgr.remove("gatSpawnUpdate")
 		
 m = Menu()
 
@@ -223,5 +232,17 @@ while(True):
 		m.destroy()
 		break
 w = World()
+endCond = False
+while(True):
+	taskMgr.step()
+	if players.players[0].timer <= 0 or (players.players[0].laps == 3 and not players.players[0].place == 1):
+		w.destroy()
+		break
+	elif players.players[0].timer > 0 and players.players[0].laps == 3 and players.players[0].place == 1:
+		endCond = True
+		w.destroy()
+		break
+		
+e = EndScreen(endCond)
 while(True):
 	taskMgr.step()
