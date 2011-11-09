@@ -71,7 +71,12 @@ class Player(DirectObject):
 		self.z = z
 		self.lastz = z
 		#self.f = open("player_checkpoints.txt", "w")
+
+		self.pointX = x
+		self.pointY = y
+
 		self.timer = 30.0
+
 		
 		
 		self.loadModels()
@@ -101,7 +106,11 @@ class Player(DirectObject):
 		#handle checkpoints
 		self.checkpoints = player_node_handler()
 		self.goal = self.checkpoints.next()
+
 		self.last_checkpoint = self.goal
+
+		self.distance = math.sqrt((self.goal[0] - self.pointX)**2+(self.goal[1] - self.pointY)**2)
+
 		self.env = 0
 		#jumping 'n' such
 		self.stopped = True
@@ -159,6 +168,8 @@ class Player(DirectObject):
 	def checkpoint(self, cEntry):
 		if cEntry.getIntoNodePath().getName() == "checkpoint" + str(self.goal[3]):
 			self.last_checkpoint = self.goal
+			self.pointX = self.goal[0]
+			self.pointY = self.goal[1]
 			self.checkpoints.checkpoint()
 			self.timer += 15.0
 			if (int(self.goal[3])-1)%4==3:
@@ -171,7 +182,7 @@ class Player(DirectObject):
 			self.goal = self.checkpoints.next()
 			print("checkpoint")
 			self.checkpointCount += 1
-			if self.checkpointCount >= 8:
+			if self.checkpointCount >= 5:
 				self.checkpointCount = 0
 				self.laps += 1
 			#add an acceptor for our next checkpoint
@@ -182,7 +193,7 @@ class Player(DirectObject):
 		#self.panda = Actor("models/panda-model", {"walk":"panda-walk4", "eat":"panda-eat"})
 		self.player = Actor("animations/gentlemanBike_idle", {"pedal":"animations/gentlemanBike_idle"})
 		#self.player.loop('pedal')
-		self.player.setScale(3)
+		self.player.setScale(4.5)
 		self.player.setPos(0, 0, -30)
 		self.player.setH(-180)
 		self.player.reparentTo(render)
@@ -334,10 +345,13 @@ class Player(DirectObject):
 		
 		#deal with terrain collisions (ty Roaming Ralph)
 		entries = []
+		pitflag = False
 		for i in range(self.playerHandler.getNumEntries()):
 			entry = self.playerHandler.getEntry(i)
 			if self.playerHandler.getEntry(i).getIntoNode().getName()=="path_collider":
 				entries.append(entry)
+			if self.playerHandler.getEntry(i).getIntoNode().getName()=="pit":
+				pitflag = True
 			#print(entry.getIntoNode().getName())
 			#print(entry.getFromNode().getName())
 			
@@ -368,7 +382,7 @@ class Player(DirectObject):
 				#print "not falling..."
 			#self.player.setZ(entries[0].getSurfacePoint(render).getZ())
 			
-		else:
+		elif not pitflag:
 			self.player.setZ(startzed-self.gravity*elapsed)
 			self.player.setP(0)
 			print "no collision", self.player.getZ()
@@ -378,6 +392,9 @@ class Player(DirectObject):
 			# self.player.setP(0)
 			self.velocity = 0
 			self.take_damage(2)
+		else:
+			self.player.setZ(startzed-self.gravity*elapsed)
+			self.player.setP(0)
 			
 		
 		
@@ -393,13 +410,14 @@ class Player(DirectObject):
 		offset = deg2Rad(offset)
 		camera.setP(0)
 		yoffset = abs(math.cos(offset)*(25+(1*abs(self.velocity)/10))+math.sin(offset)*(3+(1*abs(self.velocity)/30)))
-		zoffset = abs(math.cos(offset)*(5+(1*abs(self.velocity)/10))+math.sin(offset)*(3+(1*abs(self.velocity)/30)))
+		zoffset = abs(math.cos(offset)*(3+(1*abs(self.velocity)/10))+math.sin(offset)*(3+(1*abs(self.velocity)/30)))
 		######print "offset is ", offset, " yoffset is ", yoffset, " zoffzet is ", zoffset
 		
 		
 		camera.setPos(0, yoffset, zoffset)
 		#print "camera Z is ", camera.getZ(), zoffset
 		camera.lookAt(self.player)
+		camera.setP(camera.getP() + 7)
 		
 		
 		self.prevtime = task.time
@@ -412,7 +430,7 @@ class Player(DirectObject):
 	#	return Task.cont
 	
 	def updateHUD(self, task):
-		self.HUD.update(self.velocity, self.player.getX(), self.player.getY(), self.laps, self.place)
+		self.HUD.update(self.velocity, self.player.getX(), self.player.getY(), self.laps, self.place, self.timer)
 		#self.distanceLeft -= self.getDist(self.player.getX(), self.player.getY(), self.goal)
 		#self.HUD.updateMiniMap(self.player.getX(), self.player.getY())
 		return Task.cont
@@ -461,14 +479,19 @@ class Player(DirectObject):
 	def setKey(self,key,value):
 		self.keyMap[key] = value
 		
-	def getDist(self, x, y, checkpoint):
+	def getDist(self, x, y, checkpoint, distance):
 		cx = checkpoint[0]
 		cy = checkpoint[1]
 		dist = math.sqrt((cx-x)**2 + (cy-y)**2)
-		
-		rotAngle = math.atan2(-y,x)
+	
+		if x != 0:
+			rotAngle = math.atan(-y/x)
+		else:
+			rotAngle = math.pi/2
 		
 		newX = x*math.cos(rotAngle) - y*math.sin(rotAngle)
 		
-		dToCheckpoint = dist - newX
+		#dToCheckpoint = dist - newX
+		dToCheckpoint = distance - newX
+	
 		return dToCheckpoint

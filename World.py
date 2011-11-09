@@ -32,8 +32,8 @@ class World(DirectObject):
 		
 		
 		
-		players.add_spawn(gatSpawn(32, 50, -30))
-		players.add_spawn(bombSpawn(32,40,-30))
+		players.add_spawn(gatSpawn(-105, -10, -35))
+		#players.add_spawn(bombSpawn(32,40,-30))
 		
 
 		
@@ -46,6 +46,8 @@ class World(DirectObject):
 		self.worldMusic.play()
 		taskMgr.add(self.getPlace, "placeTask")
 		
+		#render.setShaderAuto()
+		
 	#def changeWeapons(self, cEntry):
 	#	self.weapon = GattlingGun(0,0,0,0,self.weapon.bullets)
 		
@@ -56,7 +58,7 @@ class World(DirectObject):
 		#cNode = self.env.find("**/terrain_collider")
 		#cNode.show()
 		#self.env = loader.loadModel("models/easy_course")
-		self.env = loader.loadModel("models/courseOut")
+		self.env = loader.loadModel("models/courseFixExport")
 		#cNode = self.env.find("**/terrain_collider")
 		#cNode.show()
 		
@@ -209,16 +211,19 @@ class World(DirectObject):
 	def getPlace(self, task):
 		#print players.players[0].timer
 		p1 = players.players[0]
-		p1.distanceLeft -= p1.getDist(p1.player.getX(), p1.player.getY(), p1.goal)
-		players.players[1].distanceLeft -= p1.getDist(players.players[1].form.getX(), players.players[1].form.getY(), players.players[1].goal)
-		players.players[2].distanceLeft -= p1.getDist(players.players[2].form.getX(), players.players[2].form.getY(), players.players[2].goal)
-		players.players[3].distanceLeft -= p1.getDist(players.players[3].form.getX(), players.players[3].form.getY(), players.players[3].goal)
-		players.players[4].distanceLeft -= p1.getDist(players.players[4].form.getX(), players.players[4].form.getY(), players.players[4].goal)
+		p1.distanceLeft -= p1.getDist(p1.player.getX(), p1.player.getY(), p1.goal, p1.distance)
+		players.players[1].distanceLeft -= p1.getDist(players.players[1].form.getX(), players.players[1].form.getY(), players.players[1].goal, players.players[1].distance)
+		players.players[2].distanceLeft -= p1.getDist(players.players[2].form.getX(), players.players[2].form.getY(), players.players[2].goal, players.players[2].distance)
+		players.players[3].distanceLeft -= p1.getDist(players.players[3].form.getX(), players.players[3].form.getY(), players.players[3].goal, players.players[3].distance)
+		#players.players[4].distanceLeft -= p1.getDist(players.players[4].form.getX(), players.players[4].form.getY(), players.players[4].goal)
 		
-		L = [players.players[0].distanceLeft, players.players[1].distanceLeft, players.players[2].distanceLeft, players.players[3].distanceLeft, players.players[4].distanceLeft]
+		L = [players.players[0].distanceLeft, players.players[1].distanceLeft, players.players[2].distanceLeft, players.players[3].distanceLeft]
 		L.sort()
 		
 		players.players[0].place = L.index(players.players[0].distanceLeft)+1
+		"""print "Distance " +str(p1.getDist(players.players[1].form.getX(), players.players[1].form.getY(), players.players[1].goal))
+		print "Distance " + str(players.players[1].distanceLeft)"""
+		#print "Player distance " +str(p1.distanceLeft)
 		return Task.cont
 		
 m = Menu()
