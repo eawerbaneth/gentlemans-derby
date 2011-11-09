@@ -35,7 +35,6 @@ class Menu(DirectObject):
         else:
             self.instructions = True
             self.title.setImage('img/instructions.png')
-            self.pointer.setAlphaScale(1)
             
     def back(self):
         if self.instructions == True:
