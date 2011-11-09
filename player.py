@@ -54,7 +54,7 @@ class player_node_handler(object):
 	#for this one, we aren't recycling nodes, we're getting rid of them and generating a new one
 	#in the same position but with a different id
 	def checkpoint(self):
-		#print "player checkpoint!", self.path[0].id
+		print "player checkpoint!", self.path[0].id
 		self.path.append(playerCheckpoint(self.path[0].form.getX(), self.path[0].form.getY(), self.path[0].form.getZ(), str(int(self.path[len(self.path)-1].id)+1)))
 		self.path[0].form.removeNode()
 		self.path.pop(0)
@@ -89,7 +89,7 @@ class Player(DirectObject):
 		taskMgr.add(self.updateHUD, "hudTask")
 		self.prevtime = 0
 		self.velocity = 0
-		self.topspeed = 60
+		self.topspeed = 70
 		self.worldspeed = 1
 		self.penalty = 0
 		self.id = 0
@@ -139,7 +139,7 @@ class Player(DirectObject):
 			players.spawns[0].setDowntime()
 			cEntry.getIntoNodePath().remove()
 		elif(wepIndex == 1):
-			self.weapon = BombWeapon(0,0,-30,0,self.weapon.bullets,0,self.z)
+			self.weapon = BombWeapon(0,0,0,0,self.weapon.bullets,0,self.z)
 			players.spawns[1].collectable = False
 			players.spawns[1].setDowntime()
 			cEntry.getIntoNodePath().remove()
@@ -163,7 +163,7 @@ class Player(DirectObject):
 				self.laps += 1
 			#add an acceptor for our next checkpoint
 			self.accept("collide-checkpoint" + str(self.goal[2]), self.checkpoint)
-			#print "checkpoint!"
+			print "checkpoint!"
 	
 	def loadModels(self):
 		#self.panda = Actor("models/panda-model", {"walk":"panda-walk4", "eat":"panda-eat"})

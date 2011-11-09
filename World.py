@@ -135,7 +135,7 @@ class World(DirectObject):
 		f = open("final_path.txt", "r")
 		#read in nodes from file
 		for line in f:
-			print "creating new light"
+			#print "creating new light"
 			words = line.split()
 			self.lights.append(StreetLamp(float(words[0])+10, float(words[1])+10, float(words[2])))
 		f.close()

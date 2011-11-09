@@ -198,7 +198,7 @@ class ai_player(DirectObject):
 	
 	def checkpoint(self, cEntry):
 		#print "checkpoint!"
-		print "ai ", self.id, "reached checkpoint ", self.goal[3]
+		#print "ai ", self.id, "reached checkpoint ", self.goal[3]
 		if cEntry.getIntoNodePath().getName() == "ai-node" + str(self.goal[3]):
 			self.brain.checkpoint()
 			self.goal = self.brain.next()
@@ -237,8 +237,8 @@ class ai_player(DirectObject):
 				self.form.setH(angle)
 			#deal with pitch
 			otherangle = rad2Deg(math.atan2((self.form.getZ()-self.goal[2]), ((self.form.getY()-self.goal[1])))) #- math.pi/2)
-			if otherangle >= 180 or otherangle < -180:
-				print "(", self.form.getZ(), self.goal[2], ")"
+			#if otherangle >= 180 or otherangle < -180:
+			#	print "(", self.form.getZ(), self.goal[2], ")"
 			
 			if otherangle > 90 and otherangle <= 180:
 				otherangle = 180 - otherangle
