@@ -161,8 +161,10 @@ class Player(DirectObject):
 			if (int(self.goal[2])-1)%4==3:
 				self.gravity = 25
 				print "changing gravity to ", self.gravity
-			else:
+			elif (int(self.goal[2])-1)%4==2:
 				self.gravity = 2.5
+			else:
+				self.gravity = 10
 			self.goal = self.checkpoints.next()
 			print("checkpoint")
 			self.checkpointCount += 1
