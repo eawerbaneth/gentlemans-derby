@@ -19,7 +19,7 @@ class HUD():
         self.speedometer.setScale(.25)
         self.speedometer.setTransparency(TransparencyAttrib.MAlpha)
         self.speedPin = OnscreenImage(image = 'img/speedometerNeedle.png', pos = (-1, 0, -.7))
-        self.speedPin.setScale(.15)
+        self.speedPin.setScale(.10)
         self.speedPin.setTransparency(TransparencyAttrib.MAlpha)
         self.speedPin.setHpr(0, 0, 0)
         self.dot = OnscreenImage(image = 'img/dot.png', pos = (1, 0, -.7))
@@ -32,7 +32,7 @@ class HUD():
     def update(self, velocity, x, y, laps, place):
         if velocity < 0:
             velocity = -velocity
-        self.speedPin.setHpr(0, 0, 1.8*velocity)
+        self.speedPin.setHpr(0, 0, 4*velocity)
         self.dot.setPos(1+(x/1500), 0, -.7+(y/1500))
         self.lapText.setText(str(laps)+"/10")
         self.placeText.setText(str(place) + "Place")

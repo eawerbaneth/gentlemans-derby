@@ -230,7 +230,7 @@ class BombWeapon(Weapon):
 	def fire(self):
 		"""drops a bomb"""
 		#note: bombs don't inherit from projectile class
-		self.deploy_sound.play()
+		self.deploySound.play()
 		new_bomb = Bomb(self.xpos, self.ypos, -30, self.angle-180, self.playerid, players)
 		self.bullets.append(new_bomb)
 		self.cooldown = 5.0
