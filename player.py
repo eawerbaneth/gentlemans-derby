@@ -32,7 +32,7 @@ class playerCheckpoint(ai_node):
 		cNode.addSolid(cSphere)
 		cNodePath = self.form.attachNewNode(cNode)
 		#if int(self.id) == 0:
-		cNodePath.show()
+		#cNodePath.show()
 		base.cTrav.addCollider(cNodePath, self.cHandler)
 		
 class player_node_handler(object):
@@ -61,7 +61,7 @@ class player_node_handler(object):
 		self.path.pop(0)
 		
 	def next(self):
-		return [self.path[0].xpos, self.path[0].ypos, self.path[0].id]
+		return [self.path[0].xpos, self.path[0].ypos, self.path[0].zpos, self.path[0].id]
 
 class Player(DirectObject):
 	def __init__(self, x, y, z):
@@ -77,6 +77,7 @@ class Player(DirectObject):
 
 		self.timer = 30.0
 
+		
 		
 		self.loadModels()
 		self.setupLights()
@@ -105,7 +106,11 @@ class Player(DirectObject):
 		#handle checkpoints
 		self.checkpoints = player_node_handler()
 		self.goal = self.checkpoints.next()
+
+		self.last_checkpoint = self.goal
+
 		self.distance = math.sqrt((self.goal[0] - self.pointX)**2+(self.goal[1] - self.pointY)**2)
+
 		self.env = 0
 		#jumping 'n' such
 		self.stopped = True
@@ -130,7 +135,14 @@ class Player(DirectObject):
 		self.accept("collide-oil-slick", self.oil_slicked)
 		self.accept("collide-spikes", self.spiked)
 		self.accept("collide-gatSpawn", self.changeWeapons, [0])
-		self.accept("collide-bombSpawn", self.changeWeapons, [1])		
+		self.accept("collide-bombSpawn", self.changeWeapons, [1])	
+		#self.accept("collide-walls_collider", self.heya)
+		
+	def heya(self, cEntry):
+		print "wall collision detected"
+		point = cEntry.getSurfacePoint(render)
+		self.player.setX(point.getX())
+		self.player.setY(point.getY())
 	
 	#triggers when player runs into an oil slick
 	def oil_slicked(self, cEntry):
@@ -141,7 +153,7 @@ class Player(DirectObject):
 	
 	def changeWeapons(self, wepIndex, cEntry):
 		if(wepIndex == 0):
-			self.weapon = GattlingGun(0,0,0,0,self.weapon.bullets,0,self.z+3)
+			self.weapon = GattlingGun(0,0,-3,0,self.weapon.bullets,0,self.z+3)
 			players.spawns[0].collectable = False
 			players.spawns[0].setDowntime()
 			cEntry.getIntoNodePath().remove()
@@ -154,16 +166,19 @@ class Player(DirectObject):
 	
 	#triggers when the player his next checkpoint
 	def checkpoint(self, cEntry):
-		if cEntry.getIntoNodePath().getName() == "checkpoint" + str(self.goal[2]):
+		if cEntry.getIntoNodePath().getName() == "checkpoint" + str(self.goal[3]):
+			self.last_checkpoint = self.goal
 			self.pointX = self.goal[0]
 			self.pointY = self.goal[1]
 			self.checkpoints.checkpoint()
 			self.timer += 15.0
-			if (int(self.goal[2])-1)%4==3:
+			if (int(self.goal[3])-1)%4==3:
 				self.gravity = 25
 				print "changing gravity to ", self.gravity
+			elif (int(self.goal[3])-1)%4==2:
+				self.gravity = 2.5
 			else:
-				self.gravity = 3
+				self.gravity = 10
 			self.goal = self.checkpoints.next()
 			print("checkpoint")
 			self.checkpointCount += 1
@@ -171,21 +186,20 @@ class Player(DirectObject):
 				self.checkpointCount = 0
 				self.laps += 1
 			#add an acceptor for our next checkpoint
-			self.accept("collide-checkpoint" + str(self.goal[2]), self.checkpoint)
-			print "checkpoint!", str(self.goal[2])
+			self.accept("collide-checkpoint" + str(self.goal[3]), self.checkpoint)
+			print "checkpoint!", str(self.goal[3])
 	
 	def loadModels(self):
 		#self.panda = Actor("models/panda-model", {"walk":"panda-walk4", "eat":"panda-eat"})
 		self.player = Actor("animations/gentlemanBike_idle", {"pedal":"animations/gentlemanBike_idle"})
 		#self.player.loop('pedal')
-		self.player.setScale(3)
+		self.player.setScale(4.5)
 		self.player.setPos(0, 0, -30)
 		self.player.setH(-180)
 		self.player.reparentTo(render)
 		self.player.setPos(self.x,self.y,self.z)
 
-
-		self.weapon = GattlingGun(0, 0, 0, 0, [], 0, self.z+3)
+		self.weapon = GattlingGun(0, 0, -3, 0, [], 0, self.z+3)
 		#self.weapon = Weapon(0, 0, -3, 0, [], 0, self.z)
 		#self.weapon = GattlingGun(0, 0, 800, 0, [], 0)
 		#self.weapon = Weapon(0, 0, 600, 0, [], 0)
@@ -331,10 +345,13 @@ class Player(DirectObject):
 		
 		#deal with terrain collisions (ty Roaming Ralph)
 		entries = []
+		pitflag = False
 		for i in range(self.playerHandler.getNumEntries()):
 			entry = self.playerHandler.getEntry(i)
 			if self.playerHandler.getEntry(i).getIntoNode().getName()=="path_collider":
 				entries.append(entry)
+			if self.playerHandler.getEntry(i).getIntoNode().getName()=="pit":
+				pitflag = True
 			#print(entry.getIntoNode().getName())
 			#print(entry.getFromNode().getName())
 			
@@ -365,11 +382,20 @@ class Player(DirectObject):
 				#print "not falling..."
 			#self.player.setZ(entries[0].getSurfacePoint(render).getZ())
 			
-		else:
+		elif not pitflag:
 			self.player.setZ(startzed-self.gravity*elapsed)
 			self.player.setP(0)
 			print "no collision", self.player.getZ()
 			self.airborne = False
+			self.player.setPos(self.last_checkpoint[0], self.last_checkpoint[1], self.last_checkpoint[2])
+			# self.player.setH(0)
+			# self.player.setP(0)
+			self.velocity = 0
+			self.take_damage(2)
+		else:
+			self.player.setZ(startzed-self.gravity*elapsed)
+			self.player.setP(0)
+			
 		
 		
 		######deal with camera
@@ -384,13 +410,15 @@ class Player(DirectObject):
 		offset = deg2Rad(offset)
 		camera.setP(0)
 		yoffset = abs(math.cos(offset)*(25+(1*abs(self.velocity)/10))+math.sin(offset)*(3+(1*abs(self.velocity)/30)))
-		zoffset = abs(math.cos(offset)*(5+(1*abs(self.velocity)/10))+math.sin(offset)*(3+(1*abs(self.velocity)/30)))
+		zoffset = abs(math.cos(offset)*(3+(1*abs(self.velocity)/10))+math.sin(offset)*(3+(1*abs(self.velocity)/30)))
 		######print "offset is ", offset, " yoffset is ", yoffset, " zoffzet is ", zoffset
 		
 		
 		camera.setPos(0, yoffset, zoffset)
 		#print "camera Z is ", camera.getZ(), zoffset
 		camera.lookAt(self.player)
+		camera.setP(camera.getP() + 7)
+		
 		
 		self.prevtime = task.time
 		self.lastz = self.player.getZ()
@@ -417,7 +445,7 @@ class Player(DirectObject):
 		cNode.addSolid(cSphere)
 		#cNode.setIntoCollideMask(BitMask32.allOff())
 		cNodePath = self.player.attachNewNode(cNode)
-		cNodePath.show()
+		#cNodePath.show()
 		
 		#experiment with lifter
 		self.playerRay = CollisionRay()
@@ -431,6 +459,16 @@ class Player(DirectObject):
 		self.playerColNp.reparentTo(render)
 		self.playerHandler = CollisionHandlerQueue()
 		base.cTrav.addCollider(self.playerColNp, self.playerHandler)
+		
+		#pusher = CollisionHandlerPusher()
+		
+		#pusher.addCollider(cNodePath, self.player)
+		#base.cTrav.addCollider(cNodePath, pusher)
+		
+		# pusher = CollisionHandlerPusher()
+		# pusher.addCollider(cNodePath)
+		# base.cTrav.addCollider(cNodePath, pusher)
+		
 		base.cTrav.addCollider(cNodePath, self.cHandler)
 	
 	def take_damage(self, amount):
