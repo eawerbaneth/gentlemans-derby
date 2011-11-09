@@ -231,7 +231,7 @@ class ai_player(DirectObject):
 		shootflag = False
 		if math.sqrt((self.form.getX() - players.players[0].player.getX())**2 + (self.form.getY() - players.players[0].player.getY())**2) < self.weapon.range + 5:
 			shootflag = False
-		for i in range(1, 4):
+		for i in range(1, 5):
 			if players.players[i].id != self.id:
 				#check to see if anyone is in range, shoot if they are
 				if math.sqrt((self.form.getX() - players.players[i].form.getX())**2 + (self.form.getY() - players.players[i].form.getY())**2) <= 30:

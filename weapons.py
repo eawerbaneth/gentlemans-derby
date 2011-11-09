@@ -65,9 +65,11 @@ class Weapon(DirectObject):
 		#self.form = loader.loadModel("models/weapons/revolverProxy")
 		#self.form.setScale(.9)
 
-		self.form = loader.loadModel("models/weapons/revolverProxy")
-		self.form.setScale(5)
-		self.form.setPos(self.xpos,self.ypos,self.zpos+3)
+		self.form = Actor("animations/gentlemanPistol_idle", {"idle":"animations/gentlemanPistol_idle", "shoot":"animations/gentlemanPistol_idle"})
+		self.form.setPos(self.xpos, self.ypos, self.zpos)
+		self.form.loop('idle')
+		#self.form.setScale(5)
+		#self.form.setPos(self.xpos,self.ypos,self.zpos+3)
 		self.form.setH(self.angle)
 
 		#self.form.reparentTo(render)

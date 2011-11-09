@@ -151,9 +151,9 @@ class Player(DirectObject):
 	
 	def loadModels(self):
 		#self.panda = Actor("models/panda-model", {"walk":"panda-walk4", "eat":"panda-eat"})
-		self.player = Actor("models/gentlemanBike_Pistol", {"pedal":"models/gentlemanBike_Pistol"})
+		self.player = Actor("animations/gentlemanBike_idle", {"pedal":"animations/gentlemanBike_idle"})
 		#self.player.loop('pedal')
-		#self.player.setScale(.005)
+		self.player.setScale(3)
 		self.player.setPos(0, 0, -30)
 		self.player.setH(-180)
 		self.player.reparentTo(render)
@@ -161,7 +161,7 @@ class Player(DirectObject):
 
 
 		#self.weapon = GattlingGun(0, 0, 0, 0, [], 0, self.z+3)
-		self.weapon = Weapon(0, 0, 0, 0, [], 0, self.z)
+		self.weapon = Weapon(0, 0, -3, 0, [], 0, self.z)
 		#self.weapon = GattlingGun(0, 0, 800, 0, [], 0)
 		#self.weapon = Weapon(0, 0, 600, 0, [], 0)
 
@@ -355,11 +355,13 @@ class Player(DirectObject):
 		
 		offset = deg2Rad(offset)
 		camera.setP(0)
-		yoffset = abs(math.cos(offset)*(25+(10*abs(self.velocity)/10))+math.sin(offset)*(5+(5*abs(self.velocity)/10)))
-		zoffset = abs(math.cos(offset)*(25+(10*abs(self.velocity)/10))+math.sin(offset)*(5+(5*abs(self.velocity)/10)))
+		yoffset = abs(math.cos(offset)*(25+(1*abs(self.velocity)/10))+math.sin(offset)*(3+(1*abs(self.velocity)/30)))
+		zoffset = abs(math.cos(offset)*(5+(1*abs(self.velocity)/10))+math.sin(offset)*(3+(1*abs(self.velocity)/30)))
 		######print "offset is ", offset, " yoffset is ", yoffset, " zoffzet is ", zoffset
 		
+		
 		camera.setPos(0, yoffset, zoffset)
+		#print "camera Z is ", camera.getZ(), zoffset
 		camera.lookAt(self.player)
 		
 		self.prevtime = task.time
