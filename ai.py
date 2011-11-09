@@ -126,14 +126,14 @@ class ai_player(DirectObject):
 	
 	def loadModel(self):
 		self.form = Actor("animations/gentlemanBike_idle", {"pedal":"animations/gentlemanBike_idle"})
-		#self.form.setScale(.004)
+		self.form.setScale(3)
 		self.form.setH(45)
 		self.form.loop('pedal')
 		self.form.reparentTo(render)
 		self.form.setPos(17 + int(self.id), -100 + int(self.id), -30)
 		
 		#load default weapon
-		self.weapon = Weapon(0, 0, 0, 0, [], self.id, self.form.getZ())
+		self.weapon = Weapon(0, 0, -3, 0, [], self.id, self.form.getZ())
 		self.weapon.form.reparentTo(self.form)
 		self.weapon.form.setPos(self.weapon.form.getX(), self.weapon.form.getY(), self.weapon.form.getZ()+3)
 	
@@ -142,16 +142,16 @@ class ai_player(DirectObject):
 		self.cHandler.setInPattern("ai" + str(self.id) + "-collide-%in")
 		
 		#keep ai rooted to the ground
-		self.aiRay = CollisionRay()
-		self.aiRay.setOrigin(0, 0, 3)
-		self.aiRay.setDirection(0, 0, -1)
-		self.aiCol = CollisionNode('aiRay')
-		self.aiCol.addSolid(self.aiRay)
-		self.aiCol.setFromCollideMask(BitMask32.bit(0))
-		self.aiCol.setIntoCollideMask(BitMask32.allOff())
-		self.aiColNp = self.form.attachNewNode(self.aiCol)
-		self.aiHandler = CollisionHandlerQueue()
-		base.cTrav.addCollider(self.aiColNp, self.aiHandler)
+		# self.aiRay = CollisionRay()
+		# self.aiRay.setOrigin(0, 0, 3)
+		# self.aiRay.setDirection(0, 0, -1)
+		# self.aiCol = CollisionNode('aiRay')
+		# self.aiCol.addSolid(self.aiRay)
+		# self.aiCol.setFromCollideMask(BitMask32.bit(0))
+		# self.aiCol.setIntoCollideMask(BitMask32.allOff())
+		# self.aiColNp = self.form.attachNewNode(self.aiCol)
+		# self.aiHandler = CollisionHandlerQueue()
+		# base.cTrav.addCollider(self.aiColNp, self.aiHandler)
 		
 		cSphere = CollisionSphere((0,0,0), 3)
 		cNode = CollisionNode("ai"+str(self.id))
@@ -173,12 +173,12 @@ class ai_player(DirectObject):
 	
 	def changeWeapons(self, wepIndex, cEntry):
 		if(wepIndex == 0):
-			self.weapon = GattlingGun(0,0,0,0,self.weapon.bullets,0,3)
+			self.weapon = GattlingGun(0,0,-3,0,self.weapon.bullets,0,3)
 			players.spawns[0].collectable = False
 			players.spawns[0].setDowntime()
 			cEntry.getIntoNodePath().remove()
 		elif(wepIndex == 1):
-			self.weapon = BombWeapon(0,0,-30,0,[],0,0)
+			self.weapon = BombWeapon(0,0,-3,0,[],0,0)
 			players.spawns[1].collectable = False
 			players.spawns[1].setDowntime()
 			cEntry.getIntoNodePath().remove()
