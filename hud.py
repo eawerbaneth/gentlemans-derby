@@ -32,7 +32,7 @@ class HUD():
         self.dot.setPos(1+(x/1500), 0, -.7+(y/1500))
         self.lapText.setText(str(laps)+"/10")
     
-    def getDist(self, x, y, checkpoint):
+    """def getDist(self, x, y, checkpoint):
         cx = checkpoint[0]
         cy = checkpoint[1]
         dist = math.sqrt((cx-x)**2 + (cy-y)**2)
@@ -42,7 +42,7 @@ class HUD():
         newX = x*math.cos(rotAngle) - y*math.sin(rotAngle)
         
         dToCheckpoint = dist - newX
-        return dToCheckpoint
+        return dToCheckpoint"""
     
     """def updateMiniMap(self, x, y):
         self.dot.setPos(1+(x/1000), 0, -.7+(y/1000))"""

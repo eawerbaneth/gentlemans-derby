@@ -72,6 +72,8 @@ class Player(DirectObject):
 		self.HUD = HUD()
 		self.checkpointCount = 0
 		self.laps = 0
+		self.totalDist = 0
+		self.distanceLeft = 1000
 		
 
 		self.keyMap = {"left":0, "right":0, "forward":0, "down":0, "break":0, "test":0}
@@ -379,7 +381,7 @@ class Player(DirectObject):
 	
 	def updateHUD(self, task):
 		self.HUD.update(self.velocity, self.player.getX(), self.player.getY(), self.laps)
-		self.HUD.getDist(self.player.getX(), self.player.getY(), self.goal)
+		self.distanceLeft -= self.getDist(self.player.getX(), self.player.getY(), self.goal)
 		#self.HUD.updateMiniMap(self.player.getX(), self.player.getY())
 		return Task.cont
 		
@@ -430,3 +432,15 @@ class Player(DirectObject):
 		
 	def setKey(self,key,value):
 		self.keyMap[key] = value
+		
+	def getDist(self, x, y, checkpoint):
+		cx = checkpoint[0]
+		cy = checkpoint[1]
+		dist = math.sqrt((cx-x)**2 + (cy-y)**2)
+		
+		rotAngle = math.atan2(-y,x)
+		
+		newX = x*math.cos(rotAngle) - y*math.sin(rotAngle)
+		
+		dToCheckpoint = dist - newX
+		return dToCheckpoint
