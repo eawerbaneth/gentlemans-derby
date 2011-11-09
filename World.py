@@ -222,7 +222,7 @@ class World(DirectObject):
 		players.players[0].place = L.index(players.players[0].distanceLeft)+1
 		"""print "Distance " +str(p1.getDist(players.players[1].form.getX(), players.players[1].form.getY(), players.players[1].goal))
 		print "Distance " + str(players.players[1].distanceLeft)"""
-		print "Player distance " +str(players.players[1].distanceLeft)
+		print "Player distance " +str(players.players[0].distanceLeft)
 		return Task.cont
 		
 m = Menu()

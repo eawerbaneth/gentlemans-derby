@@ -29,23 +29,23 @@ class HUD():
         self.dot.setScale(.025)
         
         font1 = loader.loadFont('img/goodfish.ttf')
-        self.lapText = OnscreenText(text = "0/10", font = font1, pos = (1, -.3, 0), fg = (1, 1, 1, 1) )
+        self.lapText = OnscreenText(text = "0/10", font = font1, pos = (1, -.1, 0), fg = (1, 1, 1, 1) )
         self.lapText.setScale(.05)
-        self.placeText = OnscreenText(text = "", font = font1, pos = (1, -.4, 0), fg = (1, 1, 1, 1))
+        self.placeText = OnscreenText(text = "", font = font1, pos = (1, -.2, 0), fg = (1, 1, 1, 1))
         self.placeText.setScale(.05)
-        self.timerText = OnscreenText(text = "Time: ", font = font1, pos = (1, -.5, 0), fg = (1, 1, 1, 1))
+        self.timerText = OnscreenText(text = "Time: ", font = font1, pos = (1, -.3, 0), fg = (1, 1, 1, 1))
         
     def update(self, velocity, x, y, laps, place, time):
         if velocity < 0:
             velocity = -velocity
 
         self.dot.setPos(1.01+(x/4250), 0, -.55+(y/4250))
-        self.lapText.setText("Laps: " + str(laps)+"/10")
+        self.lapText.setText("Laps: " + str(laps)+"/3")
 
         self.speedPin.setHpr(0, 0, 4*velocity)
 
 
-        self.placeText.setText(str(place) + "Place")
+        self.placeText.setText("Position: "+str(place))
         self.timerText.setText("Time: "+ str(round(time)))
     
     """def getDist(self, x, y, checkpoint):
