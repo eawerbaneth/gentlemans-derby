@@ -15,10 +15,12 @@ from obstacles import *
 
 class HUD():
     def __init__(self):
-        self.speedometer = OnscreenImage(image = 'img/circle.png', pos = (-1, 0, -.7) )
+        self.speedometer = OnscreenImage(image = 'img/speedometerDial.png', pos = (-1, 0, -.7) )
         self.speedometer.setScale(.25)
-        self.speedPin = OnscreenImage(image = 'img/pin.png', pos = (-1, 0, -.7))
-        self.speedPin.setScale(.25)
+        self.speedometer.setTransparency(TransparencyAttrib.MAlpha)
+        self.speedPin = OnscreenImage(image = 'img/speedometerNeedle.png', pos = (-1, 0, -.7))
+        self.speedPin.setScale(.10)
+        self.speedPin.setTransparency(TransparencyAttrib.MAlpha)
         self.speedPin.setHpr(0, 0, 0)
         self.dot = OnscreenImage(image = 'img/dot.png', pos = (1, 0, -.7))
         self.dot.setScale(.025)
@@ -33,9 +35,13 @@ class HUD():
     def update(self, velocity, x, y, laps, place, time):
         if velocity < 0:
             velocity = -velocity
-        self.speedPin.setHpr(0, 0, 1.8*velocity)
+
         self.dot.setPos(1+(x/5000), 0, -.7+(y/5000))
         self.lapText.setText("Laps: " + str(laps)+"/10")
+
+        self.speedPin.setHpr(0, 0, 4*velocity)
+
+
         self.placeText.setText(str(place) + "Place")
         self.timerText.setText("Time: "+ str(round(time)))
     

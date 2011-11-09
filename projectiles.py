@@ -212,6 +212,9 @@ class Bomb(DirectObject):
 		self.exploderange = 10.0
 		self.penalty = 100
 		self.exploded = False
+		self.explodeSound = loader.loadSfx("Sound/FX/bomb_explode.wav")
+
+		
 		#self.accept("bomb-detonated-player", self.explode)
 		if(self.playerid == 0):
 		
@@ -294,6 +297,7 @@ class Bomb(DirectObject):
 	#before being removed
 	def detonate(self, hitId, cEntry):	
 		"""the bomb explodes"""
+		self.explodeSound.play()
 		#self.form.getParent().removeNode()
 		if(cEntry):
 			print(cEntry.getFromNodePath())
