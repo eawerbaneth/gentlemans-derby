@@ -121,7 +121,7 @@ class Weapon(DirectObject):
 	def fire(self):
 		"""pulls the trigger"""
 		#print(len(players.players))
-		self.pistolSound.play()
+		#self.pistolSound.play()
 		if(self.projId >= self.idLim):
 			self.projId = 0
 		new_projectile = Projectile(100, self.xpos, self.ypos, self.projZ, self.angle, 100, self.playerid, self.projId, len(self.bullets), players)

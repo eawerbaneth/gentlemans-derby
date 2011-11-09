@@ -74,7 +74,7 @@ class Player(DirectObject):
 
 		self.pointX = x
 		self.pointY = y
-
+		
 		self.timer = 30.0
 
 		
@@ -180,6 +180,7 @@ class Player(DirectObject):
 			else:
 				self.gravity = 10
 			self.goal = self.checkpoints.next()
+			self.distance = math.sqrt((self.goal[0] - self.pointX)**2+(self.goal[1] - self.pointY)**2)
 			print("checkpoint")
 			self.checkpointCount += 1
 			if self.checkpointCount >= 5:
@@ -483,7 +484,7 @@ class Player(DirectObject):
 		cx = checkpoint[0]
 		cy = checkpoint[1]
 		dist = math.sqrt((cx-x)**2 + (cy-y)**2)
-	
+		
 		if x != 0:
 			rotAngle = math.atan(-y/x)
 		else:
@@ -492,6 +493,6 @@ class Player(DirectObject):
 		newX = x*math.cos(rotAngle) - y*math.sin(rotAngle)
 		
 		#dToCheckpoint = dist - newX
-		dToCheckpoint = distance - newX
+		dToCheckpoint = distance - dist
 	
 		return dToCheckpoint

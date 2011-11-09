@@ -32,8 +32,8 @@ class World(DirectObject):
 		
 		
 		
-		players.add_spawn(gatSpawn(-105, -10, -35))
-		#players.add_spawn(bombSpawn(32,40,-30))
+		players.add_spawn(gatSpawn(-105, -10, -30))
+		players.add_spawn(bombSpawn(228,-341,-30))
 		
 
 		
@@ -42,7 +42,7 @@ class World(DirectObject):
 		self.loadModels()
 		self.setupLights()
 		self.setupCollisions()
-		self.worldMusic = loader.loadSfx("Sound/Music/race_loop.wav")
+		self.worldMusic = loader.loadSfx("Sound/Music/entertainer.mp3")
 		self.worldMusic.play()
 		taskMgr.add(self.getPlace, "placeTask")
 		
@@ -225,7 +225,7 @@ class World(DirectObject):
 		players.players[0].place = L.index(players.players[0].distanceLeft)+1
 		"""print "Distance " +str(p1.getDist(players.players[1].form.getX(), players.players[1].form.getY(), players.players[1].goal))
 		print "Distance " + str(players.players[1].distanceLeft)"""
-		#print "Player distance " +str(p1.distanceLeft)
+		print "Player distance " +str(players.players[1].distanceLeft)
 		return Task.cont
 		
 m = Menu()
