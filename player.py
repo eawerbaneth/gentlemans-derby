@@ -64,6 +64,7 @@ class Player(DirectObject):
 		self.x = x
 		self.y = y
 		self.z = z
+		self.lastz = z
 		
 		
 		self.loadModels()
@@ -79,7 +80,7 @@ class Player(DirectObject):
 		taskMgr.add(self.updateHUD, "hudTask")
 		self.prevtime = 0
 		self.velocity = 0
-		self.topspeed = 30
+		self.topspeed = 60
 		self.worldspeed = 1
 		self.penalty = 0
 		self.id = 0
@@ -161,15 +162,14 @@ class Player(DirectObject):
 		self.headlight.setLens(lens)
 		slnp = self.player.attachNewNode(self.headlight)
 		render.setLight(slnp)
-		slnp.setPos(0, -1, 1)
-		slnp.setHpr(0, 180, 0)
+		slnp.setPos(0, -2, 2)
+		slnp.setHpr(0, 200, 0)
 		self.headlight.showFrustum()
 		
 	def move(self, task):
 		elapsed = task.time - self.prevtime
-		startzed = self.player.getZ()
-		
-		
+		if self.player.getZ() -5 > self.lastz:
+			print "TESTING: ", self.lastz
 		if(self.penalty == 0):
 			
 			#testing jumping
@@ -188,12 +188,12 @@ class Player(DirectObject):
 			#only allow them to accelerate if they are on the ground
 			if self.keyMap["forward"] and not self.airborne:
 				dist = elapsed * self.velocity
-				self.velocity += elapsed * 20 * self.worldspeed
+				self.velocity += elapsed * 30 * self.worldspeed
 				if self.velocity > self.topspeed: self.velocity = self.topspeed
 				angle = deg2Rad(self.player.getH())
 				dx = dist * math.sin(angle)
 				dy = dist * -math.cos(angle)
-				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
+				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, self.player.getZ())
 			elif self.keyMap["down"]:
 				dist = elapsed * self.velocity
 				self.velocity -= elapsed * 5
@@ -202,7 +202,7 @@ class Player(DirectObject):
 				angle = deg2Rad(self.player.getH())
 				dx = dist * math.sin(angle)
 				dy = dist * -math.cos(angle)
-				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
+				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, self.player.getZ())
 			if self.keyMap["break"]:
 				dist = elapsed * self.velocity
 				self.velocity -= elapsed *75
@@ -211,71 +211,23 @@ class Player(DirectObject):
 				angle = deg2Rad(self.player.getH())
 				dx = dist * math.sin(angle)
 				dy = dist * -math.cos(angle)
-				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
+				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, self.player.getZ())
 			if self.keyMap["forward"]==0 or self.airborne:
 				dist = elapsed * self.velocity
-				if self.velocity >= 0:	
-					self.velocity += elapsed * 20 * self.worldspeed
-					if self.velocity > self.topspeed: self.velocity = self.topspeed
+				if self.velocity > 0 and not self.airborne:
+					self.velocity -= elapsed * 5 * self.worldspeed
+					if self.velocity < 0: self.velocity = 0
+					#if self.velocity > self.topspeed: self.velocity = self.topspeed
 				angle = deg2Rad(self.player.getH())
 				dx = dist * math.sin(angle)
 				dy = dist * -math.cos(angle)
-				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
-			elif self.keyMap["down"]:
-				dist = elapsed * self.velocity
-				self.velocity -= elapsed * 5
-				if self.velocity < -10:
-					self.velocity = -10
-				angle = deg2Rad(self.player.getH())
-				dx = dist * math.sin(angle)
-				dy = dist * -math.cos(angle)
-				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
-			if self.keyMap["break"]:
-				dist = elapsed * self.velocity
-				self.velocity -= elapsed *75
-				if self.velocity < 0:
-					self.velocity = 0
-				angle = deg2Rad(self.player.getH())
-				dx = dist * math.sin(angle)
-				dy = dist * -math.cos(angle)
-				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, 0)
-			if self.keyMap["forward"]==0:
-				if self.velocity >= 0:
-					dist = elapsed * self.velocity
-					self.velocity += elapsed * 20 * self.worldspeed
-					if self.velocity > self.topspeed: self.velocity = self.topspeed
-					angle = deg2Rad(self.player.getH())
-					dx = dist * math.sin(angle)
-					dy = dist * -math.cos(angle)
-					self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, self.z)
-				elif self.keyMap["down"]:
-					dist = elapsed * self.velocity
-					self.velocity -= elapsed * 5
-					if self.velocity < -10:
-						self.velocity = -10
-					angle = deg2Rad(self.player.getH())
-					dx = dist * math.sin(angle)
-					dy = dist * -math.cos(angle)
-					self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, self.z)
-				if self.keyMap["break"]:
-					dist = elapsed * self.velocity
-					self.velocity -= elapsed *75
-					if self.velocity < 0:
-						self.velocity = 0
-					angle = deg2Rad(self.player.getH())
-					dx = dist * math.sin(angle)
-					dy = dist * -math.cos(angle)
-					self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, self.z)
-				if self.keyMap["forward"]==0:
-					if self.velocity >= 0:
-						dist = elapsed * self.velocity
-						self.velocity -= elapsed * 50 * self.worldspeed
-						if self.velocity < 0:
-							self.velocity = 0
-						angle = deg2Rad(self.player.getH())
-						dx = dist * math.sin(angle)
-						dy = dist * -math.cos(angle)
-						self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, self.z)
+				dz = 0
+				if self.airborne:
+					otherangle = deg2Rad(-self.player.getP())
+					dz = dist * math.sin(otherangle)
+					#dy += dist* -math.cos(otherangle)
+					#print "dz is ", dz
+				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, self.player.getZ()+dz)
 				if self.keyMap["down"]==0:
 					if self.velocity < 0:
 						dist = elapsed * self.velocity
@@ -285,12 +237,14 @@ class Player(DirectObject):
 						angle = deg2Rad(self.player.getH())
 						dx = dist * math.sin(angle)
 						dy = dist * -math.cos(angle)
-						self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, self.z)
+						self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, self.player.getZ())
 			
 		self.penalty -= elapsed
 		if(self.penalty < 0):
 			self.penalty = 0
 			self.invincible = False
+			
+		startzed = self.player.getZ()
 		
 		#control animation speed
 		animControl = self.player.getAnimControl('pedal')
@@ -319,8 +273,10 @@ class Player(DirectObject):
 		live = self.weapon.update(self.player.getX(), self.player.getY(), self.weapon.form.getZ(), deg2Rad(self.player.getH()), elapsed)
 
 		if(not live):
-			self.weapon = Weapon(0,0,800,0,self.weapon.bullets, self.id, self.z)
+			self.weapon = Weapon(0,0,0,0,self.weapon.bullets, self.id, self.z)
 		#self.weapon.update(self.player.getX(), self.player.getY(), self.weapon.form.getZ(), deg2Rad(self.player.getH()), elapsed)
+		
+		self.playerColNp.setPos(self.player.getX(), self.player.getY(), self.player.getZ())
 		
 		base.cTrav.traverse(render)
 		
@@ -331,23 +287,29 @@ class Player(DirectObject):
 			entries.append(entry)
 			#print(entry.getIntoNode().getName())
 			
-		#entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
-		if (len(entries) > 0) and (entries[0].getIntoNode().getName() == "terrain_collider"):
+		entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
+		if (len(entries) > 0) and (entries[0].getIntoNode().getName() == "path_collider"):
+			if (len(entries) > 1) and (entries[1].getIntoNode().getName() == "terrain_collider"):
+				print "other level detected: ", entries[0].getSurfacePoint(render).getZ(), entries[1].getSurfacePoint(render).getZ()
 			#if our Z is greater than terrain Z, make player fall
 			if self.player.getZ() > entries[0].getSurfacePoint(render).getZ():
-				self.player.setZ(startzed-25*elapsed)
-				self.player.setP(-startP + 5*elapsed)
-				if self.player.getP() > 0:
-					self.player.setP(0)
+				self.player.setZ(startzed-5*elapsed)
+				self.player.setP(self.player.getP()+elapsed)
+				
+				if self.player.getP() > 25:
+					self.player.setP(25)
 				self.airborne = True
-				print "falling...new Z is ", self.player.getZ(), "heading is ", self.player.getP()
+				#print "falling...new Z is ", self.player.getZ(), "heading is ", self.player.getP()
 				#print "offset is ", 1*elapsed
 			#if our Z is less than terrain Z, change it
 			if self.player.getZ() < entries[0].getSurfacePoint(render).getZ():
+				self.ramp = entries[0].getIntoNodePath()
 				if self.velocity > 5:
-					self.player.setP(-startP - 5*elapsed)
+					self.player.setP(self.ramp.getP())
 				self.player.setZ(entries[0].getSurfacePoint(render).getZ())
 				self.airborne = False
+				#print "bumping up from ", startzed, " to ", self.player.getZ()
+				#print "(", self.player.getX(), ",", self.player.getY(), ") (", entries[0].getSurfacePoint(render).getX(),",",entries[0].getSurfacePoint(render).getY(),")"
 				#print "not falling..."
 			#self.player.setZ(entries[0].getSurfacePoint(render).getZ())
 			
@@ -355,16 +317,29 @@ class Player(DirectObject):
 			self.player.setZ(startzed)
 			self.player.setP(0)
 			print "no collision"
+			self.airborne = False
 		
 		
 		#deal with camera
-		camera.lookAt(self.player)
-		camera.setPos(0, 25+10*self.velocity/15, 5+2*self.velocity/15)
-		camera.setP(0)
-		#print "camera pitch is ", camera.getP()
+		offset = self.player.getP()
+		if offset > 15:
+			self.player.setP(15)
+			offset = 15
+		elif offset < -15:
+			self.player.setP(-15)
+			offset = -15
 		
+		offset = deg2Rad(offset)
+		camera.setP(0)
+		yoffset = abs(math.cos(offset)*(25+(10*abs(self.velocity)/15))+math.sin(offset)*(5+(10*abs(self.velocity)/10)))
+		zoffset = abs(math.cos(offset)*(25+(10*abs(self.velocity)/15))+math.sin(offset)*(5+(10*abs(self.velocity)/10)))
+		#print "offset is ", offset, " yoffset is ", yoffset, " zoffzet is ", zoffset
+		
+		camera.setPos(0, yoffset, zoffset)
+		camera.lookAt(self.player)
 		
 		self.prevtime = task.time
+		self.lastz = self.player.getZ()
 		return Task.cont
 	
 	def adjustCamera(self, task):
@@ -398,22 +373,9 @@ class Player(DirectObject):
 		self.playerCol.setFromCollideMask(BitMask32.bit(0))
 		self.playerCol.setIntoCollideMask(BitMask32.allOff())
 		self.playerColNp = self.player.attachNewNode(self.playerCol)
+		self.playerColNp.reparentTo(render)
 		self.playerHandler = CollisionHandlerQueue()
 		base.cTrav.addCollider(self.playerColNp, self.playerHandler)
-		#self.playerHandler = CollisionHandlerFloor()
-		#self.playerHandler.addCollider(self.playerColNp, self.player)
-		#base.cTrav.addCollider(self.playerColNp, self.playerHandler)
-		
-		#self.ray = CollisionRay(0, 0, 1, 0, 0, -1)
-		#self.playerRay = self.player.attachNewNode(CollisionNode('ray'))
-		#self.playerRay.node().addSolid(self.ray)
-		#self.playerColNp.show()
-		
-		# self.fromObject = self.player.attachNewNode(CollisionNode('floor_collider'))
-		# self.fromObject.node().addSolid(CollisionRay(0, 0, 0, 0, 0, -1))
-		
-		# self.lifter = CollisionHandlerFloor()
-		#lifter.addCollider(fromObject, self.player)
 		
 		base.cTrav.addCollider(cNodePath, self.cHandler)
 	
