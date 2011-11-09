@@ -135,7 +135,7 @@ class World(DirectObject):
 		f = open("final_path.txt", "r")
 		#read in nodes from file
 		for line in f:
-			print "creating new light"
+			#print "creating new light"
 			words = line.split()
 			self.lights.append(StreetLamp(float(words[0])+10, float(words[1])+10, float(words[2])))
 		f.close()
@@ -144,7 +144,7 @@ class World(DirectObject):
 		## ambient light
 		self.ambientLight = AmbientLight("ambientLight")
 		## four values, RGBA (alpha is largely irrelevent), value range is 0:1
-		self.ambientLight.setColor((.005, .005, .005, 1))
+		self.ambientLight.setColor((.2, .1, .1, 1))
 		self.ambientLightNP = render.attachNewNode(self.ambientLight)
 		## the nodepath that calls setLight is what gets illuminated by the light
 		render.setLight(self.ambientLightNP)
@@ -152,16 +152,17 @@ class World(DirectObject):
 		
 		self.loadLamps()
 		
-		#self.keyLight = DirectionalLight("keyLight")
-		#self.keyLight.setColor((.6,.6,.6, 1))
-		#self.keyLightNP = render.attachNewNode(self.keyLight)
-		#self.keyLightNP.setHpr(0, -26, 0)
-		#render.setLight(self.keyLightNP)
-		#self.fillLight = DirectionalLight("fillLight")
-		#self.fillLight.setColor((.4,.4,.4, 1))
-		#self.fillLightNP = render.attachNewNode(self.fillLight)
-		#self.fillLightNP.setHpr(30, 0, 0)
-		#render.setLight(self.fillLightNP)
+		self.keyLight = DirectionalLight("keyLight")
+		self.keyLight.setColor((.2,.1,.7, 1))
+		self.keyLightNP = render.attachNewNode(self.keyLight)
+		self.keyLightNP.setHpr(0, -26, 0)
+		render.setLight(self.keyLightNP)
+		
+		self.fillLight = DirectionalLight("fillLight")
+		self.fillLight.setColor((.5,.3,.1, 1))
+		self.fillLightNP = render.attachNewNode(self.fillLight)
+		self.fillLightNP.setHpr(30, 0, 0)
+		render.setLight(self.fillLightNP)
 		
 		# self.headlight = Spotlight("slight")
 		# self.headlight.setColor(VBase4(1, 1, .5, 1))
@@ -200,7 +201,7 @@ class World(DirectObject):
 		# cNodePath.show()
 
 	def getPlace(self, task):
-		print players.players[0].timer
+		#print players.players[0].timer
 		p1 = players.players[0]
 		p1.distanceLeft -= p1.getDist(p1.player.getX(), p1.player.getY(), p1.goal)
 		players.players[1].distanceLeft -= p1.getDist(players.players[1].form.getX(), players.players[1].form.getY(), players.players[1].goal)
