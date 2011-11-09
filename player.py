@@ -70,7 +70,7 @@ class Player(DirectObject):
 		self.y = y
 		self.z = z
 		self.lastz = z
-		#self.f = open("player_checkpoints.txt", "w")
+		#self.f = open("new_ai_nodes.txt", "w")
 
 		self.pointX = x
 		self.pointY = y

@@ -51,7 +51,6 @@ class World(DirectObject):
 	#def changeWeapons(self, cEntry):
 	#	self.weapon = GattlingGun(0,0,0,0,self.weapon.bullets)
 		
-		
 
 	def loadModels(self):
 		#self.env = loader.loadModel("models/intermediate_course_export")
@@ -71,7 +70,7 @@ class World(DirectObject):
 		
 		#read in nodes from file
 		for x in range(1, 5):
-			ainodes = open("final_path.txt", "r")
+			ainodes = open("new_ai_nodes.txt", "r")
 			path = []
 			i = 0
 			for line in ainodes:
