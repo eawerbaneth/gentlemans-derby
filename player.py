@@ -69,6 +69,8 @@ class Player(DirectObject):
 		self.z = z
 		self.lastz = z
 		#self.f = open("player_checkpoints.txt", "w")
+		self.pointX = x
+		self.pointY = y
 		
 		
 		self.loadModels()
@@ -98,6 +100,7 @@ class Player(DirectObject):
 		#handle checkpoints
 		self.checkpoints = player_node_handler()
 		self.goal = self.checkpoints.next()
+		self.distance = math.sqrt((self.goal[0] - self.pointX)**2+(self.goal[1] - self.pointY)**2)
 		self.env = 0
 		#jumping 'n' such
 		self.stopped = True
@@ -132,6 +135,8 @@ class Player(DirectObject):
 	#triggers when the player his next checkpoint
 	def checkpoint(self, cEntry):
 		if cEntry.getIntoNodePath().getName() == "checkpoint" + str(self.goal[2]):
+			self.pointX = self.goal[0]
+			self.pointY = self.goal[1]
 			self.checkpoints.checkpoint()
 			if (int(self.goal[2])-1)%4==3:
 				self.gravity = 25
@@ -410,14 +415,19 @@ class Player(DirectObject):
 	def setKey(self,key,value):
 		self.keyMap[key] = value
 		
-	def getDist(self, x, y, checkpoint):
+	def getDist(self, x, y, checkpoint, distance):
 		cx = checkpoint[0]
 		cy = checkpoint[1]
 		dist = math.sqrt((cx-x)**2 + (cy-y)**2)
-		
-		rotAngle = math.atan2(-y,x)
+	
+		if x != 0:
+			rotAngle = math.atan(-y/x)
+		else:
+			rotAngle = math.pi/2
 		
 		newX = x*math.cos(rotAngle) - y*math.sin(rotAngle)
 		
-		dToCheckpoint = dist - newX
+		#dToCheckpoint = dist - newX
+		dToCheckpoint = distance - newX
+	
 		return dToCheckpoint
