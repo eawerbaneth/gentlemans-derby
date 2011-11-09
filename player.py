@@ -130,6 +130,7 @@ class Player(DirectObject):
 		if cEntry.getIntoNodePath().getName() == "checkpoint" + str(self.goal[2]):
 			self.checkpoints.checkpoint()
 			self.goal = self.checkpoints.next()
+			print("checkpoint")
 			self.checkpointCount += 1
 			if self.checkpointCount >= 8:
 				self.checkpointCount = 0
