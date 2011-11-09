@@ -71,7 +71,12 @@ class Player(DirectObject):
 		self.z = z
 		self.lastz = z
 		#self.f = open("player_checkpoints.txt", "w")
+
+		self.pointX = x
+		self.pointY = y
+
 		self.timer = 30.0
+
 		
 		self.loadModels()
 		self.setupLights()
@@ -100,6 +105,7 @@ class Player(DirectObject):
 		#handle checkpoints
 		self.checkpoints = player_node_handler()
 		self.goal = self.checkpoints.next()
+		self.distance = math.sqrt((self.goal[0] - self.pointX)**2+(self.goal[1] - self.pointY)**2)
 		self.env = 0
 		#jumping 'n' such
 		self.stopped = True
@@ -149,6 +155,8 @@ class Player(DirectObject):
 	#triggers when the player his next checkpoint
 	def checkpoint(self, cEntry):
 		if cEntry.getIntoNodePath().getName() == "checkpoint" + str(self.goal[2]):
+			self.pointX = self.goal[0]
+			self.pointY = self.goal[1]
 			self.checkpoints.checkpoint()
 			self.timer += 15.0
 			if (int(self.goal[2])-1)%4==3:
@@ -159,7 +167,7 @@ class Player(DirectObject):
 			self.goal = self.checkpoints.next()
 			print("checkpoint")
 			self.checkpointCount += 1
-			if self.checkpointCount >= 8:
+			if self.checkpointCount >= 5:
 				self.checkpointCount = 0
 				self.laps += 1
 			#add an acceptor for our next checkpoint
@@ -394,7 +402,7 @@ class Player(DirectObject):
 	#	return Task.cont
 	
 	def updateHUD(self, task):
-		self.HUD.update(self.velocity, self.player.getX(), self.player.getY(), self.laps, self.place)
+		self.HUD.update(self.velocity, self.player.getX(), self.player.getY(), self.laps, self.place, self.timer)
 		#self.distanceLeft -= self.getDist(self.player.getX(), self.player.getY(), self.goal)
 		#self.HUD.updateMiniMap(self.player.getX(), self.player.getY())
 		return Task.cont
@@ -433,14 +441,19 @@ class Player(DirectObject):
 	def setKey(self,key,value):
 		self.keyMap[key] = value
 		
-	def getDist(self, x, y, checkpoint):
+	def getDist(self, x, y, checkpoint, distance):
 		cx = checkpoint[0]
 		cy = checkpoint[1]
 		dist = math.sqrt((cx-x)**2 + (cy-y)**2)
-		
-		rotAngle = math.atan2(-y,x)
+	
+		if x != 0:
+			rotAngle = math.atan(-y/x)
+		else:
+			rotAngle = math.pi/2
 		
 		newX = x*math.cos(rotAngle) - y*math.sin(rotAngle)
 		
-		dToCheckpoint = dist - newX
+		#dToCheckpoint = dist - newX
+		dToCheckpoint = distance - newX
+	
 		return dToCheckpoint
