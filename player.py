@@ -136,7 +136,7 @@ class Player(DirectObject):
 			self.goal = self.checkpoints.next()
 			print("checkpoint")
 			self.checkpointCount += 1
-			if self.checkpointCount >= 8:
+			if self.checkpointCount >= 25:
 				self.checkpointCount = 0
 				self.laps += 1
 			#add an acceptor for our next checkpoint
