@@ -32,8 +32,8 @@ class World(DirectObject):
 		
 		
 		
-		players.add_spawn(gatSpawn(32, 50, -30))
-		players.add_spawn(bombSpawn(32,40,-30))
+		players.add_spawn(gatSpawn(-105, -10, -35))
+		#players.add_spawn(bombSpawn(32,40,-30))
 		
 
 		

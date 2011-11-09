@@ -36,6 +36,7 @@ class Projectile(DirectObject):
 		self.playerid = playerid
 		self.id = id
 		
+		
 
 		
 		if(self.playerid == 0):
@@ -82,6 +83,7 @@ class Projectile(DirectObject):
 		self.form = loader.loadModel("models/bullet")
 		#self.form.setScale(.005)
 		self.form.reparentTo(render)
+		self.form.setP(self.players.players[0].player.getP())
 	
 	def setupCollisions(self):
 		#run through the gambit
@@ -113,6 +115,8 @@ class Projectile(DirectObject):
 		#elapsed = task.time - self.prevtime
 		self.xpos = self.xpos + self.xvel*elapsed
 		self.ypos = self.ypos + self.yvel*elapsed
+		self.zpos = self.players.players[0].player.getZ()
+		self.form.setP(self.players.players[0].player.getP())
 		self.form.setPos(self.xpos, self.ypos, self.zpos)
 		
 		for i in range(self.bulletHandler.getNumEntries()):
