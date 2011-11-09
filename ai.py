@@ -137,7 +137,6 @@ class ai_player(DirectObject):
 		
 		self.pointX = self.form.getX()
 		self.pointY = self.form.getY()
-		self.distance = math.sqrt((self.goal[0] - self.pointX)**2+(self.goal[1] - self.pointY)**2)
 		
 		#load default weapon
 		self.weapon = Weapon(0, 0, -3, 0, [], self.id, self.form.getZ())
@@ -207,8 +206,11 @@ class ai_player(DirectObject):
 		#print "checkpoint!"
 		#print "ai ", self.id, "reached checkpoint ", self.goal[3]
 		if cEntry.getIntoNodePath().getName() == "ai-node" + str(self.goal[3]):
+			self.pointX = self.goal[0]
+			self.pointY = self.goal[1]
 			self.brain.checkpoint()
 			self.goal = self.brain.next()
+			self.distance = math.sqrt((self.goal[0] - self.pointX)**2+(self.goal[1] - self.pointY)**2)
 			#print self.goal[0], self.goal[1], self.goal[2]
 	
 	def update(self, task):
