@@ -231,23 +231,35 @@ class Bomb(DirectObject):
 			self.accept("explosion-explodes-ai3", self.explode, [3])
 			self.accept("explosion-explodes-ai4", self.explode, [4])
 		else:
-			self.accept("bomb:" + str(self.playerid) + "-detonated-player", self.explode, [0])
+			self.accept("bomb:" + str(self.playerid) + "-detonated-player", self.detonate, [0])
 			if(self.playerid ==1):
-				self.accept("bomb:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai2", self.kill, [2])
-				self.accept("bomb:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai3", self.kill, [3])
-				self.accept("bomb:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai4", self.kill, [4])
+				self.accept("bomb:" + str(self.playerid) + "-detonated-ai2", self.explode, [2])
+				self.accept("bomb:" + str(self.playerid) + "-detonated-ai3", self.explode, [3])
+				self.accept("bomb:" + str(self.playerid) + "-detonated-ai4", self.explode, [4])
+				self.accept("explosion-explodes-ai2", self.explode, [2])
+				self.accept("explosion-explodes-ai3", self.explode, [3])
+				self.accept("explosion-explodes-ai4", self.explode, [4])
 			elif(self.playerid == 2):
-				self.accept("bomb:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai1", self.kill, [1])
-				self.accept("bomb:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai3", self.kill, [3])
-				self.accept("bomb:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai4", self.kill, [4])
+				self.accept("bomb:" + str(self.playerid) + "-detonated-ai1", self.explode, [1])
+				self.accept("bomb:" + str(self.playerid) + "-detonated-ai3", self.explode, [3])
+				self.accept("bomb:" + str(self.playerid) + "-detonated-ai4", self.explode, [4])
+				self.accept("explosion-explodes-ai1", self.explode, [1])
+				self.accept("explosion-explodes-ai3", self.explode, [3])
+				self.accept("explosion-explodes-ai4", self.explode, [4])
 			elif(self.playerid == 3):
-				self.accept("bomb:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai1", self.kill, [1])
-				self.accept("bomb:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai2", self.kill, [2])
-				self.accept("bomb:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai4", self.kill, [4])
+				self.accept("bomb:" + str(self.playerid) + "-detonated-ai1", self.explode, [1])
+				self.accept("bomb:" + str(self.playerid) + "-detonated-ai2", self.explode, [2])
+				self.accept("bomb:" + str(self.playerid) + "-detonated-ai4", self.explode, [4])
+				self.accept("explosion-explodes-ai1", self.explode, [1])
+				self.accept("explosion-explodes-ai2", self.explode, [2])
+				self.accept("explosion-explodes-ai4", self.explode, [4])
 			elif(self.playerid == 4):
-				self.accept("bomb:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai1", self.kill, [1])
-				self.accept("bomb:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai2", self.kill, [2])
-				self.accept("bomb:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai3", self.kill, [3])
+				self.accept("bomb:" + str(self.playerid) + "-detonated-ai1", self.explode, [1])
+				self.accept("bomb:" + str(self.playerid) + "-detonated-ai2", self.explode, [2])
+				self.accept("bomb:" + str(self.playerid) + "-detonated-ai3", self.explode, [3])
+				self.accept("explosion-explodes-ai1", self.explode, [1])
+				self.accept("explosion-explodes-ai2", self.explode, [2])
+				self.accept("explosion-explodes-ai3", self.explode, [3])
 		
 		print "spawning bomb...", self.xpos, self.ypos, self.zpos
 	
