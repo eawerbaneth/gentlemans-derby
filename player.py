@@ -171,7 +171,7 @@ class Player(DirectObject):
 			self.pointX = self.goal[0]
 			self.pointY = self.goal[1]
 			self.checkpoints.checkpoint()
-			self.timer += 15.0
+			self.timer += 25.0
 			if (int(self.goal[3])-1)%4==3:
 				self.gravity = 25
 				print "changing gravity to ", self.gravity

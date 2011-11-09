@@ -139,12 +139,15 @@ class World(DirectObject):
 		
 	def loadLamps(self):
 		#NOTE: you guys need to move lights.txt into your panda python folder
-		f = open("final_path.txt", "r")
+		f = open("new_ai_nodes.txt", "r")
 		#read in nodes from file
+		i=0
 		for line in f:
 			#print "creating new light"
 			words = line.split()
-			self.lights.append(StreetLamp(float(words[0])+10, float(words[1])+10, float(words[2])))
+			if i%3==0:
+				self.lights.append(StreetLamp(float(words[0])+10, float(words[1])+10, float(words[2])))
+			i += 1
 		f.close()
 		
 	def	setupLights(self):

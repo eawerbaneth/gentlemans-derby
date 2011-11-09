@@ -94,7 +94,11 @@ class Weapon(DirectObject):
 		if self.keyMap["firing"] and self.cooldown == 0 and self.ammo > 0 and not players.players[self.playerid].invincible:
 			self.fire()
 		else:
-			if self.form.getCurrentAnim() == "shoot":
+			if int(self.playerid) == 0 and self.form.getCurrentAnim() == "shoot":
+				print self.form.getCurrentFrame('shoot')
+			if self.form.getCurrentAnim() == "shoot" and self.form.getCurrentFrame('shoot')==23:
+				if int(self.playerid) == 0:
+					print "stopping shoot animation"
 				self.form.stop()
 				self.form.loop('idle')
 		
@@ -116,7 +120,6 @@ class Weapon(DirectObject):
 	
 	def fire(self):
 		"""pulls the trigger"""
-
 		#print(len(players.players))
 		self.pistolSound.play()
 		if(self.projId >= self.idLim):
@@ -131,8 +134,12 @@ class Weapon(DirectObject):
 		#	if str(i) != self.playerid:
 		#		self.accept("projectile:" + str(self.playerid) + ":" + str(len(self.bullets)-1) + "-collision-ai"+str(i), self.address_bullet)
 		
-		if self.form.getCurrentAnim() == "idle":
-			self.form.loop('shoot')
+		if int(self.playerid) == 0:
+			print self.form.getCurrentAnim()
+		if self.form.getCurrentAnim() == "idle" or self.form.getCurrentAnim == "None":
+			if int(self.playerid) == 0:
+				print "playing shoot animation"
+			self.form.play('shoot')
 		self.cooldown = 1.0
 
 	#occurs when there is a bullet collision
@@ -168,6 +175,7 @@ class GattlingGun(Weapon):
 		self.form = Actor("animations/gentlemanGattling_idle", {"idle":"animations/gentlemanGattling_idle", "shoot":"animations/gentlemanGattling_trigger"})
 		#self.form.setScale(300)
 		self.form.setPos(self.xpos,self.ypos,self.zpos)
+		self.form.loop('idle')
 		#self.form.setH(90)
 		#self.form.reparentTo(render)
 		
@@ -224,7 +232,7 @@ class BombWeapon(Weapon):
 	def LoadModel(self):
 
 		self.form = Actor("animations/gentlemanBomb_idle", {"idle":"animations/gentlemanBomb_idle", "shoot":"animations/gentlemanBomb_trigger"})
-
+		self.form.loop('idle')
 		#self.form.reparentTo(render)
 	
 	def fire(self):
