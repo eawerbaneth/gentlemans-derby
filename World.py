@@ -32,8 +32,8 @@ class World(DirectObject):
 		
 		
 		
-		players.add_spawn(gatSpawn(-105, -10, -35))
-		#players.add_spawn(bombSpawn(32,40,-30))
+		players.add_spawn(gatSpawn(-105, -10, -30))
+		players.add_spawn(bombSpawn(228,-341,-30))
 		
 
 		
@@ -42,13 +42,14 @@ class World(DirectObject):
 		self.loadModels()
 		self.setupLights()
 		self.setupCollisions()
-		self.worldMusic = loader.loadSfx("Sound/Music/race_loop.wav")
+		self.worldMusic = loader.loadSfx("Sound/Music/entertainer.mp3")
 		self.worldMusic.play()
 		taskMgr.add(self.getPlace, "placeTask")
 		
+		#render.setShaderAuto()
+		
 	#def changeWeapons(self, cEntry):
 	#	self.weapon = GattlingGun(0,0,0,0,self.weapon.bullets)
-		
 		
 
 	def loadModels(self):
@@ -56,7 +57,7 @@ class World(DirectObject):
 		#cNode = self.env.find("**/terrain_collider")
 		#cNode.show()
 		#self.env = loader.loadModel("models/easy_course")
-		self.env = loader.loadModel("models/courseFinal_Export")
+		self.env = loader.loadModel("models/courseFixExport")
 		#cNode = self.env.find("**/terrain_collider")
 		#cNode.show()
 		
@@ -69,7 +70,7 @@ class World(DirectObject):
 		
 		#read in nodes from file
 		for x in range(1, 5):
-			ainodes = open("final_path.txt", "r")
+			ainodes = open("new_ai_nodes.txt", "r")
 			path = []
 			i = 0
 			for line in ainodes:
@@ -95,8 +96,12 @@ class World(DirectObject):
 		camera.setPos(0, 4, 1)
 
 	def setupCollisions(self):
-		self.cHandler = CollisionHandlerEvent()
 		
+		#base.cTrav = CollisionTraverser()
+		cNode = self.env.find("**/pit")
+		cNode.show()
+		
+		self.cHandler = CollisionHandlerEvent()
 		
 		
 		#self.cHandler.setInPattern("%in-collide")

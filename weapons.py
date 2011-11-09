@@ -71,7 +71,7 @@ class Weapon(DirectObject):
 		self.form.loop('idle')
 		#self.form.setScale(5)
 		#self.form.setPos(self.xpos,self.ypos,self.zpos+3)
-		self.form.setH(self.angle)
+		#self.form.setH(self.angle)
 
 		#self.form.reparentTo(render)
 	
@@ -118,7 +118,7 @@ class Weapon(DirectObject):
 		"""pulls the trigger"""
 
 		#print(len(players.players))
-		self.pistolSound.play()
+		#self.pistolSound.play()
 		if(self.projId >= self.idLim):
 			self.projId = 0
 		new_projectile = Projectile(100, self.xpos, self.ypos, self.projZ, self.angle, 100, self.playerid, self.projId, len(self.bullets), players)
@@ -168,7 +168,7 @@ class GattlingGun(Weapon):
 		self.form = Actor("animations/gentlemanGattling_idle", {"idle":"animations/gentlemanGattling_idle", "shoot":"animations/gentlemanGattling_trigger"})
 		#self.form.setScale(300)
 		self.form.setPos(self.xpos,self.ypos,self.zpos)
-		self.form.setH(90)
+		#self.form.setH(90)
 		#self.form.reparentTo(render)
 		
 	def fire(self):
