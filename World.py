@@ -11,6 +11,7 @@ from obstacles import *
 from ai import *
 from helper import *
 from player import *
+from menu import *
 
 
 class World(DirectObject):
@@ -24,6 +25,7 @@ class World(DirectObject):
 		players.add_player(ai_player(2))
 		players.add_player(ai_player(3))
 		players.add_player(ai_player(4))
+		
 		
 		#print(len(helper.glob_players))
 		
@@ -175,6 +177,14 @@ class World(DirectObject):
 		players.players[0].place = L.index(players.players[0].distanceLeft)+1
 		return Task.cont
 		
-		
+m = Menu()
+
+#run()
+while(True):
+	taskMgr.step()
+	if m.start == True:
+		m.destroy()
+		break
 w = World()
-run()	
+while(True):
+	taskMgr.step()
