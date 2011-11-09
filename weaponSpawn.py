@@ -87,7 +87,7 @@ class gatSpawn(DirectObject):
 		cNode = CollisionNode("gatSpawn")
 		cNode.addSolid(cSphere)
 		cNodePath = self.form.attachNewNode(cNode)
-		cNodePath.show()
+		#cNodePath.show()
 		base.cTrav.addCollider(cNodePath, self.cHandler)
 		
 	def kill(self):

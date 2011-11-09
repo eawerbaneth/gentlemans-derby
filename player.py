@@ -27,11 +27,12 @@ class playerCheckpoint(ai_node):
 		
 		cSphere = CollisionSphere(0, 0, 0, 20)
 		name_string = "checkpoint"+self.id
+		print "generating checkpoint with name ", name_string, self.xpos, self.ypos, self.zpos
 		cNode = CollisionNode(name_string)
 		cNode.addSolid(cSphere)
 		cNodePath = self.form.attachNewNode(cNode)
-		if int(self.id) == 0:
-			cNodePath.show()
+		#if int(self.id) == 0:
+		cNodePath.show()
 		base.cTrav.addCollider(cNodePath, self.cHandler)
 		
 class player_node_handler(object):
@@ -154,7 +155,7 @@ class Player(DirectObject):
 				self.gravity = 25
 				print "changing gravity to ", self.gravity
 			else:
-				self.gravity = 4
+				self.gravity = 3
 			self.goal = self.checkpoints.next()
 			print("checkpoint")
 			self.checkpointCount += 1
@@ -163,7 +164,7 @@ class Player(DirectObject):
 				self.laps += 1
 			#add an acceptor for our next checkpoint
 			self.accept("collide-checkpoint" + str(self.goal[2]), self.checkpoint)
-			print "checkpoint!"
+			print "checkpoint!", str(self.goal[2])
 	
 	def loadModels(self):
 		#self.panda = Actor("models/panda-model", {"walk":"panda-walk4", "eat":"panda-eat"})
@@ -310,8 +311,6 @@ class Player(DirectObject):
 				#self.player.loop('pedal', restart = 0, fromFrame = self.player.getCurrentFrame('pedal'))
 			self.stopped = False
 		
-		
-		
 		live = self.weapon.update(self.player.getX(), self.player.getY(), self.weapon.form.getZ(), deg2Rad(self.player.getH()), elapsed)
 
 		if(not live):
@@ -361,7 +360,7 @@ class Player(DirectObject):
 		else:
 			self.player.setZ(startzed-self.gravity*elapsed)
 			self.player.setP(0)
-			print "no collision"
+			print "no collision", self.player.getZ()
 			self.airborne = False
 		
 		
