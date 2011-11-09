@@ -9,6 +9,7 @@ import os
 from weapons import *
 from helper import *
 
+
 class ai_node(object):
 	def __init__(self, x, y, z, i):
 		self.xpos = x
@@ -18,6 +19,8 @@ class ai_node(object):
 		self.loadModel()
 		self.setupCollisions()
 
+
+		
 	def loadModel(self):
 		self.form = loader.loadModel("models/teapot")
 		self.form.reparentTo(render)
@@ -35,7 +38,9 @@ class ai_node(object):
 		cNodePath = self.form.attachNewNode(cNode)
 		#cNodePath.show()
 		base.cTrav.addCollider(cNodePath, self.cHandler)
+
 		
+
 class node_handler(object):
 	def __init__(self, path):
 		self.path = path
@@ -53,6 +58,34 @@ class node_handler(object):
 			i +=1
 		f.close()
 		
+	#def populate_tubes(self):
+	#	self.cHandler = CollisionHandlerEvent()
+	#	self.cHandler.setInPattern("%fn-collide-%in")
+	#	print(self.path[0].xpos)
+	#	print(self.path[0].ypos)
+		#print(self.path[0].zpos)
+		
+	#	print(self.path[1].xpos)
+	#	print(self.path[1].ypos)
+		#print(self.path[1].zpos)
+		
+	#	self.tubeHandler = CollisionHandlerQueue()
+		#base.cTrav.addCollider(cNodePath, self.bulletHandler)
+		
+	#	for p in range(len(self.path)):
+	#		if(p + 1 >= len(self.path)):
+	#			cTube = CollisionTube(self.path[p].xpos, self.path[p].ypos, 0, self.path[0].xpos, self.path[0].ypos, 0, 10)
+	#		else:
+	#			cTube = CollisionTube(self.path[p].xpos, self.path[p].ypos, 0, self.path[p+1].xpos, self.path[p+1].ypos, 0, 10)
+	#		cNode = CollisionNode("tube" + str(p))
+	#		cNode.addSolid(cTube)
+	#		print(cNode.getName())
+	#		cNodePath = self.form.attachNewNode(cNode)
+	#		cNodePath.show()
+	#		base.cTrav.addCollider(cNodePath,self.cHandler)
+	#		base.cTrav.addCollider(cNodePath, self.tubeHandler)
+
+	
 	def checkpoint(self):
 		self.path.append(self.path.pop(0))
 		
@@ -133,8 +166,22 @@ class ai_player(DirectObject):
 			self.accept("ai" + str(self.id) + "-collide-ai-node"+ i.id, self.checkpoint)
 		self.accept("ai" + str(self.id) + "-collide-spikes", self.penalty)
 		self.accept("ai" + str(self.id) + "-collide-oil-slick", self.oil_slicked)
+		self.accept("ai" + str(self.id) + "-collide-gatSpawn", self.changeWeapons, [0])
+		self.accept("ai" + str(self.id) + "-collide-bombSpawn", self.changeWeapons, [1])
 		
 		base.cTrav.addCollider(cNodePath, self.cHandler)
+	
+	def changeWeapons(self, wepIndex, cEntry):
+		if(wepIndex == 0):
+			self.weapon = GattlingGun(0,0,0,0,self.weapon.bullets,0,3)
+			players.spawns[0].collectable = False
+			players.spawns[0].setDowntime()
+			cEntry.getIntoNodePath().remove()
+		elif(wepIndex == 1):
+			self.weapon = BombWeapon(0,0,-30,0,[],0,0)
+			players.spawns[1].collectable = False
+			players.spawns[1].setDowntime()
+			cEntry.getIntoNodePath().remove()
 	
 	def oil_slicked(self, cEntry):
 		print "ai " + str(self.id) + " oil slicked!"
@@ -230,14 +277,20 @@ class ai_player(DirectObject):
 		#update weapon
 		shootflag = False
 		if math.sqrt((self.form.getX() - players.players[0].player.getX())**2 + (self.form.getY() - players.players[0].player.getY())**2) < self.weapon.range + 5:
-			shootflag = False
+			shootflag = True
+
 		for i in range(1, 5):
 			if players.players[i].id != self.id:
 				#check to see if anyone is in range, shoot if they are
 				if math.sqrt((self.form.getX() - players.players[i].form.getX())**2 + (self.form.getY() - players.players[i].form.getY())**2) <= 30:
-					shootflag = False
+					shootflag = True
 		self.weapon.setKey("firing", shootflag)
-		self.weapon.update(self.form.getX(), self.form.getY(), self.weapon.form.getZ(), deg2Rad(self.form.getH()), elapsed) 
+		
+		
+		live = self.weapon.update(self.form.getX(), self.form.getY(), self.weapon.form.getZ(), deg2Rad(self.form.getH()), elapsed) 
+		
+		if(not live):
+			self.weapon = Weapon(0,0,-30,0,self.weapon.bullets, self.id, 3)
 		
 		#keep ai rooted to ground
 		base.cTrav.traverse(render)

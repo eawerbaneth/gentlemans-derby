@@ -9,6 +9,7 @@ from weapons import *
 from helper import *
 from ai import *
 from hud import *
+from weaponSpawn import *
 
 
 class playerCheckpoint(ai_node):
@@ -121,6 +122,8 @@ class Player(DirectObject):
 		self.accept("collide-checkpoint1", self.checkpoint)
 		self.accept("collide-oil-slick", self.oil_slicked)
 		self.accept("collide-spikes", self.spiked)
+		self.accept("collide-gatSpawn", self.changeWeapons, [0])
+		self.accept("collide-bombSpawn", self.changeWeapons, [1])		
 	
 	#triggers when player runs into an oil slick
 	def oil_slicked(self, cEntry):
@@ -128,6 +131,19 @@ class Player(DirectObject):
 	
 	def spiked(self, cEntry):
 		print "player spiked!"
+	
+	def changeWeapons(self, wepIndex, cEntry):
+		if(wepIndex == 0):
+			self.weapon = GattlingGun(0,0,0,0,self.weapon.bullets,0,self.z+3)
+			players.spawns[0].collectable = False
+			players.spawns[0].setDowntime()
+			cEntry.getIntoNodePath().remove()
+		elif(wepIndex == 1):
+			self.weapon = BombWeapon(0,0,-30,0,self.weapon.bullets,0,self.z)
+			players.spawns[1].collectable = False
+			players.spawns[1].setDowntime()
+			cEntry.getIntoNodePath().remove()
+			
 	
 	#triggers when the player his next checkpoint
 	def checkpoint(self, cEntry):
@@ -166,6 +182,10 @@ class Player(DirectObject):
 		#self.weapon = Weapon(0, 0, 600, 0, [], 0)
 
 		#self.weapon = GattlingGun(0, 0, 0, self.player.getH(), [], 0)
+
+		#self.weapon = GattlingGun(0, 0, 0, 0, [], 0, self.z+3)
+		
+
 		#self.weapon = BombWeapon(0, 0, -30, 0, [], 0, self.z)
 		
 		self.weapon.form.reparentTo(self.player)
@@ -174,6 +194,7 @@ class Player(DirectObject):
 	
 	def putPlayer(self, cEntry):
 		self.player.setPos(0,0,-30)	
+
 	
 	def setupLights(self):
 		self.headlight = Spotlight("slight")
@@ -189,8 +210,7 @@ class Player(DirectObject):
 		
 	def move(self, task):
 		elapsed = task.time - self.prevtime
-		if self.player.getZ() -5 > self.lastz:
-			print "TESTING: ", self.lastz
+		startzed = self.player.getZ()
 		if(self.penalty == 0):
 			
 			#testing jumping
@@ -295,7 +315,7 @@ class Player(DirectObject):
 		live = self.weapon.update(self.player.getX(), self.player.getY(), self.weapon.form.getZ(), deg2Rad(self.player.getH()), elapsed)
 
 		if(not live):
-			self.weapon = Weapon(0,0,0,0,self.weapon.bullets, self.id, self.z)
+			self.weapon = Weapon(0,0,-30,0,self.weapon.bullets, self.id, self.z+3)
 		#self.weapon.update(self.player.getX(), self.player.getY(), self.weapon.form.getZ(), deg2Rad(self.player.getH()), elapsed)
 		
 		self.playerColNp.setPos(self.player.getX(), self.player.getY(), self.player.getZ())
@@ -309,6 +329,7 @@ class Player(DirectObject):
 			if self.playerHandler.getEntry(i).getIntoNode().getName()=="path_collider":
 				entries.append(entry)
 			#print(entry.getIntoNode().getName())
+			#print(entry.getFromNode().getName())
 			
 		entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
 		if (len(entries) > 0) and (entries[0].getIntoNode().getName() == "path_collider"):
@@ -387,9 +408,9 @@ class Player(DirectObject):
 		cSphere = CollisionSphere((0,0,0), 3)
 		cNode = CollisionNode("player")
 		cNode.addSolid(cSphere)
-		cNode.setIntoCollideMask(BitMask32.allOff())
+		#cNode.setIntoCollideMask(BitMask32.allOff())
 		cNodePath = self.player.attachNewNode(cNode)
-		#cNodePath.show()
+		cNodePath.show()
 		
 		#experiment with lifter
 		self.playerRay = CollisionRay()
@@ -403,7 +424,6 @@ class Player(DirectObject):
 		self.playerColNp.reparentTo(render)
 		self.playerHandler = CollisionHandlerQueue()
 		base.cTrav.addCollider(self.playerColNp, self.playerHandler)
-		
 		base.cTrav.addCollider(cNodePath, self.cHandler)
 	
 	def take_damage(self, amount):
