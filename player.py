@@ -167,7 +167,7 @@ class Player(DirectObject):
 			self.goal = self.checkpoints.next()
 			print("checkpoint")
 			self.checkpointCount += 1
-			if self.checkpointCount >= 25:
+			if self.checkpointCount >= 5:
 				self.checkpointCount = 0
 				self.laps += 1
 			#add an acceptor for our next checkpoint
@@ -402,7 +402,7 @@ class Player(DirectObject):
 	#	return Task.cont
 	
 	def updateHUD(self, task):
-		self.HUD.update(self.velocity, self.player.getX(), self.player.getY(), self.laps, self.place)
+		self.HUD.update(self.velocity, self.player.getX(), self.player.getY(), self.laps, self.place, self.timer)
 		#self.distanceLeft -= self.getDist(self.player.getX(), self.player.getY(), self.goal)
 		#self.HUD.updateMiniMap(self.player.getX(), self.player.getY())
 		return Task.cont
