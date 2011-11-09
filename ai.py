@@ -10,9 +10,10 @@ from weapons import *
 from helper import *
 
 class ai_node(object):
-	def __init__(self, x, y, i):
+	def __init__(self, x, y, z, i):
 		self.xpos = x
 		self.ypos = y
+		self.zpos = z
 		self.id = i
 		self.loadModel()
 		self.setupCollisions()
@@ -20,7 +21,7 @@ class ai_node(object):
 	def loadModel(self):
 		self.form = loader.loadModel("models/teapot")
 		self.form.reparentTo(render)
-		self.form.setPos(self.xpos, self.ypos, -30)
+		self.form.setPos(self.xpos, self.ypos, self.zpos)
 		
 	def setupCollisions(self):
 		self.cHandler = CollisionHandlerEvent()
@@ -40,13 +41,15 @@ class node_handler(object):
 		self.populate_nodes()
 		
 	def populate_nodes(self):
-		print os.getcwd()
+		#print os.getcwd()
 #NOTE: you guys need to move path_nodes.txt into your panda python folder
-		f = open("test_track.txt", "r")
+		f = open("final_path.txt", "r")
 		#read in nodes from file
+		i = 1
 		for line in f:
 			words = line.split()
-			self.path.append(ai_node(int(words[0]), int(words[1]), words[2]))
+			self.path.append(ai_node(float(words[0]), float(words[1]), float(words[2]), str(i)))
+			i +=1
 		f.close()
 		
 	def checkpoint(self):

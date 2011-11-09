@@ -12,24 +12,25 @@ from hud import *
 
 
 class playerCheckpoint(ai_node):
-	def __init__(self, x, y, i):
-		ai_node.__init__(self, x, y, i)
+	def __init__(self, x, y, z, i):
+		ai_node.__init__(self, x, y, z, i)
 		
 	def loadModel(self):
 		self.form = loader.loadModel("models/jack")
 		self.form.reparentTo(render)
-		self.form.setPos(self.xpos, self.ypos, -30)
+		self.form.setPos(self.xpos, self.ypos, self.zpos)
 		
 	def setupCollisions(self):
 		self.cHandler = CollisionHandlerEvent()
 		#self.cHandler.setInPattern('path-node-%fn')
 		
-		cSphere = CollisionSphere(0, 0, 0, 10)
+		cSphere = CollisionSphere(0, 0, 0, 20)
 		name_string = "checkpoint"+self.id
 		cNode = CollisionNode(name_string)
 		cNode.addSolid(cSphere)
 		cNodePath = self.form.attachNewNode(cNode)
-		#cNodePath.show()
+		if int(self.id) == 0:
+			cNodePath.show()
 		base.cTrav.addCollider(cNodePath, self.cHandler)
 		
 class player_node_handler(object):
@@ -40,18 +41,20 @@ class player_node_handler(object):
 	def populate_nodes(self):
 		#print os.getcwd()
 #NOTE: you guys need to move path_nodes.txt into your panda python folder
-		f = open("test_track.txt", "r")
+		f = open("final_path.txt", "r")
 		#read in nodes from file
+		i = 1
 		for line in f:
 			words = line.split()
-			self.path.append(playerCheckpoint(int(words[0]), int(words[1]), words[2]))
+			self.path.append(playerCheckpoint(float(words[0]), float(words[1]), float(words[2]), str(i)))
+			i += 1
 		f.close()
 		
 	#for this one, we aren't recycling nodes, we're getting rid of them and generating a new one
 	#in the same position but with a different id
 	def checkpoint(self):
 		print "player checkpoint!", self.path[0].id
-		self.path.append(playerCheckpoint(self.path[0].form.getX(), self.path[0].form.getY(), str(int(self.path[len(self.path)-1].id)+1)))
+		self.path.append(playerCheckpoint(self.path[0].form.getX(), self.path[0].form.getY(), self.path[0].form.getZ(), str(int(self.path[len(self.path)-1].id)+1)))
 		self.path[0].form.removeNode()
 		self.path.pop(0)
 		
@@ -65,6 +68,7 @@ class Player(DirectObject):
 		self.y = y
 		self.z = z
 		self.lastz = z
+		#self.f = open("final_path.txt", "w")
 		
 		
 		self.loadModels()
@@ -127,6 +131,7 @@ class Player(DirectObject):
 			self.goal = self.checkpoints.next()
 			#add an acceptor for our next checkpoint
 			self.accept("collide-checkpoint" + str(self.goal[2]), self.checkpoint)
+			print "checkpoint!"
 	
 	def loadModels(self):
 		#self.panda = Actor("models/panda-model", {"walk":"panda-walk4", "eat":"panda-eat"})
@@ -184,11 +189,12 @@ class Player(DirectObject):
 			if self.keyMap["right"]:
 				self.player.setH(self.player.getH() - elapsed * 45)
 			if self.keyMap["test"]:
+				#self.f.write(str(self.player.getX()) + ' ' + str(self.player.getY()) + ' ' + str(self.player.getZ()) +'\n')
 				print "\tDEBUGGING!!!", self.player.getX(), self.player.getY(), self.player.getZ()
 			#only allow them to accelerate if they are on the ground
 			if self.keyMap["forward"] and not self.airborne:
 				dist = elapsed * self.velocity
-				self.velocity += elapsed * 30 * self.worldspeed
+				self.velocity += elapsed * 20 * self.worldspeed
 				if self.velocity > self.topspeed: self.velocity = self.topspeed
 				angle = deg2Rad(self.player.getH())
 				dx = dist * math.sin(angle)
@@ -228,16 +234,16 @@ class Player(DirectObject):
 					#dy += dist* -math.cos(otherangle)
 					#print "dz is ", dz
 				self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, self.player.getZ()+dz)
-				if self.keyMap["down"]==0:
-					if self.velocity < 0:
-						dist = elapsed * self.velocity
-						self.velocity += elapsed * 50
-						if self.velocity > 0:
-							self.velocity = 0
-						angle = deg2Rad(self.player.getH())
-						dx = dist * math.sin(angle)
-						dy = dist * -math.cos(angle)
-						self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, self.player.getZ())
+				# if self.keyMap["down"]==0:
+					# if self.velocity < 0:
+						# dist = elapsed * self.velocity
+						# self.velocity -= elapsed * 10
+						# if self.velocity > 0:
+							# self.velocity = 0
+						# angle = deg2Rad(self.player.getH())
+						# dx = dist * math.sin(angle)
+						# dy = dist * -math.cos(angle)
+						# self.player.setPos(self.player.getX() + dx, self.player.getY() + dy, self.player.getZ())
 			
 		self.penalty -= elapsed
 		if(self.penalty < 0):
@@ -284,7 +290,8 @@ class Player(DirectObject):
 		entries = []
 		for i in range(self.playerHandler.getNumEntries()):
 			entry = self.playerHandler.getEntry(i)
-			entries.append(entry)
+			if self.playerHandler.getEntry(i).getIntoNode().getName()=="path_collider":
+				entries.append(entry)
 			#print(entry.getIntoNode().getName())
 			
 		entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
@@ -366,7 +373,7 @@ class Player(DirectObject):
 		
 		#experiment with lifter
 		self.playerRay = CollisionRay()
-		self.playerRay.setOrigin(0, 0, 3)
+		self.playerRay.setOrigin(0, 0, 10)
 		self.playerRay.setDirection(0, 0, -1)
 		self.playerCol = CollisionNode('playerRay')
 		self.playerCol.addSolid(self.playerRay)
