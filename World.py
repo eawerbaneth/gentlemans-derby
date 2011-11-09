@@ -32,7 +32,7 @@ class World(DirectObject):
 		self.loadModels()
 		self.setupLights()
 		self.setupCollisions()
-		
+		taskMgr.add(self.getPlace, "placeTask")
 		
 	def changeWeapons(self, cEntry):
 		self.weapon = GattlingGun(0,0,800,0,self.weapon.bullets)
@@ -161,6 +161,20 @@ class World(DirectObject):
 		# cNodePath = self.env.attachNewNode(cNode)
 		# cNodePath.show()
 
-	
+	def getPlace(self, task):
+		p1 = players.players[0]
+		p1.distanceLeft -= p1.getDist(p1.player.getX(), p1.player.getY(), p1.goal)
+		players.players[1].distanceLeft -= p1.getDist(players.players[1].form.getX(), players.players[1].form.getY(), players.players[1].goal)
+		players.players[2].distanceLeft -= p1.getDist(players.players[2].form.getX(), players.players[2].form.getY(), players.players[2].goal)
+		players.players[3].distanceLeft -= p1.getDist(players.players[3].form.getX(), players.players[3].form.getY(), players.players[3].goal)
+		players.players[4].distanceLeft -= p1.getDist(players.players[4].form.getX(), players.players[4].form.getY(), players.players[4].goal)
+		
+		L = [players.players[0].distanceLeft, players.players[1].distanceLeft, players.players[2].distanceLeft, players.players[3].distanceLeft, players.players[4].distanceLeft]
+		L.sort()
+		
+		players.players[0].place = L.index(players.players[0].distanceLeft)+1
+		return Task.cont
+		
+		
 w = World()
 run()	

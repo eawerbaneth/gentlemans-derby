@@ -74,6 +74,7 @@ class Player(DirectObject):
 		self.laps = 0
 		self.totalDist = 0
 		self.distanceLeft = 1000
+		self.place = 0
 		
 
 		self.keyMap = {"left":0, "right":0, "forward":0, "down":0, "break":0, "test":0}
@@ -380,8 +381,8 @@ class Player(DirectObject):
 		return Task.cont
 	
 	def updateHUD(self, task):
-		self.HUD.update(self.velocity, self.player.getX(), self.player.getY(), self.laps)
-		self.distanceLeft -= self.getDist(self.player.getX(), self.player.getY(), self.goal)
+		self.HUD.update(self.velocity, self.player.getX(), self.player.getY(), self.laps, self.place)
+		#self.distanceLeft -= self.getDist(self.player.getX(), self.player.getY(), self.goal)
 		#self.HUD.updateMiniMap(self.player.getX(), self.player.getY())
 		return Task.cont
 		
