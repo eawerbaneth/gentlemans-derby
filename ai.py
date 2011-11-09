@@ -125,7 +125,7 @@ class ai_player(DirectObject):
 		#self.headlight.showFrustum()
 	
 	def loadModel(self):
-		self.form = Actor("models/gentlemanBike_Pistol", {"pedal":"models/gentlemanBike_Pistol"})
+		self.form = Actor("animations/gentlemanBike_idle", {"pedal":"animations/gentlemanBike_idle"})
 		#self.form.setScale(.004)
 		self.form.setH(45)
 		self.form.loop('pedal')
