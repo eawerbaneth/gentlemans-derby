@@ -12,6 +12,8 @@ from ai import *
 from helper import *
 from player import *
 from weaponSpawn import *
+from menu import *
+
 
 
 class World(DirectObject):
@@ -20,11 +22,14 @@ class World(DirectObject):
 		camera.setPosHpr(0, -15, 7, 0, -15, 0)
 
 		#self.players = helper()
-		players.add_player(Player(0, 0,-30))
-		players.add_player(ai_player(1))
-		players.add_player(ai_player(2))
-		players.add_player(ai_player(3))
-		players.add_player(ai_player(4))
+
+		#players.add_player(Player(0, 0,-30))
+		players.add_player(Player(17, -100, -30))
+		#players.add_player(ai_player(1))
+		#players.add_player(ai_player(2))
+		#players.add_player(ai_player(3))
+		#players.add_player(ai_player(4))
+		
 		
 		
 		players.add_spawn(gatSpawn(32, 50, -30))
@@ -37,8 +42,10 @@ class World(DirectObject):
 		self.loadModels()
 		self.setupLights()
 		self.setupCollisions()
+		taskMgr.add(self.getPlace, "placeTask")
 		
-		
+	#def changeWeapons(self, cEntry):
+	#	self.weapon = GattlingGun(0,0,0,0,self.weapon.bullets)
 		
 		
 
@@ -46,17 +53,40 @@ class World(DirectObject):
 		#self.env = loader.loadModel("models/intermediate_course_export")
 		#cNode = self.env.find("**/terrain_collider")
 		#cNode.show()
-		self.env = loader.loadModel("models/easy_course")
+		#self.env = loader.loadModel("models/easy_course")
+		self.env = loader.loadModel("models/courseFinal_Export")
+		#cNode = self.env.find("**/terrain_collider")
+		#cNode.show()
 		
 
 		self.env.reparentTo(render)
 		self.env.setPos(self.env.getX(), self.env.getY(), self.env.getZ()-30)
 		
-		self.oil = oilSlick(32, 50, -30)
+		#self.oil = oilSlick(32, 50, -30)
 		#self.spikes = Spikes(32, 40, -30)
+		
+		#read in nodes from file
+		for x in range(1, 5):
+			ainodes = open("final_path.txt", "r")
+			path = []
+			i = 0
+			for line in ainodes:
+				words = line.split()
+				path.append(ai_node(float(words[0]), float(words[1]), float(words[2]), str(i)))
+				i +=1
+			players.add_player(ai_player(x, path))
+			ainodes.close()
+		
+		
+		
+		#players.add_player(ai_player(1, path))
+		#players.add_player(ai_player(2, path))
+		#players.add_player(ai_player(3, path))
+		#players.add_player(ai_player(4, path))
 
 		self.env.setScale(8)
 		camera.reparentTo(players.players[0].player)
+		#camera.reparentTo(players.players[1].form)
 		
 		players.players[0].env = self.env
 
@@ -102,12 +132,12 @@ class World(DirectObject):
 		
 	def loadLamps(self):
 		#NOTE: you guys need to move lights.txt into your panda python folder
-		f = open("lights.txt", "r")
+		f = open("final_path.txt", "r")
 		#read in nodes from file
 		for line in f:
 			print "creating new light"
 			words = line.split()
-			self.lights.append(StreetLamp(int(words[0]), int(words[1]), int(words[2])))
+			self.lights.append(StreetLamp(float(words[0])+10, float(words[1])+10, float(words[2])))
 		f.close()
 		
 	def	setupLights(self):
@@ -169,6 +199,29 @@ class World(DirectObject):
 		# cNodePath = self.env.attachNewNode(cNode)
 		# cNodePath.show()
 
-	
+	def getPlace(self, task):
+		print players.players[0].timer
+		p1 = players.players[0]
+		p1.distanceLeft -= p1.getDist(p1.player.getX(), p1.player.getY(), p1.goal)
+		players.players[1].distanceLeft -= p1.getDist(players.players[1].form.getX(), players.players[1].form.getY(), players.players[1].goal)
+		players.players[2].distanceLeft -= p1.getDist(players.players[2].form.getX(), players.players[2].form.getY(), players.players[2].goal)
+		players.players[3].distanceLeft -= p1.getDist(players.players[3].form.getX(), players.players[3].form.getY(), players.players[3].goal)
+		players.players[4].distanceLeft -= p1.getDist(players.players[4].form.getX(), players.players[4].form.getY(), players.players[4].goal)
+		
+		L = [players.players[0].distanceLeft, players.players[1].distanceLeft, players.players[2].distanceLeft, players.players[3].distanceLeft, players.players[4].distanceLeft]
+		L.sort()
+		
+		players.players[0].place = L.index(players.players[0].distanceLeft)+1
+		return Task.cont
+		
+m = Menu()
+
+#run()
+while(True):
+	taskMgr.step()
+	if m.start == True:
+		m.destroy()
+		break
 w = World()
-run()	
+while(True):
+	taskMgr.step()
