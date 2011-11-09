@@ -97,8 +97,8 @@ class World(DirectObject):
 	def setupCollisions(self):
 		
 		#base.cTrav = CollisionTraverser()
-		#cNode = self.env.find("**/walls_collider")
-		#cNode.show()
+		cNode = self.env.find("**/pit")
+		cNode.show()
 		
 		self.cHandler = CollisionHandlerEvent()
 		

@@ -61,7 +61,7 @@ class player_node_handler(object):
 		self.path.pop(0)
 		
 	def next(self):
-		return [self.path[0].xpos, self.path[0].ypos, self.path[0].id]
+		return [self.path[0].xpos, self.path[0].ypos, self.path[0].zpos, self.path[0].id]
 
 class Player(DirectObject):
 	def __init__(self, x, y, z):
@@ -72,6 +72,7 @@ class Player(DirectObject):
 		self.lastz = z
 		#self.f = open("player_checkpoints.txt", "w")
 		self.timer = 30.0
+		
 		
 		self.loadModels()
 		self.setupLights()
@@ -100,6 +101,7 @@ class Player(DirectObject):
 		#handle checkpoints
 		self.checkpoints = player_node_handler()
 		self.goal = self.checkpoints.next()
+		self.last_checkpoint = self.goal
 		self.env = 0
 		#jumping 'n' such
 		self.stopped = True
@@ -142,7 +144,7 @@ class Player(DirectObject):
 	
 	def changeWeapons(self, wepIndex, cEntry):
 		if(wepIndex == 0):
-			self.weapon = GattlingGun(0,0,0,0,self.weapon.bullets,0,self.z+3)
+			self.weapon = GattlingGun(0,0,-3,0,self.weapon.bullets,0,self.z+3)
 			players.spawns[0].collectable = False
 			players.spawns[0].setDowntime()
 			cEntry.getIntoNodePath().remove()
@@ -155,13 +157,14 @@ class Player(DirectObject):
 	
 	#triggers when the player his next checkpoint
 	def checkpoint(self, cEntry):
-		if cEntry.getIntoNodePath().getName() == "checkpoint" + str(self.goal[2]):
+		if cEntry.getIntoNodePath().getName() == "checkpoint" + str(self.goal[3]):
+			self.last_checkpoint = self.goal
 			self.checkpoints.checkpoint()
 			self.timer += 15.0
-			if (int(self.goal[2])-1)%4==3:
+			if (int(self.goal[3])-1)%4==3:
 				self.gravity = 25
 				print "changing gravity to ", self.gravity
-			elif (int(self.goal[2])-1)%4==2:
+			elif (int(self.goal[3])-1)%4==2:
 				self.gravity = 2.5
 			else:
 				self.gravity = 10
@@ -172,8 +175,8 @@ class Player(DirectObject):
 				self.checkpointCount = 0
 				self.laps += 1
 			#add an acceptor for our next checkpoint
-			self.accept("collide-checkpoint" + str(self.goal[2]), self.checkpoint)
-			print "checkpoint!", str(self.goal[2])
+			self.accept("collide-checkpoint" + str(self.goal[3]), self.checkpoint)
+			print "checkpoint!", str(self.goal[3])
 	
 	def loadModels(self):
 		#self.panda = Actor("models/panda-model", {"walk":"panda-walk4", "eat":"panda-eat"})
@@ -185,8 +188,7 @@ class Player(DirectObject):
 		self.player.reparentTo(render)
 		self.player.setPos(self.x,self.y,self.z)
 
-
-		self.weapon = GattlingGun(0, 0, 0, 0, [], 0, self.z+3)
+		self.weapon = GattlingGun(0, 0, -3, 0, [], 0, self.z+3)
 		#self.weapon = Weapon(0, 0, -3, 0, [], 0, self.z)
 		#self.weapon = GattlingGun(0, 0, 800, 0, [], 0)
 		#self.weapon = Weapon(0, 0, 600, 0, [], 0)
@@ -371,6 +373,12 @@ class Player(DirectObject):
 			self.player.setP(0)
 			print "no collision", self.player.getZ()
 			self.airborne = False
+			self.player.setPos(self.last_checkpoint[0], self.last_checkpoint[1], self.last_checkpoint[2])
+			# self.player.setH(0)
+			# self.player.setP(0)
+			self.velocity = 0
+			self.take_damage(2)
+			
 		
 		
 		######deal with camera
@@ -392,6 +400,7 @@ class Player(DirectObject):
 		camera.setPos(0, yoffset, zoffset)
 		#print "camera Z is ", camera.getZ(), zoffset
 		camera.lookAt(self.player)
+		
 		
 		self.prevtime = task.time
 		self.lastz = self.player.getZ()

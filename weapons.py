@@ -71,7 +71,7 @@ class Weapon(DirectObject):
 		self.form.loop('idle')
 		#self.form.setScale(5)
 		#self.form.setPos(self.xpos,self.ypos,self.zpos+3)
-		self.form.setH(self.angle)
+		#self.form.setH(self.angle)
 
 		#self.form.reparentTo(render)
 	
@@ -168,7 +168,7 @@ class GattlingGun(Weapon):
 		self.form = Actor("animations/gentlemanGattling_idle", {"idle":"animations/gentlemanGattling_idle", "shoot":"animations/gentlemanGattling_trigger"})
 		#self.form.setScale(300)
 		self.form.setPos(self.xpos,self.ypos,self.zpos)
-		self.form.setH(90)
+		#self.form.setH(90)
 		#self.form.reparentTo(render)
 		
 	def fire(self):
