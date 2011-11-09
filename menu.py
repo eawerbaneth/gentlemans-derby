@@ -13,7 +13,7 @@ import sys
 
 class Menu(DirectObject):
     def __init__(self):
-        self.title = OnscreenImage(image = 'img/placeholder.png', pos = (0, 0, 0) )
+        self.title = OnscreenImage(image = 'img/titleScreen.png', pos = (0, 0, 0) )
         self.pointer = OnscreenImage(image = 'img/pointer.png', pos = (0, 0 ,0))
         self.pointer.setScale(.05)
         self.start = False
@@ -40,7 +40,7 @@ class Menu(DirectObject):
     def back(self):
         if self.instructions == True:
             self.instructions = False
-            self.title.setImage('img/placeholder.png')
+            self.title.setImage('img/titleScreen.png')
             self.pointer.setImage('img/pointer.png')
     
     def movePointerUp(self):
