@@ -3,15 +3,16 @@
 
 
 class helper():
-	glob_players = []
 	
 	def __init__(self):
 		self.players = []
+		self.spawns = []
 		
 	def add_player(self, new_player):
 		self.players.append(new_player)
-		glob_players = self.players
-		print(len(glob_players))
 
 	def get_player(self, ind):
 		return self.players[ind]
+		
+	def add_spawn(self, new_spawn):
+		self.spawns.append(new_spawn)

@@ -88,7 +88,7 @@ class Weapon(DirectObject):
 		if self.cooldown < 0.0:
 			self.cooldown = 0.0
 		
-		if self.keyMap["firing"] and self.cooldown == 0 and self.ammo > 0:
+		if self.keyMap["firing"] and self.cooldown == 0 and self.ammo > 0 and not players.players[self.playerid].invincible:
 			self.fire()
 		
 		for i, projectile in enumerate(self.bullets):
@@ -199,6 +199,7 @@ class BombWeapon(Weapon):
 		self.penalty = 2.0
 		self.ammo = 3
 		self.range = 25
+		self.playerid = id
 	
 	#each individual method is going to need to load its own model
 #FLAG: needs image
@@ -211,7 +212,7 @@ class BombWeapon(Weapon):
 	def fire(self):
 		"""drops a bomb"""
 		#note: bombs don't inherit from projectile class
-		new_bomb = Bomb(self.xpos, self.ypos, -30, self.angle-180)
+		new_bomb = Bomb(self.xpos, self.ypos, -30, self.angle-180, self.playerid, players)
 		self.bullets.append(new_bomb)
 		self.cooldown = 5.0
 		self.ammo -= 1

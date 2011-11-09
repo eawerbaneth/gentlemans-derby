@@ -11,6 +11,7 @@ from obstacles import *
 from ai import *
 from helper import *
 from player import *
+from weaponSpawn import *
 
 
 class World(DirectObject):
@@ -19,13 +20,17 @@ class World(DirectObject):
 		camera.setPosHpr(0, -15, 7, 0, -15, 0)
 
 		#self.players = helper()
-		players.add_player(Player(0, 0, -30))
+		players.add_player(Player(0, 0,-30))
 		players.add_player(ai_player(1))
 		players.add_player(ai_player(2))
 		players.add_player(ai_player(3))
 		players.add_player(ai_player(4))
 		
-		#print(len(helper.glob_players))
+		
+		players.add_spawn(gatSpawn(32, 50, -30))
+		players.add_spawn(bombSpawn(32,40,-30))
+		
+
 		
 		self.lights = []
 		
@@ -34,23 +39,23 @@ class World(DirectObject):
 		self.setupCollisions()
 		
 		
-	def changeWeapons(self, cEntry):
-		self.weapon = GattlingGun(0,0,800,0,self.weapon.bullets)
 		
+		
+
 	def loadModels(self):
-		self.env = loader.loadModel("models/intermediate_course_export")
-		cNode = self.env.find("**/terrain_collider")
-		cNode.show()
+		#self.env = loader.loadModel("models/intermediate_course_export")
+		#cNode = self.env.find("**/terrain_collider")
+		#cNode.show()
+		self.env = loader.loadModel("models/easy_course")
 		
 
 		self.env.reparentTo(render)
 		self.env.setPos(self.env.getX(), self.env.getY(), self.env.getZ()-30)
 		
 		self.oil = oilSlick(32, 50, -30)
-		self.spikes = Spikes(32, 40, -30)
+		#self.spikes = Spikes(32, 40, -30)
 
-
-		self.env.setScale(4)
+		self.env.setScale(8)
 		camera.reparentTo(players.players[0].player)
 		
 		players.players[0].env = self.env
@@ -59,6 +64,8 @@ class World(DirectObject):
 
 	def setupCollisions(self):
 		self.cHandler = CollisionHandlerEvent()
+		
+		
 		
 		#self.cHandler.setInPattern("%in-collide")
 		#cSphere = CollisionInvSphere((0,0,0), 1)
