@@ -69,7 +69,7 @@ class Player(DirectObject):
 		self.z = z
 		self.lastz = z
 		#self.f = open("player_checkpoints.txt", "w")
-		
+		self.timer = 30.0
 		
 		self.loadModels()
 		self.setupLights()
@@ -133,6 +133,7 @@ class Player(DirectObject):
 	def checkpoint(self, cEntry):
 		if cEntry.getIntoNodePath().getName() == "checkpoint" + str(self.goal[2]):
 			self.checkpoints.checkpoint()
+			self.timer += 15.0
 			if (int(self.goal[2])-1)%4==3:
 				self.gravity = 25
 				print "changing gravity to ", self.gravity
@@ -343,26 +344,27 @@ class Player(DirectObject):
 			self.airborne = False
 		
 		
-		#######deal with camera
-		# offset = self.player.getP()
-		# if offset > 15:
-			# self.player.setP(15)
-			# offset = 15
-		# elif offset < -15:
-			# self.player.setP(-15)
-			# offset = -15
+		######deal with camera
+		offset = self.player.getP()
+		if offset > 15:
+			self.player.setP(15)
+			offset = 15
+		elif offset < -15:
+			self.player.setP(-15)
+			offset = -15
 		
-		# offset = deg2Rad(offset)
-		# camera.setP(0)
-		# yoffset = abs(math.cos(offset)*(25+(10*abs(self.velocity)/10))+math.sin(offset)*(5+(5*abs(self.velocity)/10)))
-		# zoffset = abs(math.cos(offset)*(25+(10*abs(self.velocity)/10))+math.sin(offset)*(5+(5*abs(self.velocity)/10)))
-		#######print "offset is ", offset, " yoffset is ", yoffset, " zoffzet is ", zoffset
+		offset = deg2Rad(offset)
+		camera.setP(0)
+		yoffset = abs(math.cos(offset)*(25+(10*abs(self.velocity)/10))+math.sin(offset)*(5+(5*abs(self.velocity)/10)))
+		zoffset = abs(math.cos(offset)*(25+(10*abs(self.velocity)/10))+math.sin(offset)*(5+(5*abs(self.velocity)/10)))
+		######print "offset is ", offset, " yoffset is ", yoffset, " zoffzet is ", zoffset
 		
-		# camera.setPos(0, yoffset, zoffset)
-		# camera.lookAt(self.player)
+		camera.setPos(0, yoffset, zoffset)
+		camera.lookAt(self.player)
 		
 		self.prevtime = task.time
 		self.lastz = self.player.getZ()
+		self.timer -= elapsed
 		return Task.cont
 	
 	#def adjustCamera(self, task):

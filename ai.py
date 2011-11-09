@@ -65,7 +65,7 @@ class ai_player(DirectObject):
 		self.goal = self.brain.next()
 		self.id = id
 		self.velocity = 0
-		self.topspeed = 30
+		self.topspeed = 70
 		self.time_penalty = 0
 		self.invincible = False
 		self.distanceLeft = 1000
@@ -161,9 +161,9 @@ class ai_player(DirectObject):
 		elapsed = task.time - self.prevtime
 		#startzed = self.form.getZ()
 		
-		if int(self.id)==1:
-			camera.lookAt(self.form)
-			print "Pitch is ", self.form.getP()
+		#if int(self.id)==1:
+		#	camera.lookAt(self.form)
+		#	print "Pitch is ", self.form.getP()
 		#	print "heading to ai-node ", self.goal[3], "(", self.goal[0], ",", self.goal[1], ",", self.goal[2], ")"
 		#	print "current Z is ", self.form.getZ()
 		
@@ -190,8 +190,15 @@ class ai_player(DirectObject):
 				self.form.setH(angle)
 			#deal with pitch
 			otherangle = rad2Deg(math.atan2((self.form.getZ()-self.goal[2]), ((self.form.getY()-self.goal[1])))) #- math.pi/2)
-			if otherangle > 90 and otherangle < 180:
+			if otherangle >= 180 or otherangle < -180:
+				print "(", self.form.getZ(), self.goal[2], ")"
+			
+			if otherangle > 90 and otherangle <= 180:
 				otherangle = 180 - otherangle
+				
+			#if int(self.id)==1:
+			#	print -otherangle
+			
 			
 			#print otherangle, "(",self.form.getZ(),",",self.form.getY(),") (",self.goal[2],",",self.goal[1],")"
 			cur_pitch = self.form.getP()

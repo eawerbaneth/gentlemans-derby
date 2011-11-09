@@ -47,7 +47,7 @@ class World(DirectObject):
 		#self.spikes = Spikes(32, 40, -30)
 		
 		#read in nodes from file
-		for x in range(1, 4):
+		for x in range(1, 5):
 			ainodes = open("final_path.txt", "r")
 			path = []
 			i = 0
@@ -66,8 +66,8 @@ class World(DirectObject):
 		#players.add_player(ai_player(4, path))
 
 		self.env.setScale(4)
-		#camera.reparentTo(players.players[0].player)
-		camera.reparentTo(players.players[1].form)
+		camera.reparentTo(players.players[0].player)
+		#camera.reparentTo(players.players[1].form)
 		
 		players.players[0].env = self.env
 
@@ -111,12 +111,12 @@ class World(DirectObject):
 		
 	def loadLamps(self):
 		#NOTE: you guys need to move lights.txt into your panda python folder
-		f = open("lights.txt", "r")
+		f = open("final_path.txt", "r")
 		#read in nodes from file
 		for line in f:
 			print "creating new light"
 			words = line.split()
-			self.lights.append(StreetLamp(int(words[0]), int(words[1]), int(words[2])))
+			self.lights.append(StreetLamp(float(words[0])+10, float(words[1])+10, float(words[2])))
 		f.close()
 		
 	def	setupLights(self):
@@ -179,6 +179,7 @@ class World(DirectObject):
 		# cNodePath.show()
 
 	def getPlace(self, task):
+		print players.players[0].timer
 		p1 = players.players[0]
 		p1.distanceLeft -= p1.getDist(p1.player.getX(), p1.player.getY(), p1.goal)
 		players.players[1].distanceLeft -= p1.getDist(players.players[1].form.getX(), players.players[1].form.getY(), players.players[1].goal)

@@ -8,7 +8,7 @@ from direct.task import Task #for update functions
 from helper import *
 #from player import *
 
-players = helper()
+#players = helper()
 
 class Projectile(DirectObject):
 	def __init__(self, vel, x, y, z, angle, range, playerid, id, penalty, playerList):
