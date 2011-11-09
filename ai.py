@@ -67,6 +67,7 @@ class ai_player(DirectObject):
 		self.topspeed = 30
 		self.time_penalty = 0
 		self.invincible = False
+		self.distanceLeft = 1000
 		
 		self.loadModel()
 		self.setupLights()
