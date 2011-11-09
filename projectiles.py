@@ -8,7 +8,7 @@ from direct.task import Task #for update functions
 from helper import *
 #from player import *
 
-players = helper()
+#players = helper()
 
 class Projectile(DirectObject):
 	def __init__(self, vel, x, y, z, angle, range, playerid, id, penalty, playerList):
@@ -46,6 +46,22 @@ class Projectile(DirectObject):
 			self.accept("projectile:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai4", self.kill, [4])
 		else:
 			self.accept("projectile:" + str(self.playerid) + ":" + str(self.id) + "-collide-player", self.kill, [0])
+			if(self.playerid ==1):
+				self.accept("projectile:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai2", self.kill, [2])
+				self.accept("projectile:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai3", self.kill, [3])
+				self.accept("projectile:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai4", self.kill, [4])
+			elif(self.playerid == 2):
+				self.accept("projectile:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai1", self.kill, [1])
+				self.accept("projectile:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai3", self.kill, [3])
+				self.accept("projectile:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai4", self.kill, [4])
+			elif(self.playerid == 3):
+				self.accept("projectile:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai1", self.kill, [1])
+				self.accept("projectile:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai2", self.kill, [2])
+				self.accept("projectile:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai4", self.kill, [4])
+			elif(self.playerid == 4):
+				self.accept("projectile:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai1", self.kill, [1])
+				self.accept("projectile:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai2", self.kill, [2])
+				self.accept("projectile:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai3", self.kill, [3])
 		
 		self.loadModel()
 		self.setupCollisions()
@@ -121,7 +137,6 @@ class Projectile(DirectObject):
 		#print(self.players.players[1])
 		
 		
-		print("LOLOLOLOLOLOL")
 		#print(self.players.players[hitId])
 		self.players.players[hitId].take_damage(3)
 		self.form.removeNode()
@@ -182,11 +197,14 @@ class Flames(DirectObject):
 		return True
 	
 class Bomb(DirectObject):
-	def __init__(self, x, y, z, angle):
+	def __init__(self, x, y, z, angle, playerid, playerList):
 		self.xpos = x
 		self.ypos = y
 		self.zpos = z
 		self.angle = angle
+		self.playerid =  playerid
+		self.players = playerList
+		
 		self.loadModel()
 		self.setupCollisions()
 		self.prevtime = -1
@@ -194,23 +212,53 @@ class Bomb(DirectObject):
 		self.exploderange = 10.0
 		self.penalty = 100
 		self.exploded = False
-		self.accept('bomb-detonated-player', self.explode)
+		#self.accept("bomb-detonated-player", self.explode)
+		if(self.playerid == 0):
+		
+			self.accept("bomb:" + str(self.playerid)  + "-detonated-ai1", self.detonate, [1])
+			self.accept("bomb:" + str(self.playerid)  + "-detonated-ai2", self.detonate, [2])
+			self.accept("bomb:" + str(self.playerid)  + "-detonated-ai3", self.detonate, [3])
+			self.accept("bomb:" + str(self.playerid)  + "-detonated-ai4", self.detonate, [4])
+			self.accept("explosion-explodes-ai1", self.explode, [1])
+			self.accept("explosion-explodes-ai2", self.explode, [2])
+			self.accept("explosion-explodes-ai3", self.explode, [3])
+			self.accept("explosion-explodes-ai4", self.explode, [4])
+		else:
+			self.accept("bomb:" + str(self.playerid) + "-detonated-player", self.explode, [0])
+			if(self.playerid ==1):
+				self.accept("bomb:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai2", self.kill, [2])
+				self.accept("bomb:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai3", self.kill, [3])
+				self.accept("bomb:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai4", self.kill, [4])
+			elif(self.playerid == 2):
+				self.accept("bomb:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai1", self.kill, [1])
+				self.accept("bomb:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai3", self.kill, [3])
+				self.accept("bomb:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai4", self.kill, [4])
+			elif(self.playerid == 3):
+				self.accept("bomb:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai1", self.kill, [1])
+				self.accept("bomb:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai2", self.kill, [2])
+				self.accept("bomb:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai4", self.kill, [4])
+			elif(self.playerid == 4):
+				self.accept("bomb:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai1", self.kill, [1])
+				self.accept("bomb:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai2", self.kill, [2])
+				self.accept("bomb:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai3", self.kill, [3])
+		
 		print "spawning bomb...", self.xpos, self.ypos, self.zpos
 	
 	def loadModel(self):
 		"""loads the bomb model"""
 		self.form = loader.loadModel("models/bombExport")
 		self.form.reparentTo(render)
-		self.form.setPos(self.xpos, self.ypos, self.zpos+3)
+		self.form.setPos(self.xpos, self.ypos, self.zpos)
 		
 	def setupCollisions(self):
 		"""sets the bomb up to collide with things"""
 		#base.cTrav = CollisionTraverser()
 		self.cHandler = CollisionHandlerEvent()
-		self.cHandler.setInPattern('bomb-detonated-%in')
+		tag = "bomb:" + str(self.playerid)
+		self.cHandler.setInPattern(tag + "-detonated-%in")
 		
 		cSphere = CollisionSphere((0,0,0), 1)
-		cNode = CollisionNode("bomb")
+		cNode = CollisionNode(tag)
 		cNode.addSolid(cSphere)
 		cNodePath = self.form.attachNewNode(cNode)
 		cNodePath.show()
@@ -231,10 +279,11 @@ class Bomb(DirectObject):
 		print "bomb countdown: ", self.countdown
 		
 		if self.countdown <= 0 and not self.exploded:
-			self.explode()
+			self.detonate(-1, None)
 			
 		if self.countdown <= -1:
 			self.form.removeNode()
+			self.explosionForm.removeNode()
 			return False
 		
 		#self.prevtime = task.time
@@ -243,17 +292,37 @@ class Bomb(DirectObject):
 	
 	#need to test to see if the explosion is lasting long enough to collide with anything
 	#before being removed
-	def explode(self):	
+	def detonate(self, hitId, cEntry):	
 		"""the bomb explodes"""
+		#self.form.getParent().removeNode()
+		if(cEntry):
+			print(cEntry.getFromNodePath())
+			cEntry.getFromNodePath().remove()
+		else:
+			self.form.removeNode()
+		if(not hitId == -1):
+			self.players.players[hitId].take_damage(6)
+			self.countdown = 0
+		
 		self.exploded = True
+		
+		self.explosionForm = loader.loadModel("models/teapot")
+		self.explosionForm.reparentTo(render)
+		self.explosionForm.setPos(self.xpos, self.ypos, self.zpos)
 		#base.cTrav = CollisionTraverser()
 		self.cHandler2 = CollisionHandlerEvent()
-		self.cHandler2.setInPattern('blew-up-%in')
+		self.cHandler2.setInPattern("explosion-explodes-%in")
 		
 		explosionSphere = CollisionSphere(0, 0, 0, self.exploderange)
 		cNode = CollisionNode("explosion")
 		cNode.addSolid(explosionSphere)
-		cNodePath = self.form.attachNewNode(cNode)
+		cNodePath = self.explosionForm.attachNewNode(cNode)
 		cNodePath.show()
 		base.cTrav.addCollider(cNodePath, self.cHandler2)
+		
+	def explode(self, hitId, cEntry):
+		"""fire hits player/ai"""
+		self.players.players[hitId].take_damage(3)
+		cEntry.getFromNodePath().remove()
+		print(cEntry.getFromNodePath())
 		

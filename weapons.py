@@ -59,15 +59,14 @@ class Weapon(DirectObject):
 	#	return Task.cont
 		
 	def LoadModel(self):
-
-
-
 		#self.form = loader.loadModel("models/weapons/revolverProxy")
 		#self.form.setScale(.9)
 
-		self.form = loader.loadModel("models/weapons/revolverProxy")
-		self.form.setScale(5)
-		self.form.setPos(self.xpos,self.ypos,self.zpos+3)
+		self.form = Actor("animations/gentlemanPistol_idle", {"idle":"animations/gentlemanPistol_idle", "shoot":"animations/gentlemanPistol_idle"})
+		self.form.setPos(self.xpos, self.ypos, self.zpos)
+		self.form.loop('idle')
+		#self.form.setScale(5)
+		#self.form.setPos(self.xpos,self.ypos,self.zpos+3)
 		self.form.setH(self.angle)
 
 		#self.form.reparentTo(render)
@@ -88,15 +87,19 @@ class Weapon(DirectObject):
 		if self.cooldown < 0.0:
 			self.cooldown = 0.0
 		
-		if self.keyMap["firing"] and self.cooldown == 0 and self.ammo > 0:
+		if self.keyMap["firing"] and self.cooldown == 0 and self.ammo > 0 and not players.players[self.playerid].invincible:
 			self.fire()
+		else:
+			if self.form.getCurrentAnim() == "shoot":
+				self.form.stop()
+				self.form.loop('idle')
 		
 		for i, projectile in enumerate(self.bullets):
 			#update all projectiles belonging to this weapon,
 			if not projectile.update(elapsed):
 				#if the projectile was destroyed, get rid of it
 				self.bullets.pop(i)
-	
+
 		# if the player runs out of ammo (this will only happen on inherited classes, 
 		# kill the thing and revert back to the pistol
 		if self.ammo <= 0:
@@ -122,7 +125,9 @@ class Weapon(DirectObject):
 		#for i in range(1, 4):
 		#	if str(i) != self.playerid:
 		#		self.accept("projectile:" + str(self.playerid) + ":" + str(len(self.bullets)-1) + "-collision-ai"+str(i), self.address_bullet)
-			
+		
+		if self.form.getCurrentAnim() == "idle":
+			self.form.loop('shoot')
 		self.cooldown = 1.0
 
 	#occurs when there is a bullet collision
@@ -154,7 +159,7 @@ class GattlingGun(Weapon):
 
 #using revolver proxy for now
 	def LoadModel(self):
-		self.form = Actor("models/gattlingExport")
+		self.form = Actor("animations/gentlemanGattling_idle", {"idle":"animations/gentlemanGattling_idle", "shoot":"animations/gentlemanGattling_trigger"})
 		#self.form.setScale(300)
 		self.form.setPos(self.xpos,self.ypos,self.zpos)
 		self.form.setH(90)
@@ -166,6 +171,8 @@ class GattlingGun(Weapon):
 		#self.bullets[len(self.bullets)-1].penalty = 0.3
 		self.cooldown = 0.3
 		self.ammo -= 1
+		if self.form.getCurrentAnim() == "idle":
+			self.form.loop('shoot')
 	
 class Flamethrower(Weapon):
 	def __init__(self, x, y, z, angle, bullets, id, projZ):
@@ -189,6 +196,7 @@ class Flamethrower(Weapon):
 		self.cooldown = 0
 		self.ammo -= 1
 		
+		
 	
 class BombWeapon(Weapon):
 
@@ -199,21 +207,24 @@ class BombWeapon(Weapon):
 		self.penalty = 2.0
 		self.ammo = 3
 		self.range = 25
+		self.playerid = id
 	
 	#each individual method is going to need to load its own model
 #FLAG: needs image
 	def LoadModel(self):
 
-		self.form = Actor("models/weapons/revolverProxy")
+		self.form = Actor("animations/gentlemanBomb_idle", {"idle":"animations/gentlemanBomb_idle", "shoot":"animations/gentlemanBomb_trigger"})
 
 		#self.form.reparentTo(render)
 	
 	def fire(self):
 		"""drops a bomb"""
 		#note: bombs don't inherit from projectile class
-		new_bomb = Bomb(self.xpos, self.ypos, -30, self.angle-180)
+		new_bomb = Bomb(self.xpos, self.ypos, -30, self.angle-180, self.playerid, players)
 		self.bullets.append(new_bomb)
 		self.cooldown = 5.0
 		self.ammo -= 1
+		if self.form.getCurrentAnim() == "idle":
+			self.form.loop('shoot')
 	
 	

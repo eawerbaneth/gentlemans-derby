@@ -11,7 +11,9 @@ from obstacles import *
 from ai import *
 from helper import *
 from player import *
+from weaponSpawn import *
 from menu import *
+
 
 
 class World(DirectObject):
@@ -20,10 +22,20 @@ class World(DirectObject):
 		camera.setPosHpr(0, -15, 7, 0, -15, 0)
 
 		#self.players = helper()
+
+		#players.add_player(Player(0, 0,-30))
 		players.add_player(Player(17, -100, -30))
+		#players.add_player(ai_player(1))
+		#players.add_player(ai_player(2))
+		#players.add_player(ai_player(3))
+		#players.add_player(ai_player(4))
 		
 		
-		#print(len(helper.glob_players))
+		
+		players.add_spawn(gatSpawn(32, 50, -30))
+		players.add_spawn(bombSpawn(32,40,-30))
+		
+
 		
 		self.lights = []
 		
@@ -32,14 +44,21 @@ class World(DirectObject):
 		self.setupCollisions()
 		taskMgr.add(self.getPlace, "placeTask")
 		
-	def changeWeapons(self, cEntry):
-		self.weapon = GattlingGun(0,0,0,0,self.weapon.bullets)
+	#def changeWeapons(self, cEntry):
+	#	self.weapon = GattlingGun(0,0,0,0,self.weapon.bullets)
 		
+		
+
 	def loadModels(self):
+		#self.env = loader.loadModel("models/intermediate_course_export")
+		#cNode = self.env.find("**/terrain_collider")
+		#cNode.show()
+		#self.env = loader.loadModel("models/easy_course")
 		self.env = loader.loadModel("models/courseFinal_Export")
 		#cNode = self.env.find("**/terrain_collider")
 		#cNode.show()
 		
+
 		self.env.reparentTo(render)
 		self.env.setPos(self.env.getX(), self.env.getY(), self.env.getZ()-30)
 		
@@ -47,7 +66,7 @@ class World(DirectObject):
 		#self.spikes = Spikes(32, 40, -30)
 		
 		#read in nodes from file
-		for x in range(1, 4):
+		for x in range(1, 5):
 			ainodes = open("final_path.txt", "r")
 			path = []
 			i = 0
@@ -65,9 +84,9 @@ class World(DirectObject):
 		#players.add_player(ai_player(3, path))
 		#players.add_player(ai_player(4, path))
 
-		self.env.setScale(4)
-		#camera.reparentTo(players.players[0].player)
-		camera.reparentTo(players.players[1].form)
+		self.env.setScale(8)
+		camera.reparentTo(players.players[0].player)
+		#camera.reparentTo(players.players[1].form)
 		
 		players.players[0].env = self.env
 
@@ -76,8 +95,10 @@ class World(DirectObject):
 	def setupCollisions(self):
 		self.cHandler = CollisionHandlerEvent()
 		
+		
+		
 		#self.cHandler.setInPattern("%in-collide")
-		#cSphere = CollisionInvSphere((0,0,0), 1000000)
+		#cSphere = CollisionInvSphere((0,0,0), 1)
 		#cNode = CollisionNode("wall")
 		#cNode.addSolid(cSphere)
 		#cNodePath = self.env.attachNewNode(cNode)
@@ -111,19 +132,19 @@ class World(DirectObject):
 		
 	def loadLamps(self):
 		#NOTE: you guys need to move lights.txt into your panda python folder
-		f = open("lights.txt", "r")
+		f = open("final_path.txt", "r")
 		#read in nodes from file
 		for line in f:
-			print "creating new light"
+			#print "creating new light"
 			words = line.split()
-			self.lights.append(StreetLamp(int(words[0]), int(words[1]), int(words[2])))
+			self.lights.append(StreetLamp(float(words[0])+10, float(words[1])+10, float(words[2])))
 		f.close()
 		
 	def	setupLights(self):
 		## ambient light
 		self.ambientLight = AmbientLight("ambientLight")
 		## four values, RGBA (alpha is largely irrelevent), value range is 0:1
-		self.ambientLight.setColor((.005, .005, .005, 1))
+		self.ambientLight.setColor((.2, .1, .1, 1))
 		self.ambientLightNP = render.attachNewNode(self.ambientLight)
 		## the nodepath that calls setLight is what gets illuminated by the light
 		render.setLight(self.ambientLightNP)
@@ -131,16 +152,17 @@ class World(DirectObject):
 		
 		self.loadLamps()
 		
-		#self.keyLight = DirectionalLight("keyLight")
-		#self.keyLight.setColor((.6,.6,.6, 1))
-		#self.keyLightNP = render.attachNewNode(self.keyLight)
-		#self.keyLightNP.setHpr(0, -26, 0)
-		#render.setLight(self.keyLightNP)
-		#self.fillLight = DirectionalLight("fillLight")
-		#self.fillLight.setColor((.4,.4,.4, 1))
-		#self.fillLightNP = render.attachNewNode(self.fillLight)
-		#self.fillLightNP.setHpr(30, 0, 0)
-		#render.setLight(self.fillLightNP)
+		self.keyLight = DirectionalLight("keyLight")
+		self.keyLight.setColor((.2,.1,.7, 1))
+		self.keyLightNP = render.attachNewNode(self.keyLight)
+		self.keyLightNP.setHpr(0, -26, 0)
+		render.setLight(self.keyLightNP)
+		
+		self.fillLight = DirectionalLight("fillLight")
+		self.fillLight.setColor((.5,.3,.1, 1))
+		self.fillLightNP = render.attachNewNode(self.fillLight)
+		self.fillLightNP.setHpr(30, 0, 0)
+		render.setLight(self.fillLightNP)
 		
 		# self.headlight = Spotlight("slight")
 		# self.headlight.setColor(VBase4(1, 1, .5, 1))
@@ -179,6 +201,7 @@ class World(DirectObject):
 		# cNodePath.show()
 
 	def getPlace(self, task):
+		#print players.players[0].timer
 		p1 = players.players[0]
 		p1.distanceLeft -= p1.getDist(p1.player.getX(), p1.player.getY(), p1.goal, p1.distance)
 		players.players[1].distanceLeft -= p1.getDist(players.players[1].form.getX(), players.players[1].form.getY(), players.players[1].goal, players.players[1].distance)

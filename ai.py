@@ -9,6 +9,7 @@ import os
 from weapons import *
 from helper import *
 
+
 class ai_node(object):
 	def __init__(self, x, y, z, i):
 		self.xpos = x
@@ -18,6 +19,8 @@ class ai_node(object):
 		self.loadModel()
 		self.setupCollisions()
 
+
+		
 	def loadModel(self):
 		self.form = loader.loadModel("models/teapot")
 		self.form.reparentTo(render)
@@ -35,7 +38,9 @@ class ai_node(object):
 		cNodePath = self.form.attachNewNode(cNode)
 		#cNodePath.show()
 		base.cTrav.addCollider(cNodePath, self.cHandler)
+
 		
+
 class node_handler(object):
 	def __init__(self, path):
 		self.path = path
@@ -53,6 +58,34 @@ class node_handler(object):
 			i +=1
 		f.close()
 		
+	#def populate_tubes(self):
+	#	self.cHandler = CollisionHandlerEvent()
+	#	self.cHandler.setInPattern("%fn-collide-%in")
+	#	print(self.path[0].xpos)
+	#	print(self.path[0].ypos)
+		#print(self.path[0].zpos)
+		
+	#	print(self.path[1].xpos)
+	#	print(self.path[1].ypos)
+		#print(self.path[1].zpos)
+		
+	#	self.tubeHandler = CollisionHandlerQueue()
+		#base.cTrav.addCollider(cNodePath, self.bulletHandler)
+		
+	#	for p in range(len(self.path)):
+	#		if(p + 1 >= len(self.path)):
+	#			cTube = CollisionTube(self.path[p].xpos, self.path[p].ypos, 0, self.path[0].xpos, self.path[0].ypos, 0, 10)
+	#		else:
+	#			cTube = CollisionTube(self.path[p].xpos, self.path[p].ypos, 0, self.path[p+1].xpos, self.path[p+1].ypos, 0, 10)
+	#		cNode = CollisionNode("tube" + str(p))
+	#		cNode.addSolid(cTube)
+	#		print(cNode.getName())
+	#		cNodePath = self.form.attachNewNode(cNode)
+	#		cNodePath.show()
+	#		base.cTrav.addCollider(cNodePath,self.cHandler)
+	#		base.cTrav.addCollider(cNodePath, self.tubeHandler)
+
+	
 	def checkpoint(self):
 		self.path.append(self.path.pop(0))
 		
@@ -65,7 +98,7 @@ class ai_player(DirectObject):
 		self.goal = self.brain.next()
 		self.id = id
 		self.velocity = 0
-		self.topspeed = 30
+		self.topspeed = 70
 		self.time_penalty = 0
 		self.invincible = False
 		self.distanceLeft = 1000
@@ -95,8 +128,8 @@ class ai_player(DirectObject):
 		#self.headlight.showFrustum()
 	
 	def loadModel(self):
-		self.form = Actor("models/gentlemanBike_Pistol", {"pedal":"models/gentlemanBike_Pistol"})
-		#self.form.setScale(.004)
+		self.form = Actor("animations/gentlemanBike_idle", {"pedal":"animations/gentlemanBike_idle"})
+		self.form.setScale(3)
 		self.form.setH(45)
 		self.form.loop('pedal')
 		self.form.reparentTo(render)
@@ -107,7 +140,7 @@ class ai_player(DirectObject):
 		self.distance = math.sqrt((self.goal[0] - self.pointX)**2+(self.goal[1] - self.pointY)**2)
 		
 		#load default weapon
-		self.weapon = Weapon(0, 0, 0, 0, [], self.id, self.form.getZ())
+		self.weapon = Weapon(0, 0, -3, 0, [], self.id, self.form.getZ())
 		self.weapon.form.reparentTo(self.form)
 		self.weapon.form.setPos(self.weapon.form.getX(), self.weapon.form.getY(), self.weapon.form.getZ()+3)
 	
@@ -116,16 +149,16 @@ class ai_player(DirectObject):
 		self.cHandler.setInPattern("ai" + str(self.id) + "-collide-%in")
 		
 		#keep ai rooted to the ground
-		self.aiRay = CollisionRay()
-		self.aiRay.setOrigin(0, 0, 3)
-		self.aiRay.setDirection(0, 0, -1)
-		self.aiCol = CollisionNode('aiRay')
-		self.aiCol.addSolid(self.aiRay)
-		self.aiCol.setFromCollideMask(BitMask32.bit(0))
-		self.aiCol.setIntoCollideMask(BitMask32.allOff())
-		self.aiColNp = self.form.attachNewNode(self.aiCol)
-		self.aiHandler = CollisionHandlerQueue()
-		base.cTrav.addCollider(self.aiColNp, self.aiHandler)
+		# self.aiRay = CollisionRay()
+		# self.aiRay.setOrigin(0, 0, 3)
+		# self.aiRay.setDirection(0, 0, -1)
+		# self.aiCol = CollisionNode('aiRay')
+		# self.aiCol.addSolid(self.aiRay)
+		# self.aiCol.setFromCollideMask(BitMask32.bit(0))
+		# self.aiCol.setIntoCollideMask(BitMask32.allOff())
+		# self.aiColNp = self.form.attachNewNode(self.aiCol)
+		# self.aiHandler = CollisionHandlerQueue()
+		# base.cTrav.addCollider(self.aiColNp, self.aiHandler)
 		
 		cSphere = CollisionSphere((0,0,0), 3)
 		cNode = CollisionNode("ai"+str(self.id))
@@ -140,8 +173,22 @@ class ai_player(DirectObject):
 			self.accept("ai" + str(self.id) + "-collide-ai-node"+ i.id, self.checkpoint)
 		self.accept("ai" + str(self.id) + "-collide-spikes", self.penalty)
 		self.accept("ai" + str(self.id) + "-collide-oil-slick", self.oil_slicked)
+		self.accept("ai" + str(self.id) + "-collide-gatSpawn", self.changeWeapons, [0])
+		self.accept("ai" + str(self.id) + "-collide-bombSpawn", self.changeWeapons, [1])
 		
 		base.cTrav.addCollider(cNodePath, self.cHandler)
+	
+	def changeWeapons(self, wepIndex, cEntry):
+		if(wepIndex == 0):
+			self.weapon = GattlingGun(0,0,-3,0,self.weapon.bullets,0,3)
+			players.spawns[0].collectable = False
+			players.spawns[0].setDowntime()
+			cEntry.getIntoNodePath().remove()
+		elif(wepIndex == 1):
+			self.weapon = BombWeapon(0,0,-3,0,[],0,0)
+			players.spawns[1].collectable = False
+			players.spawns[1].setDowntime()
+			cEntry.getIntoNodePath().remove()
 	
 	def oil_slicked(self, cEntry):
 		print "ai " + str(self.id) + " oil slicked!"
@@ -158,7 +205,7 @@ class ai_player(DirectObject):
 	
 	def checkpoint(self, cEntry):
 		#print "checkpoint!"
-		print "ai ", self.id, "reached checkpoint ", self.goal[3]
+		#print "ai ", self.id, "reached checkpoint ", self.goal[3]
 		if cEntry.getIntoNodePath().getName() == "ai-node" + str(self.goal[3]):
 			self.brain.checkpoint()
 			self.goal = self.brain.next()
@@ -168,9 +215,9 @@ class ai_player(DirectObject):
 		elapsed = task.time - self.prevtime
 		#startzed = self.form.getZ()
 		
-		if int(self.id)==1:
-			camera.lookAt(self.form)
-			print "Pitch is ", self.form.getP()
+		#if int(self.id)==1:
+		#	camera.lookAt(self.form)
+		#	print "Pitch is ", self.form.getP()
 		#	print "heading to ai-node ", self.goal[3], "(", self.goal[0], ",", self.goal[1], ",", self.goal[2], ")"
 		#	print "current Z is ", self.form.getZ()
 		
@@ -197,8 +244,15 @@ class ai_player(DirectObject):
 				self.form.setH(angle)
 			#deal with pitch
 			otherangle = rad2Deg(math.atan2((self.form.getZ()-self.goal[2]), ((self.form.getY()-self.goal[1])))) #- math.pi/2)
-			if otherangle > 90 and otherangle < 180:
+			#if otherangle >= 180 or otherangle < -180:
+			#	print "(", self.form.getZ(), self.goal[2], ")"
+			
+			if otherangle > 90 and otherangle <= 180:
 				otherangle = 180 - otherangle
+				
+			#if int(self.id)==1:
+			#	print -otherangle
+			
 			
 			#print otherangle, "(",self.form.getZ(),",",self.form.getY(),") (",self.goal[2],",",self.goal[1],")"
 			cur_pitch = self.form.getP()
@@ -230,14 +284,20 @@ class ai_player(DirectObject):
 		#update weapon
 		shootflag = False
 		if math.sqrt((self.form.getX() - players.players[0].player.getX())**2 + (self.form.getY() - players.players[0].player.getY())**2) < self.weapon.range + 5:
-			shootflag = False
-		for i in range(1, 4):
+			shootflag = True
+
+		for i in range(1, 5):
 			if players.players[i].id != self.id:
 				#check to see if anyone is in range, shoot if they are
 				if math.sqrt((self.form.getX() - players.players[i].form.getX())**2 + (self.form.getY() - players.players[i].form.getY())**2) <= 30:
-					shootflag = False
+					shootflag = True
 		self.weapon.setKey("firing", shootflag)
-		self.weapon.update(self.form.getX(), self.form.getY(), self.weapon.form.getZ(), deg2Rad(self.form.getH()), elapsed) 
+		
+		
+		live = self.weapon.update(self.form.getX(), self.form.getY(), self.weapon.form.getZ(), deg2Rad(self.form.getH()), elapsed) 
+		
+		if(not live):
+			self.weapon = Weapon(0,0,-30,0,self.weapon.bullets, self.id, 3)
 		
 		#keep ai rooted to ground
 		base.cTrav.traverse(render)
