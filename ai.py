@@ -49,7 +49,7 @@ class node_handler(object):
 	def populate_nodes(self):
 		#print os.getcwd()
 #NOTE: you guys need to move path_nodes.txt into your panda python folder
-		f = open("test_track.txt", "r")
+		f = open("new_ai_nodes.txt", "r")
 		#read in nodes from file
 		i = 1
 		for line in f:
@@ -210,7 +210,7 @@ class ai_player(DirectObject):
 			self.pointY = self.goal[1]
 			self.brain.checkpoint()
 			self.goal = self.brain.next()
-			self.distance = math.sqrt((self.goal[0] - self.pointX)**2+(self.goal[1] - self.pointY)**2)
+			self.distance = math.sqrt((self.goal[0] - self.pointX)*(self.goal[0] - self.pointX)+(self.goal[1] - self.pointY)*(self.goal[1] - self.pointY))
 			#print self.goal[0], self.goal[1], self.goal[2]
 	
 	def update(self, task):
