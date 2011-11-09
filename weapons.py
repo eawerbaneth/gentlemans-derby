@@ -36,12 +36,16 @@ class Weapon(DirectObject):
 		self.idLim = 1000
 		self.projId = 0
 		
+		
 		self.angle = angle
 		self.xpos = x
 		self.ypos = y
 		self.zpos = z
 		self.projZ = projZ
 
+		self.pistolSound = loader.loadSfx("Sound/FX/pistol.wav")
+
+		
 		#for debugging purposes only
 		#taskMgr.add(self.testing, "TESTING_WEAPON")
 		self.prevtime = 0
@@ -114,6 +118,7 @@ class Weapon(DirectObject):
 		"""pulls the trigger"""
 
 		#print(len(players.players))
+		self.pistolSound.play()
 		if(self.projId >= self.idLim):
 			self.projId = 0
 		new_projectile = Projectile(100, self.xpos, self.ypos, self.projZ, self.angle, 100, self.playerid, self.projId, len(self.bullets), players)
@@ -156,6 +161,7 @@ class GattlingGun(Weapon):
 		self.coodown = 0.3
 		self.penalty = 0.3
 		self.ammo = 100
+		self.gatSound = loader.loadSfx("Sound/FX/gattling_singleshot.wav")
 
 #using revolver proxy for now
 	def LoadModel(self):
@@ -168,6 +174,7 @@ class GattlingGun(Weapon):
 	def fire(self):
 		"""pulls the trigger"""
 		Weapon.fire(self)
+		self.gatSound.play()
 		#self.bullets[len(self.bullets)-1].penalty = 0.3
 		self.cooldown = 0.3
 		self.ammo -= 1
@@ -208,6 +215,9 @@ class BombWeapon(Weapon):
 		self.ammo = 3
 		self.range = 25
 		self.playerid = id
+		
+		self.deploySound = loader.loadSfx("Sound/FX/bomb_deploy.wav")
+		
 	
 	#each individual method is going to need to load its own model
 #FLAG: needs image
@@ -220,6 +230,7 @@ class BombWeapon(Weapon):
 	def fire(self):
 		"""drops a bomb"""
 		#note: bombs don't inherit from projectile class
+		self.deploySound.play()
 		new_bomb = Bomb(self.xpos, self.ypos, -30, self.angle-180, self.playerid, players)
 		self.bullets.append(new_bomb)
 		self.cooldown = 5.0

@@ -42,6 +42,8 @@ class World(DirectObject):
 		self.loadModels()
 		self.setupLights()
 		self.setupCollisions()
+		self.worldMusic = loader.loadSfx("Sound/Music/race_loop.wav")
+		self.worldMusic.play()
 		taskMgr.add(self.getPlace, "placeTask")
 		
 	#def changeWeapons(self, cEntry):

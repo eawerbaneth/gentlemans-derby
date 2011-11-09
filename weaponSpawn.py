@@ -42,6 +42,7 @@ class bombSpawn(DirectObject):
 		self.form.removeNode()
 		
 	def update(self, task):
+
 		#print(self.collectable)
 		elapsed = task.time - self.prevtime
 		if(not self.collectable):
@@ -93,6 +94,7 @@ class gatSpawn(DirectObject):
 		self.form.removeNode()
 		
 	def update(self, task):
+
 		#print(self.collectable)
 		elapsed = task.time - self.prevtime
 		if(not self.collectable):
