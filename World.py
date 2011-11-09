@@ -11,6 +11,7 @@ from obstacles import *
 from ai import *
 from helper import *
 from player import *
+from menu import *
 
 
 class World(DirectObject):
@@ -21,6 +22,7 @@ class World(DirectObject):
 		#self.players = helper()
 		players.add_player(Player(17, -100, -30))
 		
+		
 		#print(len(helper.glob_players))
 		
 		self.lights = []
@@ -28,7 +30,7 @@ class World(DirectObject):
 		self.loadModels()
 		self.setupLights()
 		self.setupCollisions()
-		
+		taskMgr.add(self.getPlace, "placeTask")
 		
 	def changeWeapons(self, cEntry):
 		self.weapon = GattlingGun(0,0,0,0,self.weapon.bullets)
@@ -176,6 +178,28 @@ class World(DirectObject):
 		# cNodePath = self.env.attachNewNode(cNode)
 		# cNodePath.show()
 
-	
+	def getPlace(self, task):
+		p1 = players.players[0]
+		p1.distanceLeft -= p1.getDist(p1.player.getX(), p1.player.getY(), p1.goal)
+		players.players[1].distanceLeft -= p1.getDist(players.players[1].form.getX(), players.players[1].form.getY(), players.players[1].goal)
+		players.players[2].distanceLeft -= p1.getDist(players.players[2].form.getX(), players.players[2].form.getY(), players.players[2].goal)
+		players.players[3].distanceLeft -= p1.getDist(players.players[3].form.getX(), players.players[3].form.getY(), players.players[3].goal)
+		players.players[4].distanceLeft -= p1.getDist(players.players[4].form.getX(), players.players[4].form.getY(), players.players[4].goal)
+		
+		L = [players.players[0].distanceLeft, players.players[1].distanceLeft, players.players[2].distanceLeft, players.players[3].distanceLeft, players.players[4].distanceLeft]
+		L.sort()
+		
+		players.players[0].place = L.index(players.players[0].distanceLeft)+1
+		return Task.cont
+		
+m = Menu()
+
+#run()
+while(True):
+	taskMgr.step()
+	if m.start == True:
+		m.destroy()
+		break
 w = World()
-run()	
+while(True):
+	taskMgr.step()

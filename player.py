@@ -75,6 +75,11 @@ class Player(DirectObject):
 		self.setupLights()
 		self.collisionInit()
 		self.HUD = HUD()
+		self.checkpointCount = 0
+		self.laps = 0
+		self.totalDist = 0
+		self.distanceLeft = 1000
+		self.place = 0
 		
 
 		self.keyMap = {"left":0, "right":0, "forward":0, "down":0, "break":0, "test":0}
@@ -134,6 +139,11 @@ class Player(DirectObject):
 			else:
 				self.gravity = 4
 			self.goal = self.checkpoints.next()
+			print("checkpoint")
+			self.checkpointCount += 1
+			if self.checkpointCount >= 8:
+				self.checkpointCount = 0
+				self.laps += 1
 			#add an acceptor for our next checkpoint
 			self.accept("collide-checkpoint" + str(self.goal[2]), self.checkpoint)
 			#print "checkpoint!"
@@ -360,9 +370,9 @@ class Player(DirectObject):
 	#	return Task.cont
 	
 	def updateHUD(self, task):
-		self.HUD.updateSpeed(self.velocity)
-		self.HUD.getDist(self.player.getX(), self.player.getY(), self.goal)
-		self.HUD.updateMiniMap(self.player.getX(), self.player.getY())
+		self.HUD.update(self.velocity, self.player.getX(), self.player.getY(), self.laps, self.place)
+		#self.distanceLeft -= self.getDist(self.player.getX(), self.player.getY(), self.goal)
+		#self.HUD.updateMiniMap(self.player.getX(), self.player.getY())
 		return Task.cont
 		
 	def collisionInit(self):
@@ -399,3 +409,15 @@ class Player(DirectObject):
 		
 	def setKey(self,key,value):
 		self.keyMap[key] = value
+		
+	def getDist(self, x, y, checkpoint):
+		cx = checkpoint[0]
+		cy = checkpoint[1]
+		dist = math.sqrt((cx-x)**2 + (cy-y)**2)
+		
+		rotAngle = math.atan2(-y,x)
+		
+		newX = x*math.cos(rotAngle) - y*math.sin(rotAngle)
+		
+		dToCheckpoint = dist - newX
+		return dToCheckpoint
