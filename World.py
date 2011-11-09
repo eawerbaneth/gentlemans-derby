@@ -54,7 +54,7 @@ class World(DirectObject):
 		#cNode = self.env.find("**/terrain_collider")
 		#cNode.show()
 		#self.env = loader.loadModel("models/easy_course")
-		self.env = loader.loadModel("models/courseFinal_Export")
+		self.env = loader.loadModel("models/courseOut")
 		#cNode = self.env.find("**/terrain_collider")
 		#cNode.show()
 		
@@ -93,8 +93,12 @@ class World(DirectObject):
 		camera.setPos(0, 4, 1)
 
 	def setupCollisions(self):
-		self.cHandler = CollisionHandlerEvent()
 		
+		#base.cTrav = CollisionTraverser()
+		#cNode = self.env.find("**/walls_collider")
+		#cNode.show()
+		
+		self.cHandler = CollisionHandlerEvent()
 		
 		
 		#self.cHandler.setInPattern("%in-collide")

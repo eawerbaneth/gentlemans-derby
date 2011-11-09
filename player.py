@@ -124,7 +124,14 @@ class Player(DirectObject):
 		self.accept("collide-oil-slick", self.oil_slicked)
 		self.accept("collide-spikes", self.spiked)
 		self.accept("collide-gatSpawn", self.changeWeapons, [0])
-		self.accept("collide-bombSpawn", self.changeWeapons, [1])		
+		self.accept("collide-bombSpawn", self.changeWeapons, [1])	
+		#self.accept("collide-walls_collider", self.heya)
+		
+	def heya(self, cEntry):
+		print "wall collision detected"
+		point = cEntry.getSurfacePoint(render)
+		self.player.setX(point.getX())
+		self.player.setY(point.getY())
 	
 	#triggers when player runs into an oil slick
 	def oil_slicked(self, cEntry):
@@ -423,6 +430,16 @@ class Player(DirectObject):
 		self.playerColNp.reparentTo(render)
 		self.playerHandler = CollisionHandlerQueue()
 		base.cTrav.addCollider(self.playerColNp, self.playerHandler)
+		
+		#pusher = CollisionHandlerPusher()
+		
+		#pusher.addCollider(cNodePath, self.player)
+		#base.cTrav.addCollider(cNodePath, pusher)
+		
+		# pusher = CollisionHandlerPusher()
+		# pusher.addCollider(cNodePath)
+		# base.cTrav.addCollider(cNodePath, pusher)
+		
 		base.cTrav.addCollider(cNodePath, self.cHandler)
 	
 	def take_damage(self, amount):
