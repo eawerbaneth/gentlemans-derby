@@ -22,7 +22,10 @@ class HUD():
         self.speedPin.setScale(.10)
         self.speedPin.setTransparency(TransparencyAttrib.MAlpha)
         self.speedPin.setHpr(0, 0, 0)
-        self.dot = OnscreenImage(image = 'img/dot.png', pos = (1, 0, -.7))
+        
+        self.minimap = OnscreenImage(image = 'img/minimap.png', pos = (1.05, 0, -.65))
+        self.minimap.setScale(.19, .19, .3)
+        self.dot = OnscreenImage(image = 'img/dot.png', pos = (1.01, 0, -.55))
         self.dot.setScale(.025)
         
         font1 = loader.loadFont('img/goodfish.ttf')
@@ -36,7 +39,7 @@ class HUD():
         if velocity < 0:
             velocity = -velocity
 
-        self.dot.setPos(1+(x/5000), 0, -.7+(y/5000))
+        self.dot.setPos(1.01+(x/4250), 0, -.55+(y/4250))
         self.lapText.setText("Laps: " + str(laps)+"/10")
 
         self.speedPin.setHpr(0, 0, 4*velocity)
