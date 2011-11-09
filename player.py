@@ -129,31 +129,17 @@ class Player(DirectObject):
 		self.accept("arrow_down-up", self.setKey, ["down", 0])
 		self.accept("z-up", self.setKey, ["break", 0])
 		self.accept("w-up", self.setKey, ["test", 0])
-		self.accept("collide-wall", self.putPlayer)
+		#self.accept("collide-wall", self.putPlayer)
 		#add an acceptor for the first checkpoint
 		self.accept("collide-checkpoint1", self.checkpoint)
-		self.accept("collide-oil-slick", self.oil_slicked)
-		self.accept("collide-spikes", self.spiked)
+		#self.accept("collide-oil-slick", self.oil_slicked)
+		#self.accept("collide-spikes", self.spiked)
 		self.accept("collide-gatSpawn", self.changeWeapons, [0])
 		self.accept("collide-bombSpawn", self.changeWeapons, [1])	
-		#self.accept("collide-walls_collider", self.heya)
-		
-	def heya(self, cEntry):
-		print "wall collision detected"
-		point = cEntry.getSurfacePoint(render)
-		self.player.setX(point.getX())
-		self.player.setY(point.getY())
-	
-	#triggers when player runs into an oil slick
-	def oil_slicked(self, cEntry):
-		print "player oil slicked!"
-	
-	def spiked(self, cEntry):
-		print "player spiked!"
 	
 	def changeWeapons(self, wepIndex, cEntry):
 		if(wepIndex == 0):
-			self.weapon = GattlingGun(0,0,-3,0,self.weapon.bullets,0,self.z+3)
+			self.weapon = Weapon(0,0,-3,0,self.weapon.bullets,0,self.z+3)
 			players.spawns[0].collectable = False
 			players.spawns[0].setDowntime()
 			cEntry.getIntoNodePath().remove()

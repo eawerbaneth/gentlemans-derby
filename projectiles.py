@@ -35,10 +35,7 @@ class Projectile(DirectObject):
 		self.range = range
 		self.playerid = playerid
 		self.id = id
-		
-		
 
-		
 		if(self.playerid == 0):
 		
 			self.accept("projectile:" + str(self.playerid) + ":" + str(self.id) + "-collide-ai1", self.kill, [1])

@@ -94,12 +94,10 @@ class Weapon(DirectObject):
 		if self.keyMap["firing"] and self.cooldown == 0 and self.ammo > 0 and not players.players[self.playerid].invincible:
 			self.fire()
 		else:
-			if int(self.playerid) == 0 and self.form.getCurrentAnim() == "shoot":
-				print self.form.getCurrentFrame('shoot')
 			if self.form.getCurrentAnim() == "shoot" and self.form.getCurrentFrame('shoot')==23:
-				if int(self.playerid) == 0:
-					print "stopping shoot animation"
 				self.form.stop()
+				self.form.loop('idle')
+			if self.form.getCurrentAnim() == "None":
 				self.form.loop('idle')
 		
 		for i, projectile in enumerate(self.bullets):
@@ -134,8 +132,6 @@ class Weapon(DirectObject):
 		#	if str(i) != self.playerid:
 		#		self.accept("projectile:" + str(self.playerid) + ":" + str(len(self.bullets)-1) + "-collision-ai"+str(i), self.address_bullet)
 		
-		if int(self.playerid) == 0:
-			print self.form.getCurrentAnim()
 		if self.form.getCurrentAnim() == "idle" or self.form.getCurrentAnim == "None":
 			if int(self.playerid) == 0:
 				print "playing shoot animation"
@@ -145,7 +141,7 @@ class Weapon(DirectObject):
 	#occurs when there is a bullet collision
 	def address_bullet(self, cEntry):
 		"""called when a projectile collides with a player or ai"""
-		print "bullet collision detected"
+		#print "bullet collision detected"
 		#have the injured party incur a penalty
 		handle = cEntry.getIntoNodePath().getName() #will be either ai<num> or player
 		if handle == "player":
@@ -175,7 +171,7 @@ class GattlingGun(Weapon):
 		self.form = Actor("animations/gentlemanGattling_idle", {"idle":"animations/gentlemanGattling_idle", "shoot":"animations/gentlemanGattling_trigger"})
 		#self.form.setScale(300)
 		self.form.setPos(self.xpos,self.ypos,self.zpos)
-		self.form.loop('idle')
+		#self.form.loop('idle')
 		#self.form.setH(90)
 		#self.form.reparentTo(render)
 		
@@ -186,8 +182,8 @@ class GattlingGun(Weapon):
 		#self.bullets[len(self.bullets)-1].penalty = 0.3
 		self.cooldown = 0.3
 		self.ammo -= 1
-		if self.form.getCurrentAnim() == "idle":
-			self.form.loop('shoot')
+		#if self.form.getCurrentAnim() == "idle":
+		#	self.form.loop('shoot')
 	
 class Flamethrower(Weapon):
 	def __init__(self, x, y, z, angle, bullets, id, projZ):
@@ -224,7 +220,7 @@ class BombWeapon(Weapon):
 		self.range = 25
 		self.playerid = id
 		
-		self.deploySound = loader.loadSfx("Sound/FX/bomb_deploy.wav")
+		#self.deploySound = loader.loadSfx("Sound/FX/bomb_deploy.wav")
 		
 	
 	#each individual method is going to need to load its own model
@@ -232,7 +228,7 @@ class BombWeapon(Weapon):
 	def LoadModel(self):
 
 		self.form = Actor("animations/gentlemanBomb_idle", {"idle":"animations/gentlemanBomb_idle", "shoot":"animations/gentlemanBomb_trigger"})
-		self.form.loop('idle')
+		#self.form.loop('idle')
 		#self.form.reparentTo(render)
 	
 	def fire(self):
@@ -243,7 +239,7 @@ class BombWeapon(Weapon):
 		self.bullets.append(new_bomb)
 		self.cooldown = 5.0
 		self.ammo -= 1
-		if self.form.getCurrentAnim() == "idle":
-			self.form.loop('shoot')
+		#if self.form.getCurrentAnim() == "idle":
+		#	self.form.loop('shoot')
 	
 	

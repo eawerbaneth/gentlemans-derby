@@ -6,44 +6,30 @@ from direct.interval.IntervalGlobal import * #for compound intervals
 from direct.task import Task #for update functions
 import sys, math, random, os
 from weapons import *
-from misc import *
-from obstacles import *
 from ai import *
 from helper import *
 from player import *
 from weaponSpawn import *
 from menu import *
-
-
+from misc import StreetLamp
 
 class World(DirectObject):
 	def __init__(self):
 		base.disableMouse()
 		camera.setPosHpr(0, -15, 7, 0, -15, 0)
 
-		#self.players = helper()
-
-		#players.add_player(Player(0, 0,-30))
 		players.add_player(Player(17, -100, -30))
-		#players.add_player(ai_player(1))
-		#players.add_player(ai_player(2))
-		#players.add_player(ai_player(3))
-		#players.add_player(ai_player(4))
-		
-		
 		
 		players.add_spawn(gatSpawn(-105, -10, -30))
 		players.add_spawn(bombSpawn(228,-341,-30))
-		
-
 		
 		self.lights = []
 		
 		self.loadModels()
 		self.setupLights()
 		self.setupCollisions()
-		self.worldMusic = loader.loadSfx("Sound/Music/entertainer.mp3")
-		self.worldMusic.play()
+		#self.worldMusic = loader.loadSfx("Sound/Music/entertainer.mp3")
+		#self.worldMusic.play()
 		taskMgr.add(self.getPlace, "placeTask")
 		
 		#render.setShaderAuto()
@@ -223,9 +209,9 @@ class World(DirectObject):
 		L.sort()
 		
 		players.players[0].place = L.index(players.players[0].distanceLeft)+1
-		"""print "Distance " +str(p1.getDist(players.players[1].form.getX(), players.players[1].form.getY(), players.players[1].goal))
-		print "Distance " + str(players.players[1].distanceLeft)"""
-		print "Player distance " +str(players.players[1].distanceLeft)
+	#"""print "Distance " +str(p1.getDist(players.players[1].form.getX(), players.players[1].form.getY(), players.players[1].goal))
+	#	print "Distance " + str(players.players[1].distanceLeft)"""
+		#print "Player distance " +str(players.players[1].distanceLeft)
 		return Task.cont
 		
 m = Menu()

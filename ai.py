@@ -170,8 +170,8 @@ class ai_player(DirectObject):
 		#add acceptors
 		for i in self.brain.path:
 			self.accept("ai" + str(self.id) + "-collide-ai-node"+ i.id, self.checkpoint)
-		self.accept("ai" + str(self.id) + "-collide-spikes", self.penalty)
-		self.accept("ai" + str(self.id) + "-collide-oil-slick", self.oil_slicked)
+		# self.accept("ai" + str(self.id) + "-collide-spikes", self.penalty)
+		# self.accept("ai" + str(self.id) + "-collide-oil-slick", self.oil_slicked)
 		self.accept("ai" + str(self.id) + "-collide-gatSpawn", self.changeWeapons, [0])
 		self.accept("ai" + str(self.id) + "-collide-bombSpawn", self.changeWeapons, [1])
 		
