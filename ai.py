@@ -139,7 +139,7 @@ class ai_player(DirectObject):
 		self.pointY = self.form.getY()
 		
 		#load default weapon
-		self.weapon = Weapon(0, 0, -3, 0, [], self.id, self.form.getZ())
+		self.weapon = Weapon(0, 0, -3, 0, [], self.id, self.form.getZ() + 10)
 		self.weapon.form.reparentTo(self.form)
 		self.weapon.form.setPos(self.weapon.form.getX(), self.weapon.form.getY(), self.weapon.form.getZ()+3)
 	

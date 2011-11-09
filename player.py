@@ -186,7 +186,7 @@ class Player(DirectObject):
 		self.player.reparentTo(render)
 		self.player.setPos(self.x,self.y,self.z)
 
-		self.weapon = GattlingGun(0, 0, -3, 0, [], 0, self.z+3)
+		self.weapon = GattlingGun(0, 0, -3, 0, [], 0, self.z+10)
 		#self.weapon = Weapon(0, 0, -3, 0, [], 0, self.z)
 		#self.weapon = GattlingGun(0, 0, 800, 0, [], 0)
 		#self.weapon = Weapon(0, 0, 600, 0, [], 0)
