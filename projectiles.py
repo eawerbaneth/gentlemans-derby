@@ -166,7 +166,7 @@ class Flames(DirectObject):
 	#def update(self, task):
 		"""the fire sticks around for a second and then disappears"""
 		#elapsed = 0
-		#if self.prevtime == -1:	
+		#if self.prevtime == -1:
 		#	elapsed = 0
 		#else:
 		#	elapsed = task.time - self.prevtime

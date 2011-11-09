@@ -35,12 +35,12 @@ class World(DirectObject):
 		taskMgr.add(self.getPlace, "placeTask")
 		
 	def changeWeapons(self, cEntry):
-		self.weapon = GattlingGun(0,0,800,0,self.weapon.bullets)
+		self.weapon = GattlingGun(0,0,0,0,self.weapon.bullets)
 		
 	def loadModels(self):
-		self.env = loader.loadModel("models/intermediate_course_export")
-		cNode = self.env.find("**/terrain_collider")
-		cNode.show()
+		self.env = loader.loadModel("models/courseFinal_Export")
+		#cNode = self.env.find("**/terrain_collider")
+		#cNode.show()
 		
 		self.env.reparentTo(render)
 		self.env.setPos(self.env.getX(), self.env.getY(), self.env.getZ()-30)
